@@ -1,0 +1,584 @@
+{
+  "scoring": "hit만 적중; unavailable은 적중률 분모에서 제외. context_has_evidence는 같은 행의 제목 또는 인용 발견, context_has_exact_quote는 실제 인용 전달 여부.",
+  "aggregate": {
+    "facts": 16,
+    "before_available": 12,
+    "after_available": 16,
+    "before_hits": 2,
+    "after_hits": 12,
+    "context_row_hits": 15,
+    "context_quote_hits": 12
+  },
+  "queries": [
+    {
+      "id": "Q1",
+      "runId": 19,
+      "success": true,
+      "wall_ms": 210809,
+      "answer_ms": {
+        "before": 208168,
+        "after": 48777
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "validity": "valid",
+          "before": {
+            "status": "partial",
+            "evidence": "활성화/가중치 희소화; top-K와 학습 추정기는 없음"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "top-K sparsification ... straight-through estimator"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F2",
+          "validity": "valid",
+          "before": {
+            "status": "miss",
+            "evidence": "full-precision 및 1-bit 적용 범위 언급 없음"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "모든 대형 언어 모델이라고만 언급"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": false
+        },
+        {
+          "id": "F3",
+          "validity": "valid",
+          "before": {
+            "status": "contradict",
+            "evidence": "14.4 GB/s"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "25.60 GB/s"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F4",
+          "validity": "valid",
+          "before": {
+            "status": "contradict",
+            "evidence": "300W 이상"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "250 W"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F5",
+          "validity": "valid",
+          "before": {
+            "status": "miss",
+            "evidence": "강력한 수요와 공급 제약 전망; 목표가 인상 언급 없음"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "확인 불가"
+          },
+          "context_has_evidence": false,
+          "context_has_exact_quote": false
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "procedureRouting": [
+          "embedding"
+        ],
+        "actual_researchers": [
+          "GPU Ark 그래픽카드 사양",
+          "AI 머신러닝 연구 논문 초록",
+          "미국 기업 산업 동향 기사"
+        ],
+        "actual_pairs": [
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 작업별 GPU 적합성 검토"
+          },
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 전력 대비 사양 검토"
+          },
+          {
+            "researcher": "AI 머신러닝 연구 논문 초록",
+            "procedure": "[AI연구] 기법 적용 조건 비교"
+          },
+          {
+            "researcher": "AI 머신러닝 연구 논문 초록",
+            "procedure": "[AI연구] 벤치마크 결과 해석"
+          },
+          {
+            "researcher": "미국 기업 산업 동향 기사",
+            "procedure": "[산업기술] 기업과 제품의 경쟁 근거 비교"
+          },
+          {
+            "researcher": "미국 기업 산업 동향 기사",
+            "procedure": "[산업기술] 기업 발표와 전망의 실현 근거 점검"
+          }
+        ],
+        "researchers": {
+          "matched": [
+            "AI 머신러닝 연구 논문 초록",
+            "GPU Ark 그래픽카드 사양",
+            "미국 기업 산업 동향 기사"
+          ],
+          "missing": [],
+          "extra": []
+        },
+        "procedures": {
+          "matched": [
+            "[GPU Ark] 작업별 GPU 적합성 검토"
+          ],
+          "missing": [
+            "[AI연구] 논문 주장과 근거 추출",
+            "[산업기술] 시점별 기업 동향과 전환점"
+          ],
+          "extra": [
+            "[GPU Ark] 전력 대비 사양 검토",
+            "[AI연구] 기법 적용 조건 비교",
+            "[AI연구] 벤치마크 결과 해석",
+            "[산업기술] 기업과 제품의 경쟁 근거 비교",
+            "[산업기술] 기업 발표와 전망의 실현 근거 점검"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "MSI GT 330 대역폭 14.4 GB/s 및 PSU 300W: 지정된 행과 불일치",
+          "Q-Sparse가 사전 학습이나 파인튜닝을 대체하지 않는다는 적용 범위: 초록의 학습·파인튜닝 적용과 상충",
+          "GTC 2024에 Rubin 로드맵과 B200·GB200 발표를 묶은 주장 및 수요·공급 전망: 제공된 목표 기사에서 확인 불가"
+        ],
+        "after": [
+          "CUDA 1.1을 CUDA 버전으로 확정하고 현대 프레임워크가 CUDA 7.5 이상 필요하다고 단정: 제공 사양표는 CUDA 값의 의미를 정의하지 않음",
+          "FP32 0.24에 TFLOPS 단위 부여: 전달된 사양에는 단위 없음"
+        ]
+      },
+      "after_declared_gaps": {
+        "declared": true,
+        "evidence": "GTC 발표 이후의 애널리스트 동향 ... 확인할 수 없습니다; 실행 가능성을 단정할 수 없습니다"
+      }
+    },
+    {
+      "id": "Q2",
+      "runId": 22,
+      "success": true,
+      "wall_ms": 167262,
+      "answer_ms": {
+        "before": 58481,
+        "after": 166313
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "validity": "valid",
+          "before": {
+            "status": "partial",
+            "evidence": "메모리 대역폭 (가중치 로딩); 전역 메모리에서 레지스터로의 이동은 미기재"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "글로벌 메모리에서 레지스터로 전송"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F2",
+          "validity": "valid",
+          "before": {
+            "status": "contradict",
+            "evidence": "상수 메모리에 저장 ... 브로드캐스트"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "역양자화와 matmul 결합만 언급; LUT 복제·벡터화 없음"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": false
+        },
+        {
+          "id": "F3",
+          "validity": "valid",
+          "before": {
+            "status": "contradict",
+            "evidence": "24 GB/s"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "32.00 GB/s"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F4",
+          "validity": "valid",
+          "before": {
+            "status": "hit",
+            "evidence": "6핀 PCIe 보조 전원 커넥터"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "1x 6-pin"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "procedureRouting": [
+          "embedding"
+        ],
+        "actual_researchers": [
+          "GPU Ark 그래픽카드 사양",
+          "AI 머신러닝 연구 논문 초록",
+          "산업 뉴스(합성)"
+        ],
+        "actual_pairs": [
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 작업별 GPU 적합성 검토"
+          },
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 장착 및 전원 조건 점검"
+          },
+          {
+            "researcher": "AI 머신러닝 연구 논문 초록",
+            "procedure": "[AI연구] 벤치마크 결과 해석"
+          },
+          {
+            "researcher": "AI 머신러닝 연구 논문 초록",
+            "procedure": "[AI연구] 논문 주장과 근거 추출"
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출"
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "산업 이슈 영향 분석"
+          }
+        ],
+        "researchers": {
+          "matched": [
+            "AI 머신러닝 연구 논문 초록",
+            "GPU Ark 그래픽카드 사양"
+          ],
+          "missing": [],
+          "extra": [
+            "산업 뉴스(합성)"
+          ]
+        },
+        "procedures": {
+          "matched": [
+            "[AI연구] 논문 주장과 근거 추출",
+            "[GPU Ark] 장착 및 전원 조건 점검",
+            "[GPU Ark] 작업별 GPU 적합성 검토"
+          ],
+          "missing": [],
+          "extra": [
+            "[AI연구] 벤치마크 결과 해석",
+            "수치·사실 추출",
+            "산업 이슈 영향 분석"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "FLUTE LUT를 상수 메모리에 저장하고 브로드캐스트한다는 설명은 목표 논문 발췌로 뒷받침되지 않음",
+          "8600 GTS 대역폭 24 GB/s: 지정 사양 32.00 GB/s와 불일치"
+        ],
+        "after": [
+          "CUDA 1.1을 CUDA 버전/컴퓨트 능력으로 해석: 사양 필드의 의미가 확정되지 않음"
+        ]
+      },
+      "after_declared_gaps": {
+        "declared": true,
+        "evidence": "논문이 요구하는 최소 CUDA 버전 및 컴퓨트 캡빌리티가 초록에 명시되지 않음"
+      }
+    },
+    {
+      "id": "Q3",
+      "runId": 24,
+      "success": true,
+      "wall_ms": 121542,
+      "answer_ms": {
+        "before": 120610,
+        "after": 43083
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "validity": "valid",
+          "before": {
+            "status": "contradict",
+            "evidence": "bug_report.php ... 1.1.0 ~ 1.1.7"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "core/summary_api.php ... Summary ... 1.2.3 이전"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F2",
+          "validity": "valid",
+          "before": {
+            "status": "partial",
+            "evidence": "BLOB (또는 64KB 초과 시 LONGBLOB)"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "bin_data LONGBLOB"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F3",
+          "validity": "valid",
+          "before": {
+            "status": "hit",
+            "evidence": "mysql_real_escape_string()"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "구체적인 입력 처리 함수명을 확인할 수 없음"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": false
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "procedureRouting": [
+          "embedding"
+        ],
+        "actual_researchers": [
+          "CVE 취약점과 영향 정보",
+          "소프트웨어 개발 질의응답",
+          "판례·법령 질의응답"
+        ],
+        "actual_pairs": [
+          {
+            "researcher": "CVE 취약점과 영향 정보",
+            "procedure": "[IT보안] 취약점 심각도와 노출 판단"
+          },
+          {
+            "researcher": "CVE 취약점과 영향 정보",
+            "procedure": "[IT보안] 공격 조건과 방어 지점 추출"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 오류 원인과 재현 진단"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 답변 근거와 최신성 평가"
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "수치·사실 추출"
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "근거 신뢰도 점검"
+          }
+        ],
+        "researchers": {
+          "matched": [
+            "CVE 취약점과 영향 정보",
+            "소프트웨어 개발 질의응답"
+          ],
+          "missing": [],
+          "extra": [
+            "판례·법령 질의응답"
+          ]
+        },
+        "procedures": {
+          "matched": [
+            "[IT보안] 공격 조건과 방어 지점 추출",
+            "근거 신뢰도 점검"
+          ],
+          "missing": [
+            "[개발] 코드 동작과 경계 사례 검토"
+          ],
+          "extra": [
+            "[IT보안] 취약점 심각도와 노출 판단",
+            "[개발] 오류 원인과 재현 진단",
+            "[개발] 답변 근거와 최신성 평가",
+            "수치·사실 추출"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "CVE 공격 위치 bug_report.php, 영향 버전 1.1.0~1.1.7, 수정 1.1.8: 지정 기록과 불일치"
+        ],
+        "after": [
+          "두 기록의 주제가 다르다는 관찰을 넘어 실제로 수정책 관계가 아니라고 단정: 제공 자료는 관계 부재를 입증하지 못함"
+        ]
+      },
+      "after_declared_gaps": {
+        "declared": true,
+        "evidence": "함수 본문이 생략되어 ... 함수명을 확인할 수 없음; 두 기록만으로 ... 판단할 수 없으며"
+      }
+    },
+    {
+      "id": "Q4",
+      "runId": 28,
+      "success": true,
+      "wall_ms": 303893,
+      "answer_ms": {
+        "before": 300644,
+        "after": 36240
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "validity": "valid",
+          "before": {
+            "status": "unavailable",
+            "evidence": "답변 없음: fetch failed"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "State ... REJECTED"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F2",
+          "validity": "valid",
+          "before": {
+            "status": "unavailable",
+            "evidence": "답변 없음: fetch failed"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "No description available (설명 없음)"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F3",
+          "validity": "valid",
+          "before": {
+            "status": "unavailable",
+            "evidence": "답변 없음: fetch failed"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        },
+        {
+          "id": "F4",
+          "validity": "valid",
+          "before": {
+            "status": "unavailable",
+            "evidence": "답변 없음: fetch failed"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "application/vnd.ms-word.document.macroEnabled.12"
+          },
+          "context_has_evidence": true,
+          "context_has_exact_quote": true
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "procedureRouting": [
+          "embedding"
+        ],
+        "actual_researchers": [
+          "CVE 취약점과 영향 정보",
+          "소프트웨어 개발 질의응답",
+          "웹 검색(덕덕고)"
+        ],
+        "actual_pairs": [
+          {
+            "researcher": "CVE 취약점과 영향 정보",
+            "procedure": "[IT보안] 취약점 심각도와 노출 판단"
+          },
+          {
+            "researcher": "CVE 취약점과 영향 정보",
+            "procedure": "[IT보안] 공격 조건과 방어 지점 추출"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 오류 원인과 재현 진단"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 답변 근거와 최신성 평가"
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "근거 신뢰도 점검"
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "수치·사실 추출"
+          }
+        ],
+        "researchers": {
+          "matched": [
+            "CVE 취약점과 영향 정보",
+            "소프트웨어 개발 질의응답"
+          ],
+          "missing": [],
+          "extra": [
+            "웹 검색(덕덕고)"
+          ]
+        },
+        "procedures": {
+          "matched": [
+            "근거 신뢰도 점검"
+          ],
+          "missing": [
+            "[IT보안] 취약 제품과 수정 범위 대조",
+            "[개발] 코드 동작과 경계 사례 검토"
+          ],
+          "extra": [
+            "[IT보안] 취약점 심각도와 노출 판단",
+            "[IT보안] 공격 조건과 방어 지점 추출",
+            "[개발] 오류 원인과 재현 진단",
+            "[개발] 답변 근거와 최신성 평가",
+            "수치·사실 추출"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [],
+        "after": [
+          "할당 기관이 atlassian이므로 Atlassian 제품군과 관련 있을 가능성이 높다는 추정: 제공 기록에는 영향 제품 정보가 없음",
+          "CVE 자료를 cve.org 기반이라고 출처 단정: 제공된 합성 덤프에서 해당 출처가 확인되지 않음"
+        ]
+      },
+      "after_declared_gaps": {
+        "declared": true,
+        "evidence": "어떤 제품, 어떤 진입 경로 ... 기술 설명이 없습니다; 원문 ... 확인해야 합니다"
+      }
+    }
+  ]
+}

@@ -1,4 +1,13 @@
 import type pg from "pg";
+import { Agent, fetch } from "undici";
+
+// Node 내장 fetch(undici)는 응답 헤더를 기다리는 시간(headersTimeout)이 기본 300초다. 추론 모델은 스트리밍 없이
+// 답을 다 만든 뒤에야 헤더를 보내므로, AbortSignal 을 늘려도 정확히 300초에 `fetch failed` 가 된다
+// (실험 F1·F2 의 최종 답변 16개 중 5개, 경과 시간 모두 300~301초. 그 앞선 E 라운드 24개 중 7개는
+// 300초 AbortSignal 이 원인이었다). 그래서 호출 전용 Agent 로 두 제한을 함께 늘린다.
+// 재현: test/20261113/slow-header-probe.mjs — 수정 전 306.7초 `fetch failed`(UND_ERR_HEADERS_TIMEOUT),
+// 수정 후 320.0초 정상.
+const patient = new Agent({ headersTimeout: 900_000, bodyTimeout: 900_000 });
 
 export type Endpoint = { baseUrl: string; model: string; apiKey: string };
 export type AiServer = { embedding: Endpoint; chat: Endpoint };
@@ -27,8 +36,8 @@ export function createModelClient(pool: pg.Pool, envApiKey: string) {
       headers: { "content-type": "application/json", ...(endpoint.apiKey ? { authorization: `Bearer ${endpoint.apiKey}` } : {}) },
       body: body === undefined ? undefined : JSON.stringify(body),
       // 추론 모델은 긴 컨텍스트에서 수 분이 걸리고, 한 서버를 여럿이 나눠 쓰면 대기까지 더해진다.
-      // 300초는 시험 실행의 증강 전/후 답변을 자주 끊었다(실험 E1b~E3b 8개 중 5개).
-      signal: AbortSignal.timeout(900_000)
+      signal: AbortSignal.timeout(900_000),
+      dispatcher: patient
     });
     if (!response.ok) throw new Error(`AI server ${path} answered ${response.status}: ${(await response.text()).slice(0, 200)}`);
     return (await response.json()) as Record<string, any>;

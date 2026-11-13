@@ -4,6 +4,7 @@ import type { ModelClient } from "../../model/index.js";
 
 const identifier = /^[a-z_][a-z0-9_]*$/;
 const candidatePool = 8;
+const defaultSnippetChars = 1200;
 
 /** 관리자가 입력한 테이블/컬럼 이름은 SQL 에 직접 들어가므로 식별자 형태만 허용한다. */
 export function assertIdentifier(value: unknown, label: string): string {
@@ -33,6 +34,9 @@ export async function collectPgvector(pool: pg.Pool, model: ModelClient, config:
   const titleColumn = config.titleColumn ? assertIdentifier(config.titleColumn, "titleColumn") : null;
   const reducedColumn = config.reducedColumn ? assertIdentifier(config.reducedColumn, "reducedColumn") : null;
   const topK = Number(config.topK ?? 3);
+  // 컨텍스트에 싣는 자료 길이. 600자로 자르면 검색은 맞았는데 정답 문장이 잘려 사라지는 일이 있었다(실험 F1·F3).
+  const snippetChars = Number(config.snippetChars ?? defaultSnippetChars);
+  if (!Number.isInteger(snippetChars) || snippetChars < 100 || snippetChars > 8000) throw new Error("snippetChars must be an integer from 100 to 8000");
 
   const [full] = await model.embed([query]);
   const titleSql = titleColumn ? `"${titleColumn}"::text` : `'${table}'`;
@@ -40,8 +44,8 @@ export async function collectPgvector(pool: pg.Pool, model: ModelClient, config:
 
   if (!reducedColumn) {
     const { rows } = await pool.query<Material>(
-      `select ${titleSql} as title, left("${textColumn}"::text, 600) as text from ${from} order by "${vectorColumn}" <=> $1::vector limit $2`,
-      [literal(full), topK]
+      `select ${titleSql} as title, left("${textColumn}"::text, $3) as text from ${from} order by "${vectorColumn}" <=> $1::vector limit $2`,
+      [literal(full), topK, snippetChars]
     );
     return rows;
   }
@@ -50,10 +54,10 @@ export async function collectPgvector(pool: pg.Pool, model: ModelClient, config:
   if (!Number.isInteger(reducedDim) || reducedDim < 1 || reducedDim > full.length) throw new Error("reducedDim must be an integer within the embedding size");
   const { rows } = await pool.query<Material>(
     `select title, text from (
-       select ${titleSql} as title, left("${textColumn}"::text, 600) as text, "${vectorColumn}" as full_vector
+       select ${titleSql} as title, left("${textColumn}"::text, $5) as text, "${vectorColumn}" as full_vector
          from ${from} order by "${reducedColumn}" <=> $1::vector limit $3
      ) candidates order by full_vector <=> $2::vector limit $4`,
-    [literal(reduceMrl(full, reducedDim)), literal(full), topK * candidatePool, topK]
+    [literal(reduceMrl(full, reducedDim)), literal(full), topK * candidatePool, topK, snippetChars]
   );
   return rows;
 }

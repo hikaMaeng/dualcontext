@@ -1,0 +1,624 @@
+[
+  {
+    "id": "F2-1",
+    "runId": 20,
+    "wall_seconds": 305.345,
+    "answer_ms": {
+      "before": 300781,
+      "after": 198706
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "hit",
+          "reason": "25.60 GB/s"
+        },
+        "context_has_evidence": true,
+        "context_has_quote": true,
+        "evidence_note": null
+      },
+      {
+        "id": "F2",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "AMD ... 근거 자료에 수치 없음"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F3",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "8600 GTS ... 미확인"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F4",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "hit",
+          "reason": "75 W ... 250 W"
+        },
+        "context_has_evidence": true,
+        "context_has_quote": true,
+        "evidence_note": null
+      },
+      {
+        "id": "F5",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "HD 6670 ... 미확인"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "selected_researchers": [
+        "GPU Ark 그래픽카드 사양",
+        "CVE 취약점과 영향 정보",
+        "웹 검색(덕덕고)"
+      ],
+      "selected_pairs": [
+        {
+          "researcher": "GPU Ark 그래픽카드 사양",
+          "procedure": "[GPU Ark] 전력 대비 사양 검토",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "GPU Ark 그래픽카드 사양",
+          "procedure": "[GPU Ark] 제품 사양과 세대 비교",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "CVE 취약점과 영향 정보",
+          "procedure": "[IT보안] 공격 조건과 방어 지점 추출",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "CVE 취약점과 영향 정보",
+          "procedure": "[IT보안] 취약 제품과 수정 범위 대조",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "비교 분석",
+          "procedureRouting": "embedding"
+        }
+      ],
+      "researchers": {
+        "match": [
+          "GPU Ark 그래픽카드 사양"
+        ],
+        "missing": [],
+        "extra": [
+          "CVE 취약점과 영향 정보",
+          "웹 검색(덕덕고)"
+        ]
+      },
+      "procedures": {
+        "match": [
+          "[GPU Ark] 제품 사양과 세대 비교"
+        ],
+        "missing": [
+          "[GPU Ark] 장착 및 전원 조건 점검"
+        ],
+        "extra": [
+          "[GPU Ark] 전력 대비 사양 검토"
+        ]
+      }
+    },
+    "hallucination": {
+      "before": [],
+      "after": [
+        "MSI GT 330의 GDDR3이므로 768 MB라고 추정: 메모리 종류만으로 용량 단위를 도출하는 근거가 부족하다. 다만 웹 검색 결과에는 768 MB가 별도 명시된다."
+      ]
+    },
+    "after_declared_gaps": {
+      "status": "yes",
+      "evidence": "두 카드 근거 자료에 수치 없음; 실사용 전성비 실측 필요"
+    },
+    "summary": {
+      "before": {
+        "hit": 0,
+        "available": 0,
+        "total": 5
+      },
+      "after": {
+        "hit": 2,
+        "available": 5,
+        "total": 5
+      },
+      "evidence_rows": 2,
+      "evidence_quotes": 2,
+      "total": 5
+    }
+  },
+  {
+    "id": "F2-2",
+    "runId": 25,
+    "wall_seconds": 302.785,
+    "answer_ms": {
+      "before": 300782,
+      "after": 25515
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "세 건은 제공된 컨텍스트에 포함되어 있지 않습니다"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F2",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "상태, 영향 제품, 공격 조건 ... 확인할 수 없습니다"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F3",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "상태 ... 확인할 수 없습니다"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F4",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "상태 ... 확인할 수 없습니다"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "selected_researchers": [
+        "CVE 취약점과 영향 정보",
+        "소프트웨어 개발 질의응답",
+        "산업 뉴스(합성)"
+      ],
+      "selected_pairs": [
+        {
+          "researcher": "CVE 취약점과 영향 정보",
+          "procedure": "[IT보안] 취약점 심각도와 노출 판단",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "CVE 취약점과 영향 정보",
+          "procedure": "[IT보안] 취약 제품과 수정 범위 대조",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "소프트웨어 개발 질의응답",
+          "procedure": "[개발] 답변 근거와 최신성 평가",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "소프트웨어 개발 질의응답",
+          "procedure": "[개발] 해결 대안과 호환성 비교",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "산업 뉴스(합성)",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "산업 뉴스(합성)",
+          "procedure": "산업 이슈 영향 분석",
+          "procedureRouting": "embedding"
+        }
+      ],
+      "researchers": {
+        "match": [
+          "CVE 취약점과 영향 정보"
+        ],
+        "missing": [],
+        "extra": [
+          "소프트웨어 개발 질의응답",
+          "산업 뉴스(합성)"
+        ]
+      },
+      "procedures": {
+        "match": [
+          "[IT보안] 취약점 심각도와 노출 판단"
+        ],
+        "missing": [
+          "[IT보안] 공격 조건과 방어 지점 추출"
+        ],
+        "extra": [
+          "[IT보안] 취약 제품과 수정 범위 대조"
+        ]
+      }
+    },
+    "hallucination": {
+      "before": [],
+      "after": []
+    },
+    "after_declared_gaps": {
+      "status": "yes",
+      "evidence": "요청한 세 CVE 자료에 없어 비교 불가"
+    },
+    "summary": {
+      "before": {
+        "hit": 0,
+        "available": 0,
+        "total": 4
+      },
+      "after": {
+        "hit": 0,
+        "available": 4,
+        "total": 4
+      },
+      "evidence_rows": 0,
+      "evidence_quotes": 0,
+      "total": 4
+    }
+  },
+  {
+    "id": "F2-3",
+    "runId": 29,
+    "wall_seconds": 301.759,
+    "answer_ms": {
+      "before": 300557,
+      "after": 20294
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "기법 ... 근거가 없으므로"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F2",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "평가 조건 ... 근거가 없으므로"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F3",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "보고된 성능 수치 ... 근거가 없으므로"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F4",
+        "before": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "after": {
+          "status": "miss",
+          "reason": "보고된 성능 수치 ... 근거가 없으므로"
+        },
+        "context_has_evidence": true,
+        "context_has_quote": false,
+        "evidence_note": "행 제목은 포함되나 인용문은 전달 본문에 없음"
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "selected_researchers": [
+        "소프트웨어 개발 질의응답",
+        "AI 머신러닝 연구 논문 초록",
+        "판례·법령 질의응답"
+      ],
+      "selected_pairs": [
+        {
+          "researcher": "소프트웨어 개발 질의응답",
+          "procedure": "[개발] 해결 대안과 호환성 비교",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "소프트웨어 개발 질의응답",
+          "procedure": "[개발] 답변 근거와 최신성 평가",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "AI 머신러닝 연구 논문 초록",
+          "procedure": "[AI연구] 벤치마크 결과 해석",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "AI 머신러닝 연구 논문 초록",
+          "procedure": "[AI연구] 기법 적용 조건 비교",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding"
+        }
+      ],
+      "researchers": {
+        "match": [
+          "AI 머신러닝 연구 논문 초록"
+        ],
+        "missing": [],
+        "extra": [
+          "소프트웨어 개발 질의응답",
+          "판례·법령 질의응답"
+        ]
+      },
+      "procedures": {
+        "match": [
+          "[AI연구] 벤치마크 결과 해석"
+        ],
+        "missing": [
+          "[AI연구] 논문 주장과 근거 추출"
+        ],
+        "extra": [
+          "[AI연구] 기법 적용 조건 비교"
+        ]
+      }
+    },
+    "hallucination": {
+      "before": [],
+      "after": [
+        "FLUTE 논문 초록이 포함되지 않았다는 주장: 해당 논문 제목과 잘린 초록 앞부분은 포함되나 FLUTE 명칭과 성능 수치는 잘렸다."
+      ]
+    },
+    "after_declared_gaps": {
+      "status": "yes",
+      "evidence": "논문 기법과 성능 비교 근거 부족"
+    },
+    "summary": {
+      "before": {
+        "hit": 0,
+        "available": 0,
+        "total": 4
+      },
+      "after": {
+        "hit": 0,
+        "available": 4,
+        "total": 4
+      },
+      "evidence_rows": 1,
+      "evidence_quotes": 0,
+      "total": 4
+    }
+  },
+  {
+    "id": "F2-4",
+    "runId": 30,
+    "wall_seconds": 301.92,
+    "answer_ms": {
+      "before": 198561,
+      "after": 300435
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "before": {
+          "status": "partial",
+          "reason": "Opacity 가 double 타입 ... decimal 로 변환해 바인딩"
+        },
+        "after": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "context_has_evidence": true,
+        "context_has_quote": false,
+        "evidence_note": "행 제목은 포함되나 인용문은 전달 본문에 없음"
+      },
+      {
+        "id": "F2",
+        "before": {
+          "status": "miss",
+          "reason": "Floor(-1.6) = -2, Truncate(-1.6) = -1"
+        },
+        "after": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "context_has_evidence": true,
+        "context_has_quote": true,
+        "evidence_note": null
+      },
+      {
+        "id": "F3",
+        "before": {
+          "status": "partial",
+          "reason": "Skip((page - 1) * pageSize).Take(pageSize)"
+        },
+        "after": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "context_has_evidence": false,
+        "context_has_quote": false,
+        "evidence_note": null
+      },
+      {
+        "id": "F4",
+        "before": {
+          "status": "miss",
+          "reason": "최솟값 20 언급 없음"
+        },
+        "after": {
+          "status": "unavailable",
+          "reason": "fetch failed"
+        },
+        "context_has_evidence": true,
+        "context_has_quote": true,
+        "evidence_note": null
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "selected_researchers": [
+        "소프트웨어 개발 질의응답",
+        "판례·법령 질의응답",
+        "AI 머신러닝 연구 논문 초록"
+      ],
+      "selected_pairs": [
+        {
+          "researcher": "소프트웨어 개발 질의응답",
+          "procedure": "[개발] 코드 동작과 경계 사례 검토",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "소프트웨어 개발 질의응답",
+          "procedure": "[개발] 오류 원인과 재현 진단",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "AI 머신러닝 연구 논문 초록",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding"
+        },
+        {
+          "researcher": "AI 머신러닝 연구 논문 초록",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding"
+        }
+      ],
+      "researchers": {
+        "match": [
+          "소프트웨어 개발 질의응답"
+        ],
+        "missing": [],
+        "extra": [
+          "판례·법령 질의응답",
+          "AI 머신러닝 연구 논문 초록"
+        ]
+      },
+      "procedures": {
+        "match": [
+          "[개발] 코드 동작과 경계 사례 검토",
+          "[개발] 오류 원인과 재현 진단"
+        ],
+        "missing": [],
+        "extra": []
+      }
+    },
+    "hallucination": {
+      "before": [
+        "질문 4의 해결책으로 double에서 decimal로 변환해 Opacity에 바인딩하라고 제시: 자료의 decimal을 double에 대입하는 오류 방향과 맞지 않는다.",
+        "Skip 음수 인자가 항상 ArgumentOutOfRangeException을 던진다는 단정: 제공된 자료에는 근거가 없다."
+      ],
+      "after": []
+    },
+    "after_declared_gaps": {
+      "status": "unavailable",
+      "evidence": "fetch failed"
+    },
+    "summary": {
+      "before": {
+        "hit": 0,
+        "available": 4,
+        "total": 4
+      },
+      "after": {
+        "hit": 0,
+        "available": 0,
+        "total": 4
+      },
+      "evidence_rows": 3,
+      "evidence_quotes": 2,
+      "total": 4
+    }
+  }
+]

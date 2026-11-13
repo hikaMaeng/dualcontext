@@ -1,0 +1,156 @@
+[
+  {
+    "id": "F3-1",
+    "query": "GeForce RTX 5090의 VRAM과 소비전력은 얼마인가요? 자료에 있는 MSI GT 330과 AMD Radeon HD 6670의 출시일 및 소비전력도 함께 비교하고, 최신 제품은 근거가 없으면 확인이 필요하다고 알려주세요.",
+    "why_complex": "최신 웹 근거와 두 구형 제품 사양을 구분한다.",
+    "expect_researchers": [
+      "GPU Ark 그래픽카드 사양",
+      "웹 검색(덕덕고)"
+    ],
+    "expect_procedures": [
+      "[GPU Ark] 제품 사양과 세대 비교",
+      "근거 신뢰도 점검",
+      "수치·사실 추출"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "MSI GT 330 출시일은 2010-02-02이다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 1,
+        "quote": "Release date: 2010-02-02"
+      },
+      {
+        "id": "F2",
+        "fact": "MSI GT 330 TDP는 75 W이다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 1,
+        "quote": "TDP: 75 W"
+      },
+      {
+        "id": "F3",
+        "fact": "AMD Radeon HD 6670 출시일은 2011-04-19이다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 3,
+        "quote": "Release date: 2011-04-19"
+      },
+      {
+        "id": "F4",
+        "fact": "AMD Radeon HD 6670 TDP는 66 W이다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 3,
+        "quote": "TDP: 66 W"
+      }
+    ],
+    "trap": "전체 10개 덤프에서 RTX 5090 또는 GeForce 5090 표기 0건. 웹 근거가 있으면 출처를 제시하고 구형 사양을 전용하지 않아야 한다."
+  },
+  {
+    "id": "F3-2",
+    "query": "Sapphire HD 6570 Platinum 1 GB와 HIS HD 6570 Silence 2 GB의 자료를 비교해 주세요. 각 제품명과 VRAM 원시 숫자, 메모리 대역폭은 어떻게 적혀 있고, 숫자를 같은 단위로 바로 비교해도 되나요?",
+    "why_complex": "두 제품 행의 단위 미표기 숫자와 사양 비교 및 신뢰도를 점검한다.",
+    "expect_researchers": [
+      "GPU Ark 그래픽카드 사양"
+    ],
+    "expect_procedures": [
+      "[GPU Ark] 제품 사양과 세대 비교",
+      "근거 신뢰도 점검"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "Sapphire 제품명은 1 GB다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 38,
+        "quote": "GPU: Sapphire HD 6570 Platinum 1 GB"
+      },
+      {
+        "id": "F2",
+        "fact": "Sapphire VRAM 원시 숫자는 1024다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 38,
+        "quote": "VRAM (unit varies): 1024"
+      },
+      {
+        "id": "F3",
+        "fact": "HIS 제품명은 2 GB다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 50,
+        "quote": "GPU: HIS HD 6570 Silence 2 GB"
+      },
+      {
+        "id": "F4",
+        "fact": "HIS VRAM 원시 숫자는 2다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 50,
+        "quote": "VRAM (unit varies): 2"
+      },
+      {
+        "id": "F5",
+        "fact": "Sapphire 대역폭은 21.34 GB/s다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 38,
+        "quote": "Memory bandwidth: 21.34 GB/s"
+      },
+      {
+        "id": "F6",
+        "fact": "HIS 대역폭은 16.00 GB/s다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 50,
+        "quote": "Memory bandwidth: 16.00 GB/s"
+      }
+    ],
+    "trap": "서로 다른 제품의 VRAM 숫자 1024와 2의 단위를 동일하다고 가정하면 안 된다."
+  },
+  {
+    "id": "F3-3",
+    "query": "대형 언어 모델의 활성값에서 상위 일부만 남겨 추론 효율을 높이는 연구와, 사전학습된 시각 모델을 다시 훈련하지 않고 자기지도 기울기를 기존 표현에 붙이는 연구는 각각 어떤 방법과 평가 결과를 제시하나요?",
+    "why_complex": "영어 명칭 없이 두 영문 초록을 찾아 방법과 평가를 분석한다.",
+    "expect_researchers": [
+      "AI 머신러닝 연구 논문 초록"
+    ],
+    "expect_procedures": [
+      "[AI연구] 논문 주장과 근거 추출",
+      "[AI연구] 벤치마크 결과 해석"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "첫 연구는 활성값에 top-K 희소화를 적용하고 학습에 straight-through estimator를 사용한다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 3,
+        "quote": "This is achieved by applying top-K sparsification to the activations and the straight-through-estimator to the training."
+      },
+      {
+        "id": "F2",
+        "fact": "첫 연구는 기준 모델과 비슷한 결과와 더 효율적인 추론을 주장한다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 3,
+        "quote": "Q-Sparse can achieve results comparable to those of baseline LLMs while being much more efficient at inference time"
+      },
+      {
+        "id": "F3",
+        "fact": "둘째 연구는 자기지도 기울기를 저차원으로 투영하여 모델 임베딩에 이어 붙인다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 5,
+        "quote": "These are projected to a lower dimension and then concatenated with the model's embedding."
+      },
+      {
+        "id": "F4",
+        "fact": "둘째 연구는 시각 11개, 자연어 5개, 음성 2개 데이터셋에서 최근접 이웃 분류를 평가한다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 5,
+        "quote": "The resulting features are evaluated on k-nearest neighbor classification over 11 datasets from vision, 5 from natural language processing, and 2 from audio."
+      }
+    ],
+    "trap": "연구자 주장과 검증된 실측을 구분하고 없는 실험 조건은 추정하지 않는다."
+  },
+  {
+    "id": "F3-4",
+    "query": "빵 반죽을 손으로 치댈 때 글루텐이 생기는 과정을 쉽게 설명해 주세요. 반죽을 너무 오래 치대면 가정용 제빵에서 어떤 상태 변화를 살펴봐야 하나요?",
+    "why_complex": "제빵은 IT와 다른 일상 주제로 무관한 자료를 끌어올 위험이 있다.",
+    "expect_researchers": [],
+    "expect_procedures": [],
+    "gold_facts": [],
+    "trap": "IT·법률·금융·의학 자료를 제빵 근거로 오인해 인용하면 오답이다. 정답률 분모 없음."
+  }
+]

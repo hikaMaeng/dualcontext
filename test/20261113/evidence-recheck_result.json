@@ -1,0 +1,478 @@
+{
+  "criterion": "gold quote (whitespace-folded) present in context",
+  "facts": 47,
+  "before": 25,
+  "after": 31,
+  "rows": [
+    {
+      "session": "F1",
+      "query": "Q1",
+      "fact": "F1",
+      "table": "ds_ai_research",
+      "row": 3,
+      "quoteChars": 120,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q1",
+      "fact": "F2",
+      "table": "ds_ai_research",
+      "row": 3,
+      "quoteChars": 75,
+      "before": false,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q1",
+      "fact": "F3",
+      "table": "ds_gpu_hardware",
+      "row": 1,
+      "quoteChars": 28,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q1",
+      "fact": "F4",
+      "table": "ds_gpu_hardware",
+      "row": 1,
+      "quoteChars": 20,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q1",
+      "fact": "F5",
+      "table": "ds_industry_tech",
+      "row": 19,
+      "quoteChars": 153,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F1",
+      "query": "Q2",
+      "fact": "F1",
+      "table": "ds_ai_research",
+      "row": 7,
+      "quoteChars": 113,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q2",
+      "fact": "F2",
+      "table": "ds_ai_research",
+      "row": 7,
+      "quoteChars": 97,
+      "before": false,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q2",
+      "fact": "F3",
+      "table": "ds_gpu_hardware",
+      "row": 9,
+      "quoteChars": 28,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q2",
+      "fact": "F4",
+      "table": "ds_gpu_hardware",
+      "row": 9,
+      "quoteChars": 26,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q3",
+      "fact": "F1",
+      "table": "ds_it_security",
+      "row": 1,
+      "quoteChars": 214,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q3",
+      "fact": "F2",
+      "table": "ds_software_dev",
+      "row": 8,
+      "quoteChars": 18,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q3",
+      "fact": "F3",
+      "table": "ds_software_dev",
+      "row": 8,
+      "quoteChars": 86,
+      "before": false,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q4",
+      "fact": "F1",
+      "table": "ds_it_security",
+      "row": 2,
+      "quoteChars": 21,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q4",
+      "fact": "F2",
+      "table": "ds_it_security",
+      "row": 2,
+      "quoteChars": 24,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q4",
+      "fact": "F3",
+      "table": "ds_software_dev",
+      "row": 18,
+      "quoteChars": 79,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F1",
+      "query": "Q4",
+      "fact": "F4",
+      "table": "ds_software_dev",
+      "row": 18,
+      "quoteChars": 56,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F2",
+      "query": "F2-1",
+      "fact": "F1",
+      "table": "ds_gpu_hardware",
+      "row": 1,
+      "quoteChars": 28,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F2",
+      "query": "F2-1",
+      "fact": "F2",
+      "table": "ds_gpu_hardware",
+      "row": 3,
+      "quoteChars": 28,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-1",
+      "fact": "F3",
+      "table": "ds_gpu_hardware",
+      "row": 9,
+      "quoteChars": 81,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-1",
+      "fact": "F4",
+      "table": "ds_gpu_hardware",
+      "row": 1,
+      "quoteChars": 30,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F2",
+      "query": "F2-1",
+      "fact": "F5",
+      "table": "ds_gpu_hardware",
+      "row": 3,
+      "quoteChars": 30,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-2",
+      "fact": "F1",
+      "table": "ds_it_security",
+      "row": 1,
+      "quoteChars": 214,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-2",
+      "fact": "F2",
+      "table": "ds_it_security",
+      "row": 3,
+      "quoteChars": 182,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-2",
+      "fact": "F3",
+      "table": "ds_it_security",
+      "row": 2,
+      "quoteChars": 21,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-2",
+      "fact": "F4",
+      "table": "ds_it_security",
+      "row": 2,
+      "quoteChars": 24,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-3",
+      "fact": "F1",
+      "table": "ds_ai_research",
+      "row": 3,
+      "quoteChars": 120,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-3",
+      "fact": "F2",
+      "table": "ds_ai_research",
+      "row": 5,
+      "quoteChars": 157,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-3",
+      "fact": "F3",
+      "table": "ds_ai_research",
+      "row": 5,
+      "quoteChars": 89,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-3",
+      "fact": "F4",
+      "table": "ds_ai_research",
+      "row": 7,
+      "quoteChars": 135,
+      "before": false,
+      "after": true
+    },
+    {
+      "session": "F2",
+      "query": "F2-4",
+      "fact": "F1",
+      "table": "ds_software_dev",
+      "row": 1,
+      "quoteChars": 47,
+      "before": false,
+      "after": true
+    },
+    {
+      "session": "F2",
+      "query": "F2-4",
+      "fact": "F2",
+      "table": "ds_software_dev",
+      "row": 6,
+      "quoteChars": 46,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F2",
+      "query": "F2-4",
+      "fact": "F3",
+      "table": "ds_software_dev",
+      "row": 19,
+      "quoteChars": 58,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F2",
+      "query": "F2-4",
+      "fact": "F4",
+      "table": "ds_software_dev",
+      "row": 1,
+      "quoteChars": 82,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-1",
+      "fact": "F1",
+      "table": "ds_gpu_hardware",
+      "row": 1,
+      "quoteChars": 24,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-1",
+      "fact": "F2",
+      "table": "ds_gpu_hardware",
+      "row": 1,
+      "quoteChars": 9,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-1",
+      "fact": "F3",
+      "table": "ds_gpu_hardware",
+      "row": 3,
+      "quoteChars": 24,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F3",
+      "query": "F3-1",
+      "fact": "F4",
+      "table": "ds_gpu_hardware",
+      "row": 3,
+      "quoteChars": 9,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F3",
+      "query": "F3-2",
+      "fact": "F1",
+      "table": "ds_gpu_hardware",
+      "row": 38,
+      "quoteChars": 35,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-2",
+      "fact": "F2",
+      "table": "ds_gpu_hardware",
+      "row": 38,
+      "quoteChars": 24,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-2",
+      "fact": "F3",
+      "table": "ds_gpu_hardware",
+      "row": 50,
+      "quoteChars": 29,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-2",
+      "fact": "F4",
+      "table": "ds_gpu_hardware",
+      "row": 50,
+      "quoteChars": 21,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-2",
+      "fact": "F5",
+      "table": "ds_gpu_hardware",
+      "row": 38,
+      "quoteChars": 28,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-2",
+      "fact": "F6",
+      "table": "ds_gpu_hardware",
+      "row": 50,
+      "quoteChars": 28,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-3",
+      "fact": "F1",
+      "table": "ds_ai_research",
+      "row": 3,
+      "quoteChars": 120,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F3",
+      "query": "F3-3",
+      "fact": "F2",
+      "table": "ds_ai_research",
+      "row": 3,
+      "quoteChars": 115,
+      "before": false,
+      "after": false
+    },
+    {
+      "session": "F3",
+      "query": "F3-3",
+      "fact": "F3",
+      "table": "ds_ai_research",
+      "row": 5,
+      "quoteChars": 90,
+      "before": true,
+      "after": true
+    },
+    {
+      "session": "F3",
+      "query": "F3-3",
+      "fact": "F4",
+      "table": "ds_ai_research",
+      "row": 5,
+      "quoteChars": 157,
+      "before": false,
+      "after": true
+    }
+  ]
+}

@@ -1,0 +1,614 @@
+{
+  "method": "hit만 적중으로 계산; partial은 별도, unavailable은 답변 부재. 행 포함은 제목 일치 기준이며 인용 실제 포함 여부를 별도 표시. 기대 목록 외 선택은 과잉으로 기록하되 반드시 무관함을 뜻하지 않음.",
+  "totals": {
+    "queries": 4,
+    "successful_runs": 4,
+    "facts": 14,
+    "before_hit": 3,
+    "after_hit": 9,
+    "context_rows": 10,
+    "context_quotes": 9
+  },
+  "scores": [
+    {
+      "id": "F3-1",
+      "runId": 21,
+      "success": true,
+      "elapsed_ms": 225259,
+      "answer_ms": {
+        "before": 80992,
+        "after": 223440
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "before": {
+            "status": "contradict",
+            "evidence": "2011 년경"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "2010-02-02"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F2",
+          "before": {
+            "status": "contradict",
+            "evidence": "35W"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "75 W"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F3",
+          "before": {
+            "status": "contradict",
+            "evidence": "2011 년 10 월경"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "제공된 자료에 없음"
+          },
+          "context_has_evidence": false,
+          "context_has_quote": false,
+          "note": ""
+        },
+        {
+          "id": "F4",
+          "before": {
+            "status": "contradict",
+            "evidence": "50W"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "확인 불가"
+          },
+          "context_has_evidence": false,
+          "context_has_quote": false,
+          "note": ""
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "GPU Ark 그래픽카드 사양",
+          "웹 검색(덕덕고)",
+          "산업 뉴스(합성)"
+        ],
+        "procedures": [
+          "[GPU Ark] 제품 사양과 세대 비교",
+          "[GPU Ark] 전력 대비 사양 검토",
+          "수치·사실 추출",
+          "근거 신뢰도 점검"
+        ],
+        "pairs": [
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 제품 사양과 세대 비교",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 전력 대비 사양 검토",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding"
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [
+            "GPU Ark 그래픽카드 사양",
+            "웹 검색(덕덕고)"
+          ],
+          "missing": [],
+          "extra": [
+            "산업 뉴스(합성)"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [
+            "[GPU Ark] 제품 사양과 세대 비교",
+            "근거 신뢰도 점검",
+            "수치·사실 추출"
+          ],
+          "missing": [],
+          "extra": [
+            "[GPU Ark] 전력 대비 사양 검토"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "MSI GT 330을 GT 330M 노트북으로 특정하고 2011년경·35W·1GB GDDR5라고 주장: 지정 행과 불일치.",
+          "HD 6670을 2011년 10월·50W라고 주장: 지정 행과 불일치.",
+          "RTX 5090이 공식 발표 전이라는 시점 주장은 웹 검색에 나타난 출시 후 기사 및 공식 제품 페이지와 불일치."
+        ],
+        "after": [
+          "RTX 5090 공식 출시일이 제공된 MSI·NVIDIA 페이지에 명시되지 않았다는 서술은 검색 스니펫만으로 페이지 전체를 확인할 수 없어 미입증.",
+          "GT 330 출처로 제시한 gpuark.com 링크는 반환된 해당 행에 없는 URL로 연결 정확성 미확인."
+        ]
+      },
+      "after_declared_gaps": {
+        "declared": true,
+        "evidence": "AMD Radeon HD 6670 제공 자료에 없음; RTX 5090 공식 출시일 확인 필요"
+      },
+      "totals": {
+        "facts": 4,
+        "before_hit": 0,
+        "after_hit": 2,
+        "context_rows": 2,
+        "context_quotes": 2
+      }
+    },
+    {
+      "id": "F3-2",
+      "runId": 23,
+      "success": true,
+      "elapsed_ms": 144494,
+      "answer_ms": {
+        "before": 143013,
+        "after": 34160
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "before": {
+            "status": "hit",
+            "evidence": "Sapphire HD 6570 Platinum 1GB"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "Sapphire HD 6570 Platinum 1 GB"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F2",
+          "before": {
+            "status": "contradict",
+            "evidence": "원시 숫자 | 1"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "원시 숫자 | 1024"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F3",
+          "before": {
+            "status": "hit",
+            "evidence": "HIS Radeon HD 6570 Silence 2GB"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "HIS HD 6570 Silence 2 GB"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F4",
+          "before": {
+            "status": "hit",
+            "evidence": "원시 숫자 | 2"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "원시 숫자 | 2"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F5",
+          "before": {
+            "status": "contradict",
+            "evidence": "64.0 GB/s"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "21.34 GB/s"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F6",
+          "before": {
+            "status": "contradict",
+            "evidence": "25.6 GB/s"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "16.00 GB/s"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "GPU Ark 그래픽카드 사양",
+          "소프트웨어 개발 질의응답",
+          "산업 뉴스(합성)"
+        ],
+        "procedures": [
+          "[GPU Ark] 제품 사양과 세대 비교",
+          "[GPU Ark] 전력 대비 사양 검토",
+          "[개발] 해결 대안과 호환성 비교",
+          "[개발] 오류 원인과 재현 진단",
+          "수치·사실 추출",
+          "비교 분석"
+        ],
+        "pairs": [
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 제품 사양과 세대 비교",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "GPU Ark 그래픽카드 사양",
+            "procedure": "[GPU Ark] 전력 대비 사양 검토",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 해결 대안과 호환성 비교",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 오류 원인과 재현 진단",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "비교 분석",
+            "procedureRouting": "embedding"
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [
+            "GPU Ark 그래픽카드 사양"
+          ],
+          "missing": [],
+          "extra": [
+            "소프트웨어 개발 질의응답",
+            "산업 뉴스(합성)"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [
+            "[GPU Ark] 제품 사양과 세대 비교"
+          ],
+          "missing": [
+            "근거 신뢰도 점검"
+          ],
+          "extra": [
+            "[GPU Ark] 전력 대비 사양 검토",
+            "[개발] 해결 대안과 호환성 비교",
+            "[개발] 오류 원인과 재현 진단",
+            "수치·사실 추출",
+            "비교 분석"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "Sapphire 원시값 1, 대역폭 64.0 GB/s, 메모리 GDDR5 및 HIS 대역폭 25.6 GB/s: 덤프와 불일치."
+        ],
+        "after": [
+          "VRAM 원시값 1024의 단위를 MB, 2의 단위를 GB로 확정: 행에는 단위가 명시되지 않아 제품명에서 추정한 값이다.",
+          "두 TechPowerUp 상세 URL은 반환된 자료에 없으며 실제 대응 여부를 검증하지 못했다."
+        ]
+      },
+      "after_declared_gaps": {
+        "declared": false,
+        "evidence": "VRAM 숫자의 단위 불일치는 지적했으나 원시 필드의 단위 미확정을 밝히지 않고 MB와 GB로 단정"
+      },
+      "totals": {
+        "facts": 6,
+        "before_hit": 3,
+        "after_hit": 6,
+        "context_rows": 6,
+        "context_quotes": 6
+      }
+    },
+    {
+      "id": "F3-3",
+      "runId": 26,
+      "success": true,
+      "elapsed_ms": 229462,
+      "answer_ms": {
+        "before": 228691,
+        "after": 26727
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "before": {
+            "status": "partial",
+            "evidence": "상위 k% ... 나머지는 0"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "확인 불가"
+          },
+          "context_has_evidence": false,
+          "context_has_quote": false,
+          "note": ""
+        },
+        {
+          "id": "F2",
+          "before": {
+            "status": "partial",
+            "evidence": "정확도 저하를 최소화하면서 추론 속도"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "확인 불가"
+          },
+          "context_has_evidence": false,
+          "context_has_quote": false,
+          "note": ""
+        },
+        {
+          "id": "F3",
+          "before": {
+            "status": "partial",
+            "evidence": "자기지도 학습 ... 얻은 기울기 ... 결합"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "낮은 차원으로 투영 ... 임베딩에 concatenate"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": true,
+          "note": ""
+        },
+        {
+          "id": "F4",
+          "before": {
+            "status": "miss",
+            "evidence": "데이터셋 수 미기재"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "구체적인 수치나 성능 결과는 확인할 수 없습니다"
+          },
+          "context_has_evidence": true,
+          "context_has_quote": false,
+          "note": "해당 행 제목은 검색됐으나 인용 문장은 반환 본문에서 잘림"
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "AI 머신러닝 연구 논문 초록",
+          "판례·법령 질의응답",
+          "소프트웨어 개발 질의응답"
+        ],
+        "procedures": [
+          "[AI연구] 벤치마크 결과 해석",
+          "[AI연구] 기법 적용 조건 비교",
+          "근거 신뢰도 점검",
+          "수치·사실 추출",
+          "[개발] 답변 근거와 최신성 평가",
+          "[개발] 해결 대안과 호환성 비교"
+        ],
+        "pairs": [
+          {
+            "researcher": "AI 머신러닝 연구 논문 초록",
+            "procedure": "[AI연구] 벤치마크 결과 해석",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "AI 머신러닝 연구 논문 초록",
+            "procedure": "[AI연구] 기법 적용 조건 비교",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 답변 근거와 최신성 평가",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 해결 대안과 호환성 비교",
+            "procedureRouting": "embedding"
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [
+            "AI 머신러닝 연구 논문 초록"
+          ],
+          "missing": [],
+          "extra": [
+            "판례·법령 질의응답",
+            "소프트웨어 개발 질의응답"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [
+            "[AI연구] 벤치마크 결과 해석"
+          ],
+          "missing": [
+            "[AI연구] 논문 주장과 근거 추출"
+          ],
+          "extra": [
+            "[AI연구] 기법 적용 조건 비교",
+            "근거 신뢰도 점검",
+            "수치·사실 추출",
+            "[개발] 답변 근거와 최신성 평가",
+            "[개발] 해결 대안과 호환성 비교"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "첫 연구의 MMLU·GSM8K·HumanEval, 속도 2~3배, 메모리 30~50% 절감은 해당 초록에서 확인되지 않는다.",
+          "둘째 연구의 ImageNet·어댑터 또는 합성 레이어 및 미세 조정 평가 주장은 해당 초록에 없다."
+        ],
+        "after": []
+      },
+      "after_declared_gaps": {
+        "declared": true,
+        "evidence": "상위 활성값 연구 확인 불가; 평가 수치는 잘려 확인할 수 없음"
+      },
+      "totals": {
+        "facts": 4,
+        "before_hit": 0,
+        "after_hit": 1,
+        "context_rows": 2,
+        "context_quotes": 1
+      }
+    },
+    {
+      "id": "F3-4",
+      "runId": 27,
+      "success": true,
+      "elapsed_ms": 60981,
+      "answer_ms": {
+        "before": 60080,
+        "after": 13914
+      },
+      "facts": [],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "소프트웨어 개발 질의응답",
+          "의학 문제은행",
+          "미국 기업 산업 동향 기사"
+        ],
+        "procedures": [
+          "[개발] 오류 원인과 재현 진단",
+          "[개발] 해결 대안과 호환성 비교",
+          "문제 풀이 근거 정리",
+          "근거 신뢰도 점검",
+          "[산업기술] 산업 변화의 영향 경로",
+          "[산업기술] 기업과 제품의 경쟁 근거 비교"
+        ],
+        "pairs": [
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 오류 원인과 재현 진단",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "소프트웨어 개발 질의응답",
+            "procedure": "[개발] 해결 대안과 호환성 비교",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "의학 문제은행",
+            "procedure": "문제 풀이 근거 정리",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "의학 문제은행",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "미국 기업 산업 동향 기사",
+            "procedure": "[산업기술] 산업 변화의 영향 경로",
+            "procedureRouting": "embedding"
+          },
+          {
+            "researcher": "미국 기업 산업 동향 기사",
+            "procedure": "[산업기술] 기업과 제품의 경쟁 근거 비교",
+            "procedureRouting": "embedding"
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [],
+          "missing": [],
+          "extra": [
+            "소프트웨어 개발 질의응답",
+            "의학 문제은행",
+            "미국 기업 산업 동향 기사"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [],
+          "missing": [],
+          "extra": [
+            "[개발] 오류 원인과 재현 진단",
+            "[개발] 해결 대안과 호환성 비교",
+            "문제 풀이 근거 정리",
+            "근거 신뢰도 점검",
+            "[산업기술] 산업 변화의 영향 경로",
+            "[산업기술] 기업과 제품의 경쟁 근거 비교"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [],
+        "after": []
+      },
+      "after_declared_gaps": {
+        "declared": true,
+        "evidence": "컨텍스트에 빵 반죽과 글루텐 형성 정보가 전혀 포함되어 있지 않습니다"
+      },
+      "totals": {
+        "facts": 0,
+        "before_hit": 0,
+        "after_hit": 0,
+        "context_rows": 0,
+        "context_quotes": 0
+      }
+    }
+  ]
+}

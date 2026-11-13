@@ -1,0 +1,181 @@
+[
+  {
+    "id": "F2-1",
+    "query": "MSI GT 330, AMD Radeon HD 6670, NVIDIA GeForce 8600 GTS 세 그래픽카드의 메모리 대역폭과 TDP를 비교하고, PCIe 장착과 권장 파워 및 보조 전원 조건을 점검해 주세요. VRAM 단위와 실사용 전성비도 확인 가능한가요?",
+    "why_complex": "세 GPU의 명목 사양 비교와 PCIe·PSU·커넥터 점검이 함께 필요하다.",
+    "expect_researchers": [
+      "GPU Ark 그래픽카드 사양"
+    ],
+    "expect_procedures": [
+      "[GPU Ark] 제품 사양과 세대 비교",
+      "[GPU Ark] 장착 및 전원 조건 점검"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "MSI GT 330 대역폭 25.60 GB/s",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 1,
+        "quote": "Memory bandwidth: 25.60 GB/s"
+      },
+      {
+        "id": "F2",
+        "fact": "AMD Radeon HD 6670 대역폭 64.00 GB/s로 세 제품 중 최고",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 3,
+        "quote": "Memory bandwidth: 64.00 GB/s"
+      },
+      {
+        "id": "F3",
+        "fact": "GeForce 8600 GTS는 TDP 60 W, 권장 PSU 250 W, 6핀 1개",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 9,
+        "quote": "TDP: 60 W\nSuggested PSU: 250 W\nSlot width: Single-slot\nPower connectors: 1x 6-pin"
+      },
+      {
+        "id": "F4",
+        "fact": "MSI GT 330은 TDP 75 W, 권장 PSU 250 W",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 1,
+        "quote": "TDP: 75 W\nSuggested PSU: 250 W"
+      },
+      {
+        "id": "F5",
+        "fact": "HD 6670은 TDP 66 W, 권장 PSU 250 W",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 3,
+        "quote": "TDP: 66 W\nSuggested PSU: 250 W"
+      }
+    ],
+    "trap": "VRAM 단위가 행마다 다르며 케이스·메인보드·실측 자료가 없어 실장착과 전성비를 확정할 수 없다."
+  },
+  {
+    "id": "F2-2",
+    "query": "CVE-2010-3763, CVE-2022-46505, CVE-2024-21709 세 건을 상태와 영향 제품·공격 조건으로 비교해 대응 우선순위를 살펴봐 주세요. 각 수정 버전과 CVSS 점수가 자료에서 확인되는지도 알려 주세요.",
+    "why_complex": "CVE 상태와 자산 노출 판단 및 공격 조건과 수정 범위를 함께 검토한다.",
+    "expect_researchers": [
+      "CVE 취약점과 영향 정보"
+    ],
+    "expect_procedures": [
+      "[IT보안] 취약점 심각도와 노출 판단",
+      "[IT보안] 공격 조건과 방어 지점 추출"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "CVE-2010-3763은 MantisBT 1.2.3 이전에서 Summary 필드를 통한 원격 XSS",
+        "source_table": "ds_it_security",
+        "source_row_id": 1,
+        "quote": "Cross-site scripting (XSS) vulnerability in core/summary_api.php in MantisBT before 1.2.3 allows remote attackers to inject arbitrary web script or HTML via the Summary field, a different vector than CVE-2010-3303."
+      },
+      {
+        "id": "F2",
+        "fact": "CVE-2022-46505는 MatrixSSL 4.5.1-open 이하 SessionID 검사 실패와 all-zero MasterSecret 문제",
+        "source_table": "ds_it_security",
+        "source_row_id": 3,
+        "quote": "An issue in MatrixSSL 4.5.1-open and earlier leads to failure to securely check the SessionID field, resulting in the misuse of an all-zero MasterSecret that can decrypt secret data."
+      },
+      {
+        "id": "F3",
+        "fact": "CVE-2024-21709 상태는 REJECTED",
+        "source_table": "ds_it_security",
+        "source_row_id": 2,
+        "quote": "- **State**: REJECTED"
+      },
+      {
+        "id": "F4",
+        "fact": "CVE-2024-21709 설명은 제공되지 않는다",
+        "source_table": "ds_it_security",
+        "source_row_id": 2,
+        "quote": "No description available"
+      }
+    ],
+    "trap": "합성 자료이며 각 행에서 CVSS 점수 및 명시적 수정 버전은 확인되지 않는다. 제품의 실제 노출 여부도 불명이다."
+  },
+  {
+    "id": "F2-3",
+    "query": "Q-Sparse, FUNGI, FLUTE 논문 초록에서 각각 어떤 기법으로 효율이나 표현을 개선한다고 주장하는지 비교해 주세요. 평가 조건과 보고된 성능 근거를 대조하고 세 방법의 수치를 직접 순위화할 수 있는지도 알려 주세요.",
+    "why_complex": "서로 다른 세 논문의 기법과 주장 추출 및 벤치마크 조건 비교가 함께 필요하다.",
+    "expect_researchers": [
+      "AI 머신러닝 연구 논문 초록"
+    ],
+    "expect_procedures": [
+      "[AI연구] 논문 주장과 근거 추출",
+      "[AI연구] 벤치마크 결과 해석"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "Q-Sparse는 활성화에 top-K 희소화, 학습에 straight-through estimator 적용",
+        "source_table": "ds_ai_research",
+        "source_row_id": 3,
+        "quote": "This is achieved by applying top-K sparsification to the activations and the straight-through-estimator to the training."
+      },
+      {
+        "id": "F2",
+        "fact": "FUNGI는 kNN 분류에 비전 11개, NLP 5개, 오디오 2개 데이터셋 평가",
+        "source_table": "ds_ai_research",
+        "source_row_id": 5,
+        "quote": "The resulting features are evaluated on k-nearest neighbor classification over 11 datasets from vision, 5 from natural language processing, and 2 from audio."
+      },
+      {
+        "id": "F3",
+        "fact": "FUNGI는 학습 없이 semantic segmentation에서 DINO 대비 +17% 주장",
+        "source_table": "ds_ai_research",
+        "source_row_id": 5,
+        "quote": "for example improving upon DINO by +17% for semantic segmentation - without any training."
+      },
+      {
+        "id": "F4",
+        "fact": "FLUTE는 배치 32 미만과 그룹 크기 128 조건에서 2–4배 빠르다고 주장하나 비교 대상은 본문이 잘렸다",
+        "source_table": "ds_ai_research",
+        "source_row_id": 7,
+        "quote": "At batch sizes < 32 and quantization group size of 128 (typical in LLM inference), the FLUTE kernel can be 2-4x faster than existing GE"
+      }
+    ],
+    "trap": "서로 다른 과제·지표이므로 순위화 불가. FLUTE 문장은 덤프에서 비교 대상이 잘렸다."
+  },
+  {
+    "id": "F2-4",
+    "query": "Stack Overflow 질문 4번의 C# Opacity decimal 변환 오류, 14번의 Math.Floor와 Truncate, 66번의 LINQ 페이징을 함께 검토해 주세요. 각 답변의 해결 방법과 음수·정수 나눗셈 같은 경계 조건을 비교하고 확인이 필요한 부분도 알려 주세요.",
+    "why_complex": "각 오류 원인과 해결 대안 및 코드의 경계 조건을 함께 분석해야 한다.",
+    "expect_researchers": [
+      "소프트웨어 개발 질의응답"
+    ],
+    "expect_procedures": [
+      "[개발] 오류 원인과 재현 진단",
+      "[개발] 코드 동작과 경계 사례 검토"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "질문 4의 Opacity는 decimal이 아닌 double을 요구한다",
+        "source_table": "ds_software_dev",
+        "source_row_id": 1,
+        "quote": "Opacity requires a double, not a decimal value."
+      },
+      {
+        "id": "F2",
+        "fact": "질문 14의 -3.4에 대해 Floor는 -4, Truncate는 -3",
+        "source_table": "ds_software_dev",
+        "source_row_id": 6,
+        "quote": "Math.Floor(-3.4)     = -4\nMath.Truncate(-3.4)  = -3"
+      },
+      {
+        "id": "F3",
+        "fact": "질문 66은 Skip(startIndex).Take(count) 페이징을 제시한다",
+        "source_table": "ds_software_dev",
+        "source_row_id": 19,
+        "quote": "var paggedCollection = query.Skip(startIndex).Take(count);"
+      },
+      {
+        "id": "F4",
+        "fact": "질문 4의 한 답변은 완전한 투명화를 피하려 최솟값 20을 제안한다",
+        "source_table": "ds_software_dev",
+        "source_row_id": 1,
+        "quote": "The minimum 20 example below prevents the form from becoming completely invisible:"
+      }
+    ],
+    "trap": "발췌가 잘린 답변이며 코드 실행 결과와 현재 환경의 호환성은 미검증이다."
+  }
+]

@@ -33,7 +33,7 @@
 | type | config |
 | --- | --- |
 | `duckduckgo` | `{ topK }` |
-| `pgvector` | `{ table, vectorColumn, textColumn, titleColumn?, reducedColumn?, reducedDim?, topK }` — `reducedColumn` 이 있으면 축소 차원으로 후보 topK×8 을 뽑고 전체 차원으로 재순위화한다 |
+| `pgvector` | `{ table, vectorColumn, textColumn, titleColumn?, reducedColumn?, reducedDim?, snippetChars?, topK }` — `reducedColumn` 이 있으면 축소 차원으로 후보 topK×8 을 뽑고 전체 차원으로 재순위화한다. `snippetChars`(100~8000, 기본 1200)는 컨텍스트에 싣는 자료 글자 수다 |
 | `folder` | `{ path, topK }` — `path` 는 볼륨 기준 상대 경로 |
 
 ## 모듈 표면

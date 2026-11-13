@@ -1,0 +1,48 @@
+const fs=require('fs');
+const s=JSON.parse(fs.readFileSync('_experiments/F1/scores.json','utf8'));
+const pct=(n,d)=>d ? `${(100*n/d).toFixed(1)}%`:'unavailable';
+const rows=s.queries.map(q=>{
+ const b=q.facts.filter(f=>f.before.status!=='unavailable'),a=q.facts.filter(f=>f.after.status!=='unavailable');
+ const bh=b.filter(f=>f.before.status==='hit').length,ah=a.filter(f=>f.after.status==='hit').length;
+ const row=q.facts.filter(f=>f.context_has_evidence).length,quote=q.facts.filter(f=>f.context_has_exact_quote).length;
+ const rr=q.routing.researchers,pr=q.routing.procedures;
+ return `| ${q.id} | ${b.length?`${bh}/${b.length} (${pct(bh,b.length)})`:'unavailable'} | ${ah}/${a.length} (${pct(ah,a.length)}) | ${row}/${q.facts.length} | ${quote}/${q.facts.length} | ${rr.matched.length}/${rr.matched.length+rr.missing.length}, 추가 ${rr.extra.length} | ${pr.matched.length}/${pr.matched.length+pr.missing.length}, 추가 ${pr.extra.length} | ${(q.wall_ms/1000).toFixed(1)}초 |`;
+});
+const paired=s.queries.filter(q=>q.facts.every(f=>f.before.status!=='unavailable')).flatMap(q=>q.facts);
+const b=paired.filter(f=>f.before.status==='hit').length,a=paired.filter(f=>f.after.status==='hit').length;
+const x=s.aggregate;
+const report=`# F1 IT 복합 질의 실험 보고서
+
+## 방법과 집계 기준
+
+실행 전 덤프의 정확한 인용을 확인해 4개 질의와 ${x.facts}개 사실을 고정했다. 각 질의는 서로 다른 IT 테이블을 필요로 하며 Q1은 세 조사원을 필요로 한다. 요청은 순차 실행했고 네 HTTP 응답 모두 첫 시도에 성공했다. Q4 증강 전 답변은 서버 내부 오류 \`fetch failed\`로 생성되지 않았다. 사실은 엄격하게 hit만 적중으로 세고 partial·miss·contradict는 적중에 넣지 않는다. unavailable은 분모에서 제외한다. 따라서 전체 전후 분모는 다르며 같은 질의만의 비교를 별도 제시한다.
+
+근거 행은 \`pairs[].materials\`에 정답 행의 제목이나 인용이 있으면 포함으로 계산한다. 제목만 있어도 행 포함으로 잡히므로 실제 정답 인용이 전달됐는지도 별도 계산했다. 라우팅은 사전에 정한 기대 목록의 일치 개수이며, 추가는 기대 밖 선택이다. 포괄 프로시저 이름 일치는 소속 조사원의 적절성을 보장하지 않는다. 시간은 POST 시작부터 원문 수신까지의 실측 시간이다.
+
+| 질의 | 증강 전 적중 | 증강 후 적중 | 행 포함 | 원문 인용 포함 | 조사원 기대 일치 | 프로시저 기대 일치 | 시간 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+${rows.join('\n')}
+
+전체 이용 가능한 답변의 적중은 증강 전 ${x.before_hits}/${x.before_available} (${pct(x.before_hits,x.before_available)}), 후 ${x.after_hits}/${x.after_available} (${pct(x.after_hits,x.after_available)})이다. 같은 Q1~Q3 사실 ${paired.length}개만 비교하면 전 ${b}/${paired.length} (${pct(b,paired.length)})에서 후 ${a}/${paired.length} (${pct(a,paired.length)})다. 전체 행 포함은 ${x.context_row_hits}/${x.facts} (${pct(x.context_row_hits,x.facts)}), 정답 인용 포함은 ${x.context_quote_hits}/${x.facts} (${pct(x.context_quote_hits,x.facts)})이다.
+
+## 관찰
+
+- Q1에서 세 기대 조사원은 모두 선택됐다. MSI GT 330의 대역폭·권장 PSU는 각각 증강 전 14.4 GB/s·300 W로 틀렸고 후 25.60 GB/s·250 W로 수정됐다. 하지만 3월 20일 Nvidia 기사는 검색되지 않았으며 답변은 해당 뉴스에 대해 확인 불가를 밝혔다. Q-Sparse 행이 검색됐어도 full-precision과 1-bit 적용에 관한 인용은 잘려 답하지 못했다.
+- Q2는 논문의 GPU 전역 메모리→레지스터 병목과 8600 GTS 사양을 후에 맞혔다. 논문 행은 검색됐으나 LUT 벡터화·복제 문장이 발췌에서 빠졌고 답변도 이를 빠뜨렸다. 증강 전에는 근거 없는 상수 메모리·브로드캐스트 설명을 제시했다.
+- Q3에서 증강 후 CVE의 경로와 버전이 바로잡혔다. 반대로 개발 문답의 \`mysql_real_escape_string\`은 원본 덤프에는 있으나 전달된 행이 잘려 증강 후에는 확인하지 못했다. 증강 전에는 해당 함수를 맞혔으므로 사실 하나는 hit에서 miss로 후퇴했다. 관련성 미입증을 말하면서도 두 기록이 실제로 무관하다고 단정한 대목은 근거 범위를 넘는다.
+- Q4는 REJECTED·설명 없음과 두 MIME 문자열을 후에 모두 맞혔고 악용 여부를 보류했다. 다만 할당 기관이 Atlassian이라는 점에서 해당 제품군과 관련될 가능성이 높다고 추정했는데 제공 자료는 그 연결을 뒷받침하지 않는다. 증강 전 답변이 없어 Q4에서는 전후 개선을 판단할 수 없다.
+
+## 라우팅과 교차 언어 검색
+
+네 질의 모두 기대 조사원은 누락 없이 선택됐다. Q1은 기대한 세 조사원이 정확히 선택됐고, 나머지는 상위 3개 구조에서 각각 합성 산업 뉴스, 판례·법령, 웹 검색이 추가됐다. 추가 선택은 기대 밖이라는 뜻이며 그 자체가 오류라는 판정은 아니다. Q1의 기대 프로시저는 3개 중 1개, Q2는 3개 모두, Q3는 이름 기준 3개 중 2개, Q4는 3개 중 1개가 선택됐다. Q3의 공통 \`근거 신뢰도 점검\`은 관련 개발·보안 조사원이 아닌 추가 판례 조사원에 붙었고 Q4에서는 웹 조사원에 붙었다. 개별 쌍은 scores.json에 보존했다.
+
+한국어 질문에 포함된 영어 제품명·논문명·CVE 등으로 목표 영문 행이 ${x.context_row_hits}/${x.facts} 사실에 대해 검색됐다. 그러나 이는 사실 단위 행 중복을 포함한 지표이며 교차 언어 검색만의 효과를 분리한 실험은 아니다. Q1의 특정 뉴스는 찾지 못했고, 행을 찾아도 길이 제한으로 필요한 문장이 전달되지 않은 사례가 세 사실(Q1 F2, Q2 F2, Q3 F3) 있었다.
+
+## 근거에 기반한 가설과 한계
+
+- 검색 후 전달되는 발췌 길이가 짧아 정답 행 검색 성공이 정답 사실 전달을 보장하지 않을 수 있다. 세 사례에서 목표 문장 부재와 답변 누락이 함께 관측됐지만 인과성은 추가 실험이 필요하다.
+- 조사원·프로시저의 임베딩 라우팅은 복합 질의의 각 부분을 항상 적절히 반영하지 못할 수 있다. Q1에서 세 조사원은 맞았지만 기대 프로시저 두 개와 지정 뉴스 행은 빠졌다.
+- Q1·Q2에서 CUDA 필드의 의미와 FP32 단위처럼 자료에 정의되지 않은 값을 답변이 단정하거나 부연했다. 근거 전달 후에도 출처 범위를 넘는 해석을 막는 검증이 필요하다는 가설이다.
+- 표본은 4개 질의·16개 사실이고 채점자는 모델이며 단일 실행이다. 질문별 난이도와 정답 사실의 구성은 다르고, Q1의 뉴스와 Q3·Q4의 보안/개발 예제는 한 업무의 병렬 점검 항목으로 결합되어 직접적인 인과관계를 주장하지 않는다. 이 설계는 결합의 자연스러움이 제한될 수 있다. 보안 기록은 합성이며 실제 CVE의 최신 진위와 조치 판단은 검증하지 않았다. 영문 문서가 검색된 것과 정확한 번역 능력도 분리하지 못했다. 원문 덤프도 본문이 1200자로 잘린 자료다.
+`;
+fs.writeFileSync('_experiments/F1/report.md',report,'utf8');

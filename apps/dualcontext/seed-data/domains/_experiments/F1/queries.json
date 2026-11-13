@@ -1,0 +1,183 @@
+[
+  {
+    "id": "Q1",
+    "query": "사내 LLM 추론 도입을 검토 중입니다. Q-Sparse 논문이 제안한 방법과 적용 범위, 보유한 MSI GT 330의 메모리 대역폭과 권장 전원, 2024년 3월 20일 Nvidia GTC 발표 뒤 애널리스트 동향을 함께 정리해 주세요. 이 자료만으로 해당 GPU에서 실행 가능성도 판단할 수 있나요?",
+    "why_complex": "AI 논문 기법, 보유 GPU 사양과 기업 뉴스의 세 조사원을 결합하고 실제 실행 가능성의 근거 부족을 판단해야 한다.",
+    "expect_researchers": [
+      "AI 머신러닝 연구 논문 초록",
+      "GPU Ark 그래픽카드 사양",
+      "미국 기업 산업 동향 기사"
+    ],
+    "expect_procedures": [
+      "[AI연구] 논문 주장과 근거 추출",
+      "[GPU Ark] 작업별 GPU 적합성 검토",
+      "[산업기술] 시점별 기업 동향과 전환점"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "Q-Sparse는 활성값에 top-K 희소화, 학습에 straight-through estimator를 적용한다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 3,
+        "quote": "This is achieved by applying top-K sparsification to the activations and the straight-through-estimator to the training."
+      },
+      {
+        "id": "F2",
+        "fact": "Q-Sparse는 full-precision과 1-bit LLM 모두에 적용된다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 3,
+        "quote": "Q-Sparse works for both full-precision and 1-bit LLMs (e.g., BitNet b1.58)."
+      },
+      {
+        "id": "F3",
+        "fact": "MSI GT 330의 메모리 대역폭은 25.60 GB/s다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 1,
+        "quote": "Memory bandwidth: 25.60 GB/s"
+      },
+      {
+        "id": "F4",
+        "fact": "MSI GT 330의 권장 PSU는 250 W다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 1,
+        "quote": "Suggested PSU: 250 W"
+      },
+      {
+        "id": "F5",
+        "fact": "2024년 3월 20일 기사에 따르면 Nvidia GTC의 새 GPU 공개 이후 여러 애널리스트가 목표가를 올렸다.",
+        "source_table": "ds_industry_tech",
+        "source_row_id": 19,
+        "quote": "Several analysts raised their price targets on Nvidia after the company's GTC Conference, in which the chipmaker unveiled a new graphics processing unit."
+      }
+    ],
+    "trap": "논문 초록과 GPU 사양만으로 해당 GPU에서 Q-Sparse 실행 가능 여부를 확정할 수 없다. 기사에 공개 GPU 모델명은 없다."
+  },
+  {
+    "id": "Q2",
+    "query": "양자화 LLM 추론을 검토하며 FLUTE 논문과 NVIDIA GeForce 8600 GTS 사양을 함께 보고 싶습니다. 논문이 겨냥한 병목과 LUT 처리 방식, 이 카드의 대역폭과 전원 커넥터를 알려주고, 이 정보만으로 FLUTE 실행 가능 여부를 확정할 수 있는지도 설명해 주세요.",
+    "why_complex": "양자화 논문의 기법과 구형 GPU의 대역폭·장착 사양을 함께 검토해야 한다.",
+    "expect_researchers": [
+      "AI 머신러닝 연구 논문 초록",
+      "GPU Ark 그래픽카드 사양"
+    ],
+    "expect_procedures": [
+      "[AI연구] 논문 주장과 근거 추출",
+      "[GPU Ark] 장착 및 전원 조건 점검",
+      "[GPU Ark] 작업별 GPU 적합성 검토"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "논문은 GPU 전역 메모리에서 레지스터로 모델 파라미터를 옮기는 비용을 주된 병목으로 설명한다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 7,
+        "quote": "the primary bottleneck is the cost of transferring model parameters from the GPU's global memory to its registers"
+      },
+      {
+        "id": "F2",
+        "fact": "FLUTE는 공유 메모리 대역폭 제약을 완화하기 위해 lookup table을 벡터화하고 복제한다.",
+        "source_table": "ds_ai_research",
+        "source_row_id": 7,
+        "quote": "vectorization and duplication of the lookup table to mitigate shared memory bandwidth constraints"
+      },
+      {
+        "id": "F3",
+        "fact": "GeForce 8600 GTS의 메모리 대역폭은 32.00 GB/s다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 9,
+        "quote": "Memory bandwidth: 32.00 GB/s"
+      },
+      {
+        "id": "F4",
+        "fact": "GeForce 8600 GTS의 전원 커넥터는 6핀 1개다.",
+        "source_table": "ds_gpu_hardware",
+        "source_row_id": 9,
+        "quote": "Power connectors: 1x 6-pin"
+      }
+    ],
+    "trap": "초록과 사양표만으로 실제 커널·드라이버 호환성을 확정할 수 없다."
+  },
+  {
+    "id": "Q3",
+    "query": "오래된 PHP 업무 시스템을 점검합니다. MantisBT의 CVE-2010-3763에서 공격 입력 위치와 영향 버전을 확인하고, Stack Overflow 질문 17의 MySQL binary_data 예제에서 바이너리 열 타입과 입력 처리 함수를 알려주세요. 두 기록만으로 이 예제가 그 CVE의 수정책인지 판단할 수 있나요?",
+    "why_complex": "특정 MantisBT XSS 기록과 별개의 PHP MySQL 예제를 함께 살피며 관련성이 입증되지 않은 수정 주장을 배제한다.",
+    "expect_researchers": [
+      "CVE 취약점과 영향 정보",
+      "소프트웨어 개발 질의응답"
+    ],
+    "expect_procedures": [
+      "[IT보안] 공격 조건과 방어 지점 추출",
+      "[개발] 코드 동작과 경계 사례 검토",
+      "근거 신뢰도 점검"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "CVE-2010-3763은 MantisBT 1.2.3 이전 core/summary_api.php의 Summary 필드를 통한 XSS다.",
+        "source_table": "ds_it_security",
+        "source_row_id": 1,
+        "quote": "Cross-site scripting (XSS) vulnerability in core/summary_api.php in MantisBT before 1.2.3 allows remote attackers to inject arbitrary web script or HTML via the Summary field, a different vector than CVE-2010-3303."
+      },
+      {
+        "id": "F2",
+        "fact": "질문 17 예제에서 bin_data 열은 LONGBLOB이다.",
+        "source_table": "ds_software_dev",
+        "source_row_id": 8,
+        "quote": "    bin_data LONGBLOB,"
+      },
+      {
+        "id": "F3",
+        "fact": "예제는 파일 데이터를 mysql_real_escape_string으로 처리한다.",
+        "source_table": "ds_software_dev",
+        "source_row_id": 8,
+        "quote": "$data = mysql_real_escape_string(fread(fopen($form_data, \"r\"), filesize($form_data)));"
+      }
+    ],
+    "trap": "MySQL 이스케이프가 MantisBT XSS의 수정이라는 근거는 없으며 예제는 오래되어 최신 보안성 검토가 필요하다."
+  },
+  {
+    "id": "Q4",
+    "query": "업로드 기능을 검토 중입니다. CVE-2024-21709 기록의 상태와 설명 유무를 확인하고, Stack Overflow 질문 61의 Office 2007 업로드 예시에서 docx와 docm의 MIME 타입을 알려주세요. 이 정보만으로 해당 CVE가 업로드에서 악용된다고 판단할 수 있나요?",
+    "why_complex": "거절된 CVE 상태와 별도 Office 업로드 MIME 개발 문답을 대조해 확인되지 않은 연관성을 배제한다.",
+    "expect_researchers": [
+      "CVE 취약점과 영향 정보",
+      "소프트웨어 개발 질의응답"
+    ],
+    "expect_procedures": [
+      "[IT보안] 취약 제품과 수정 범위 대조",
+      "[개발] 코드 동작과 경계 사례 검토",
+      "근거 신뢰도 점검"
+    ],
+    "gold_facts": [
+      {
+        "id": "F1",
+        "fact": "CVE-2024-21709 기록의 상태는 REJECTED다.",
+        "source_table": "ds_it_security",
+        "source_row_id": 2,
+        "quote": "- **State**: REJECTED"
+      },
+      {
+        "id": "F2",
+        "fact": "해당 CVE 기록에 취약점 설명이 없다.",
+        "source_table": "ds_it_security",
+        "source_row_id": 2,
+        "quote": "No description available"
+      },
+      {
+        "id": "F3",
+        "fact": "docx MIME 타입은 application/vnd.openxmlformats-officedocument.wordprocessingml.document이다.",
+        "source_table": "ds_software_dev",
+        "source_row_id": 18,
+        "quote": "*.docx, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      },
+      {
+        "id": "F4",
+        "fact": "docm MIME 타입은 application/vnd.ms-word.document.macroEnabled.12이다.",
+        "source_table": "ds_software_dev",
+        "source_row_id": 18,
+        "quote": "*.docm, application/vnd.ms-word.document.macroEnabled.12"
+      }
+    ],
+    "trap": "거절된 CVE 기록과 Office MIME 문답 사이에 취약점 연관성은 제시되지 않는다."
+  }
+]

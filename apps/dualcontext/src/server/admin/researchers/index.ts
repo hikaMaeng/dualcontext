@@ -27,6 +27,8 @@ const body = z.discriminatedUnion("type", [
       /** MRL 축소 차원 컬럼(HNSW 인덱스가 걸린 컬럼). 주면 reducedDim 도 필요하다. */
       reducedColumn: identifier.optional(),
       reducedDim: z.number().int().min(1).optional(),
+      /** 컨텍스트에 싣는 자료 길이(글자 수). 기본 1200. */
+      snippetChars: z.number().int().min(100).max(8000).optional(),
       topK: topK.default(3)
     })
   }),
