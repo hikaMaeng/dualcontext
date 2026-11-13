@@ -7,5 +7,6 @@ export enum RSC {
   ROUTER_METHOD_EMBEDDING_TEXT = "router.method.embedding.text",
   ROUTER_METHOD_LLM_TEXT = "router.method.llm.text",
   ROUTER_PROMPT_LABEL = "router.prompt.label",
+  ROUTER_MINSCORE_LABEL = "router.minscore.label",
   ROUTER_HINT_MESSAGE = "router.hint.message"
 }

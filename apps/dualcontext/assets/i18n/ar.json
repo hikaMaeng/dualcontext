@@ -48,7 +48,7 @@
   "router.method.embedding.text": "تشابه التضمين",
   "router.method.llm.text": "موجّه LLM",
   "router.prompt.label": "موجّه LLM (يستخدم {{query}} و{{topK}} و{{candidates}})",
-  "router.hint.message": "إذا فشلت طريقة ما (خطأ في خادم النموذج مثلًا) يعود التوجيه إلى مطابقة الكلمات المفتاحية وتُظهر التجربة ذلك.",
+  "router.hint.message": "تستبعد طريقة التضمين المرشحين الأقل من الحد الأدنى للتشابه حتى لو كانوا ضمن أعلى N. وإذا لم يكن أي باحث مناسبًا فلا يُختار أحد ولا يُقدَّم أي سياق. وإذا فشلت طريقة ما (خطأ في خادم النموذج مثلًا) يعود التوجيه إلى مطابقة الكلمات المفتاحية وتُظهر التجربة ذلك.",
   "writers.title.text": "الكتّاب",
   "writers.engine.label": "المحرّك",
   "writers.engine.template.text": "تجميع بسيط (بلا نموذج)",
@@ -97,5 +97,18 @@
   "common.answer.after.label": "الإجابة بعد الإثراء (الاستعلام + السياق المُثرى)",
   "common.answer.failed.alert": "تعذّر إنتاج الإجابة",
   "common.seconds.text": "ث",
-  "try.busy.status": "قيد التشغيل. قد يستغرق إنتاج الإجابتين قبل الإثراء وبعده عدة دقائق."
+  "try.busy.status": "يستمر التشغيل على الخادم، لذا يمكنك مغادرة هذه الصفحة ومتابعته في سجل التشغيل.",
+  "common.answer.pending.status": "جارٍ إنتاج الإجابة…",
+  "try.stage.augment.status": "جارٍ اختيار الباحثين والإجراءات وبناء السياق.",
+  "try.stage.answering.status": "السياق جاهز. جارٍ إنتاج الإجابتين قبل الإثراء وبعده.",
+  "try.failed.alert": "فشل التشغيل",
+  "runs.running.status": "قيد التشغيل",
+  "runs.stage.augment.status": "جارٍ بناء السياق",
+  "runs.stage.answering.status": "جارٍ إنتاج الإجابات النهائية",
+  "router.minscore.label": "الحد الأدنى للتشابه (0-1؛ تستبعد طريقة التضمين المرشحين الأقل منه؛ 0 يعطّل التصفية)",
+  "common.answer.skipped.status": "لم يُقدَّم أي سياق، لذا لم تُنتَج الإجابة بعد الإثراء (ستكون مطابقة للإجابة السابقة).",
+  "common.routing.scores.label": "درجات توجيه الباحثين (التشابه)",
+  "common.routing.selected.status": "مختار",
+  "common.routing.excluded.status": "مستبعد",
+  "common.routing.none.message": "لا يوجد باحث مناسب لهذا الاستعلام، لذا لم يُقدَّم أي سياق."
 }

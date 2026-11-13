@@ -21,7 +21,7 @@ export function RouterView({ t }: { t: Texts }) {
 
   if (!config) return state === "failed" ? <p role="alert" className="text-danger">{t[SHARED.COMMON_ERROR_ALERT]}</p> : null;
 
-  const update = (stage: Stage, field: "Method" | "TopK" | "Prompt", value: string | number) =>
+  const update = (stage: Stage, field: "Method" | "TopK" | "MinScore" | "Prompt", value: string | number) =>
     setConfig({ ...config, [`${stage}${field}`]: value } as RouterConfig);
 
   const submit = async (event: FormEvent) => {
@@ -34,9 +34,9 @@ export function RouterView({ t }: { t: Texts }) {
     }
   };
 
-  const stages: { stage: Stage; heading: string; method: RoutingMethod; topK: number; prompt: string }[] = [
-    { stage: "researcher", heading: t[RSC.ROUTER_RESEARCHER_HEADING_TEXT], method: config.researcherMethod, topK: config.researcherTopK, prompt: config.researcherPrompt },
-    { stage: "procedure", heading: t[RSC.ROUTER_PROCEDURE_HEADING_TEXT], method: config.procedureMethod, topK: config.procedureTopK, prompt: config.procedurePrompt }
+  const stages: { stage: Stage; heading: string; method: RoutingMethod; topK: number; minScore: number; prompt: string }[] = [
+    { stage: "researcher", heading: t[RSC.ROUTER_RESEARCHER_HEADING_TEXT], method: config.researcherMethod, topK: config.researcherTopK, minScore: config.researcherMinScore, prompt: config.researcherPrompt },
+    { stage: "procedure", heading: t[RSC.ROUTER_PROCEDURE_HEADING_TEXT], method: config.procedureMethod, topK: config.procedureTopK, minScore: config.procedureMinScore, prompt: config.procedurePrompt }
   ];
 
   return (
@@ -48,7 +48,7 @@ export function RouterView({ t }: { t: Texts }) {
           <Card key={entry.stage} role="group" aria-labelledby={`${entry.stage}-heading`}>
             <CardHeader><CardTitle id={`${entry.stage}-heading`}>{entry.heading}</CardTitle></CardHeader>
             <CardContent className="grid gap-3">
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <Field label={t[RSC.ROUTER_METHOD_LABEL]}>
                   <Select data-testid={`${entry.stage}-method`} value={entry.method} onChange={(e) => update(entry.stage, "Method", e.target.value)}>
                     <option value="embedding">{t[RSC.ROUTER_METHOD_EMBEDDING_TEXT]}</option>
@@ -58,6 +58,9 @@ export function RouterView({ t }: { t: Texts }) {
                 </Field>
                 <Field label={t[SHARED.COMMON_TOPK_LABEL]}>
                   <Input type="number" min={1} max={20} value={entry.topK} onChange={(e) => update(entry.stage, "TopK", Number(e.target.value))} />
+                </Field>
+                <Field label={t[RSC.ROUTER_MINSCORE_LABEL]}>
+                  <Input data-testid={`${entry.stage}-minscore`} type="number" min={0} max={1} step={0.01} value={entry.minScore} onChange={(e) => update(entry.stage, "MinScore", Number(e.target.value))} />
                 </Field>
               </div>
               <Field label={t[RSC.ROUTER_PROMPT_LABEL]}>

@@ -1,39 +1,50 @@
 import { useEffect, useState, type FormEvent } from "react";
-import type { Answers, AugmentResult, WriterConfig } from "dualcontext_domain/common";
+import type { WriterConfig } from "dualcontext_domain/common";
 import { AnswerCompare } from "../../components/answers";
+import { RoutingScores } from "../../components/routing-scores";
 import { Button } from "../../components/ui/button";
 import { Input, Select } from "../../components/ui/input";
 import { Field } from "../../components/layout";
 import { api } from "../../lib/api";
+import { useRun } from "../../lib/run";
 import type { Texts } from "../../i18n";
 import { RSC as SHARED } from "../../resource";
 import { RSC } from "./resource";
 
-/** MCP 도구와 같은 증강 경로를 관리자가 직접 시험한다. 라이터를 골라 돌려 볼 수 있다. */
+/**
+ * MCP 도구와 같은 증강 경로를 관리자가 직접 시험한다. 실행은 서버에서 비동기로 돌고(수 분 걸릴 수 있다),
+ * 이 화면은 runId 를 받아 진행을 따라간다: 라우팅 · 컨텍스트가 만들어지는 대로, 증강 전/후 답변이 끝나는 대로 채워진다.
+ */
 export function TryView({ t }: { t: Texts }) {
   const [query, setQuery] = useState("");
   const [writers, setWriters] = useState<WriterConfig[]>([]);
   const [writerId, setWriterId] = useState("");
-  const [result, setResult] = useState<(AugmentResult & { runId: number; answers: Answers }) | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [runId, setRunId] = useState<number | null>(null);
+  const [starting, setStarting] = useState(false);
+  const [startFailed, setStartFailed] = useState(false);
+  const run = useRun(runId);
 
   useEffect(() => {
-    api<WriterConfig[]>("/writers").then(setWriters).catch(() => setFailed(true));
+    api<WriterConfig[]>("/writers").then(setWriters).catch(() => setStartFailed(true));
   }, []);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    setBusy(true);
+    setStarting(true);
+    setStartFailed(false);
     try {
-      setResult(await api<AugmentResult & { runId: number; answers: Answers }>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } }));
-      setFailed(false);
+      const started = await api<{ runId: number }>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } });
+      setRunId(started.runId);
     } catch {
-      setFailed(true);
+      setStartFailed(true);
     } finally {
-      setBusy(false);
+      setStarting(false);
     }
   };
+
+  const running = run?.status === "running";
+  // 증강 단계(라우팅 · 수집 · 컨텍스트)가 끝났는가. 조사원이 하나도 선택되지 않아 쌍이 0개여도 끝난 것이다.
+  const augmentDone = run !== null && (run.stage === "answering" || run.stage === "done");
 
   return (
     <section aria-labelledby="page-title" className="grid gap-4">
@@ -46,25 +57,38 @@ export function TryView({ t }: { t: Texts }) {
             {writers.map((writer) => <option key={writer.id} value={writer.id}>{writer.name}</option>)}
           </Select>
         </Field>
-        <Button type="submit" disabled={busy} className="justify-self-start">{t[RSC.TRY_RUN_BUTTON]}</Button>
+        <Button type="submit" disabled={starting} className="justify-self-start">{t[RSC.TRY_RUN_BUTTON]}</Button>
       </form>
-      {busy && <p role="status" data-testid="busy-state" className="text-sm text-muted">{t[RSC.TRY_BUSY_STATUS]}</p>}
-      {failed && <p role="alert" className="text-sm text-danger">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
-      {result && (
+      {startFailed && <p role="alert" className="text-sm text-danger">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
+      {runId !== null && (
         <>
-          <p role="status" data-testid="routing-state" className="text-sm text-muted">{t[RSC.TRY_ROUTING_LABEL]}: {result.researcherRouting}</p>
           <p role="status" data-testid="logged-state" className="text-sm text-muted">
-            <a className="text-accent underline" href="#runs">{t[RSC.TRY_LOGGED_STATUS]} #{result.runId}</a>
+            <a className="text-accent underline" href="#runs">{t[RSC.TRY_LOGGED_STATUS]} #{runId}</a>
           </p>
-          <AnswerCompare answers={result.answers} t={t} />
-          <ul aria-label={t[RSC.TRY_PAIRS_LABEL]} className="grid gap-1 text-sm text-muted">
-            {result.pairs.map((pair, index) => (
-              <li key={index} data-testid="pair-item">{pair.researcher} / {pair.procedure ?? "-"} ({pair.materialCount}) [{pair.procedureRouting}]</li>
-            ))}
-          </ul>
-          <pre aria-label={t[RSC.TRY_RESULT_LABEL]} data-testid="augmented-context" className="whitespace-pre-wrap rounded-md border border-line bg-sidebar p-4 font-mono text-sm">
-            {result.context}
-          </pre>
+          {running && (
+            <p role="status" data-testid="busy-state" className="text-sm text-muted">
+              {run?.stage === "answering" ? t[RSC.TRY_STAGE_ANSWERING_STATUS] : t[RSC.TRY_STAGE_AUGMENT_STATUS]} {t[RSC.TRY_BUSY_STATUS]}
+            </p>
+          )}
+          {run?.status === "error" && <p role="alert" data-testid="run-error" className="text-sm text-danger">{t[RSC.TRY_FAILED_ALERT]}: {run.error}</p>}
+          {run && augmentDone && (
+            <>
+              <p role="status" data-testid="routing-state" className="text-sm text-muted">{t[RSC.TRY_ROUTING_LABEL]}: {run.researcherRouting}</p>
+              {run.pairs.length === 0 && <p role="status" data-testid="routing-none" className="text-sm text-fg">{t[SHARED.COMMON_ROUTING_NONE_MESSAGE]}</p>}
+              <RoutingScores routing={run.routing} t={t} />
+              <AnswerCompare answers={run.answers} pending={running} t={t} />
+              <ul aria-label={t[RSC.TRY_PAIRS_LABEL]} className="grid gap-1 text-sm text-muted">
+                {run.pairs.map((pair, index) => (
+                  <li key={index} data-testid="pair-item">{pair.researcher} / {pair.procedure ?? "-"} ({pair.materialCount}) [{pair.procedureRouting}]</li>
+                ))}
+              </ul>
+              {run.context && (
+                <pre aria-label={t[RSC.TRY_RESULT_LABEL]} data-testid="augmented-context" className="whitespace-pre-wrap rounded-md border border-line bg-sidebar p-4 font-mono text-sm">
+                  {run.context}
+                </pre>
+              )}
+            </>
+          )}
         </>
       )}
     </section>

@@ -48,7 +48,7 @@
   "router.method.embedding.text": "임베딩 유사도",
   "router.method.llm.text": "LLM 프롬프트",
   "router.prompt.label": "LLM 프롬프트 ({{query}}, {{topK}}, {{candidates}} 사용)",
-  "router.hint.message": "방법이 실패하면(모델 서버 오류 등) 키워드 일치로 되돌아가며, 시험 실행에 그 사실이 표시됩니다.",
+  "router.hint.message": "임베딩 방식은 최소 유사도 미만의 후보를 상위 개수 안이어도 제외합니다. 마땅한 조사원이 하나도 없으면 아무것도 고르지 않고 컨텍스트를 공급하지 않습니다. 방법이 실패하면(모델 서버 오류 등) 키워드 일치로 되돌아가며, 시험 실행에 그 사실이 표시됩니다.",
   "writers.title.text": "라이터",
   "writers.engine.label": "엔진",
   "writers.engine.template.text": "기본 조립(모델 없음)",
@@ -97,5 +97,18 @@
   "common.answer.after.label": "증강 후 답변(질의 + 증강된 컨텍스트)",
   "common.answer.failed.alert": "답변을 만들지 못했습니다",
   "common.seconds.text": "초",
-  "try.busy.status": "실행 중입니다. 증강 전후 최종 답변까지 만드느라 수 분 걸릴 수 있습니다."
+  "try.busy.status": "실행은 서버에서 계속되므로 이 화면을 떠나도 실행 로그에서 이어서 볼 수 있습니다.",
+  "common.answer.pending.status": "답변을 만드는 중입니다…",
+  "try.stage.augment.status": "조사원과 프로시저를 골라 컨텍스트를 만드는 중.",
+  "try.stage.answering.status": "컨텍스트를 만들었습니다. 증강 전 · 후 최종 답변을 만드는 중.",
+  "try.failed.alert": "실행이 실패했습니다",
+  "runs.running.status": "실행 중",
+  "runs.stage.augment.status": "컨텍스트를 만드는 중",
+  "runs.stage.answering.status": "최종 답변을 만드는 중",
+  "router.minscore.label": "최소 유사도(0~1, 임베딩 방식에서 이보다 낮은 후보는 제외, 0 이면 거르지 않음)",
+  "common.answer.skipped.status": "컨텍스트가 없어 증강 후 답변은 만들지 않았습니다(증강 전 답변과 같습니다).",
+  "common.routing.scores.label": "조사원 라우팅 점수(유사도)",
+  "common.routing.selected.status": "선택",
+  "common.routing.excluded.status": "제외",
+  "common.routing.none.message": "이 질의에 마땅한 조사원이 없어 컨텍스트를 공급하지 않았습니다."
 }

@@ -48,7 +48,7 @@
   "router.method.embedding.text": "Embedding similarity",
   "router.method.llm.text": "LLM prompt",
   "router.prompt.label": "LLM prompt (uses {{query}}, {{topK}}, {{candidates}})",
-  "router.hint.message": "If a method fails (model server error and so on) routing falls back to keyword match, and the try page shows that it did.",
+  "router.hint.message": "The embedding method drops candidates below the minimum similarity even when they are inside the top N. If no researcher is suitable, nothing is chosen and no context is supplied. If a method fails (model server error and so on) routing falls back to keyword match, and the try page shows that it did.",
   "writers.title.text": "Writers",
   "writers.engine.label": "Engine",
   "writers.engine.template.text": "Plain assembly (no model)",
@@ -97,5 +97,18 @@
   "common.answer.after.label": "Answer after augmentation (query + augmented context)",
   "common.answer.failed.alert": "Could not produce an answer",
   "common.seconds.text": "s",
-  "try.busy.status": "Running. Producing the answers before and after augmentation can take several minutes."
+  "try.busy.status": "The run continues on the server, so you can leave this page and follow it in the run log.",
+  "common.answer.pending.status": "Producing the answer…",
+  "try.stage.augment.status": "Choosing researchers and procedures and building the context.",
+  "try.stage.answering.status": "The context is ready. Producing the answers before and after augmentation.",
+  "try.failed.alert": "The run failed",
+  "runs.running.status": "Running",
+  "runs.stage.augment.status": "Building the context",
+  "runs.stage.answering.status": "Producing the final answers",
+  "router.minscore.label": "Minimum similarity (0-1; embedding method drops candidates below it; 0 turns the filter off)",
+  "common.answer.skipped.status": "No context was supplied, so the answer after augmentation was not produced (it would equal the answer before).",
+  "common.routing.scores.label": "Researcher routing scores (similarity)",
+  "common.routing.selected.status": "chosen",
+  "common.routing.excluded.status": "excluded",
+  "common.routing.none.message": "No researcher is suitable for this query, so no context was supplied."
 }

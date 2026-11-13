@@ -1,7 +1,10 @@
 import type { Procedure, Researcher } from "../../common/index.js";
 
-/** 라우팅 결과. mode 는 실제로 쓰인 방법(되돌림 포함)이다. */
-export type Selection<T> = { mode: string; selected: T[] };
+/** 후보 하나의 점수(임베딩 방식에서만). */
+export type ScoredId = { id: number; score: number; selected: boolean };
+
+/** 라우팅 결과. mode 는 실제로 쓰인 방법(되돌림 포함), scores 는 임베딩 방식일 때 모든 후보의 점수다. */
+export type Selection<T> = { mode: string; selected: T[]; scores?: ScoredId[] };
 
 function keywordScore(query: string, keywords: string[]): number {
   const lowered = query.toLowerCase();
@@ -9,8 +12,8 @@ function keywordScore(query: string, keywords: string[]): number {
 }
 
 /**
- * 키워드 라우팅(조사원). 키워드가 맞는 조사원만 점수순으로 상위 topK 개,
- * 맞는 것이 없으면 사용 가능한 전체의 앞 topK 개(fallback-all).
+ * 키워드 라우팅(조사원). 키워드가 맞는 조사원만 점수순으로 상위 topK 개.
+ * 맞는 것이 없으면 선택하지 않는다(keyword-none): 마땅한 조사원이 없는 질의에 임의의 조사원을 붙이지 않는다.
  */
 export function routeResearchersByKeyword(query: string, researchers: Researcher[], topK: number): Selection<Researcher> {
   const enabled = researchers.filter((researcher) => researcher.enabled);
@@ -21,8 +24,7 @@ export function routeResearchersByKeyword(query: string, researchers: Researcher
     .map((entry) => entry.researcher);
 
   if (matched.length > 0) return { mode: "keyword", selected: matched.slice(0, topK) };
-  if (enabled.length > 0) return { mode: "keyword-fallback-all", selected: enabled.slice(0, topK) };
-  return { mode: "none", selected: [] };
+  return { mode: enabled.length > 0 ? "keyword-none" : "none", selected: [] };
 }
 
 /**
@@ -48,12 +50,18 @@ export function cosine(a: number[], b: number[]): number {
   return normA === 0 || normB === 0 ? 0 : dot / Math.sqrt(normA * normB);
 }
 
-/** 임베딩 유사도 상위 topK. 벡터 차원이 다른 항목은 비교할 수 없으므로 건너뛴다. */
-export function topKByEmbedding<T>(queryVector: number[], items: { item: T; vector: number[] }[], topK: number): T[] {
+/** 임베딩 유사도순으로 모든 후보에 점수를 매긴다. 벡터 차원이 다른 항목은 비교할 수 없으므로 건너뛴다. */
+export function rankByEmbedding<T>(queryVector: number[], items: { item: T; vector: number[] }[]): { item: T; score: number }[] {
   return items
     .filter((entry) => entry.vector.length === queryVector.length)
     .map((entry) => ({ item: entry.item, score: cosine(queryVector, entry.vector) }))
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.score - a.score);
+}
+
+/** 임베딩 유사도 상위 topK(최소 유사도 minScore 이상만). */
+export function topKByEmbedding<T>(queryVector: number[], items: { item: T; vector: number[] }[], topK: number, minScore = 0): T[] {
+  return rankByEmbedding(queryVector, items)
+    .filter((entry) => entry.score >= minScore)
     .slice(0, topK)
     .map((entry) => entry.item);
 }

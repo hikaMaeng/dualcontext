@@ -1,0 +1,290 @@
+{
+  "method": "llm (stage 1 only)",
+  "model": "qwen36-35b",
+  "concurrency": 3,
+  "topK": 3,
+  "positives": {
+    "total": 12,
+    "ok": 12
+  },
+  "negatives": {
+    "total": 12,
+    "ok": 1
+  },
+  "seconds": {
+    "min": 2.7,
+    "median": 9.4,
+    "max": 144.4
+  },
+  "rows": [
+    {
+      "id": "P1",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "AI 머신러닝 연구 논문 초록",
+        "GPU Ark 그래픽카드 사양"
+      ],
+      "answer": "[8, 9]",
+      "unparsed": false,
+      "seconds": 105.5
+    },
+    {
+      "id": "P2",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "CVE 취약점과 영향 정보"
+      ],
+      "answer": "[11]",
+      "unparsed": false,
+      "seconds": 7.2
+    },
+    {
+      "id": "P3",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "소프트웨어 개발 질의응답"
+      ],
+      "answer": "[12]",
+      "unparsed": false,
+      "seconds": 44.7
+    },
+    {
+      "id": "P4",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "AI 머신러닝 연구 논문 초록"
+      ],
+      "answer": "[8]",
+      "unparsed": false,
+      "seconds": 16.4
+    },
+    {
+      "id": "P5",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "금융 시황 리포트(합성)"
+      ],
+      "answer": "[6]",
+      "unparsed": false,
+      "seconds": 7.9
+    },
+    {
+      "id": "P6",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "산업 뉴스(합성)",
+        "미국 기업 산업 동향 기사",
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[5, 10, 7]",
+      "unparsed": false,
+      "seconds": 5.6
+    },
+    {
+      "id": "P7",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "의학 문제은행"
+      ],
+      "answer": "[4]",
+      "unparsed": false,
+      "seconds": 3.3
+    },
+    {
+      "id": "P8",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "법률 용어 사전",
+        "판례·법령 질의응답"
+      ],
+      "answer": "[2, 3]",
+      "unparsed": false,
+      "seconds": 4.1
+    },
+    {
+      "id": "P9",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "판례·법령 질의응답"
+      ],
+      "answer": "[3]",
+      "unparsed": false,
+      "seconds": 6.6
+    },
+    {
+      "id": "P10",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "웹 검색(덕덕고)",
+        "미국 기업 산업 동향 기사",
+        "금융 시황 리포트(합성)"
+      ],
+      "answer": "[7, 10, 6]",
+      "unparsed": false,
+      "seconds": 45.6
+    },
+    {
+      "id": "P11",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 2.7
+    },
+    {
+      "id": "P12",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "웹 검색(덕덕고)",
+        "GPU Ark 그래픽카드 사양"
+      ],
+      "answer": "[7, 9]",
+      "unparsed": false,
+      "seconds": 5.6
+    },
+    {
+      "id": "X1",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 4.6
+    },
+    {
+      "id": "X2",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 9.4
+    },
+    {
+      "id": "X3",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 4.2
+    },
+    {
+      "id": "X4",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 46
+    },
+    {
+      "id": "X5",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 57.1
+    },
+    {
+      "id": "X6",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 72.5
+    },
+    {
+      "id": "X7",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 24.7
+    },
+    {
+      "id": "X8",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 35.2
+    },
+    {
+      "id": "X9",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 144.4
+    },
+    {
+      "id": "X10",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 6.2
+    },
+    {
+      "id": "X11",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 27.9
+    },
+    {
+      "id": "X12",
+      "kind": "negative",
+      "ok": false,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 5.2
+    }
+  ]
+}

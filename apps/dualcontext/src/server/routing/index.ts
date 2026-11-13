@@ -3,17 +3,17 @@ import type pg from "pg";
 import type { Procedure, Researcher, RouterConfig, RoutingMethod } from "dualcontext_domain/common";
 import {
   parseIdSelection,
+  rankByEmbedding,
   routeProceduresByKeyword,
   routeResearchersByKeyword,
-  topKByEmbedding,
   type Selection
 } from "dualcontext_domain/server";
 import type { ModelClient } from "../model/index.js";
 
 export async function readRouterConfig(pool: pg.Pool): Promise<RouterConfig> {
   const { rows } = await pool.query<RouterConfig>(
-    `select researcher_method as "researcherMethod", researcher_top_k as "researcherTopK", researcher_prompt as "researcherPrompt",
-            procedure_method as "procedureMethod", procedure_top_k as "procedureTopK", procedure_prompt as "procedurePrompt"
+    `select researcher_method as "researcherMethod", researcher_top_k as "researcherTopK", researcher_min_score as "researcherMinScore", researcher_prompt as "researcherPrompt",
+            procedure_method as "procedureMethod", procedure_top_k as "procedureTopK", procedure_min_score as "procedureMinScore", procedure_prompt as "procedurePrompt"
        from router_config where id = 1`
   );
   return rows[0];
@@ -27,6 +27,8 @@ type Target<T> = {
   table: "researchers" | "procedures";
   method: RoutingMethod;
   topK: number;
+  /** 임베딩 방식의 최소 유사도. 이보다 낮은 후보는 상위 topK 안이어도 제외한다. */
+  minScore: number;
   prompt: string;
   query: string;
   candidates: T[];
@@ -64,8 +66,10 @@ export function createSelectors(pool: pg.Pool, model: ModelClient) {
       if (target.method === "embedding") {
         const [queryVector] = await model.embed([target.query]);
         const vectors = await embeddingsFor(target.table, target.candidates, target.embeddingText);
-        const items = target.candidates.map((item, index) => ({ item, vector: vectors[index] }));
-        return { mode: "embedding", selected: topKByEmbedding(queryVector, items, target.topK) };
+        const ranked = rankByEmbedding(queryVector, target.candidates.map((item, index) => ({ item, vector: vectors[index] })));
+        const selected = ranked.filter((entry) => entry.score >= target.minScore).slice(0, target.topK).map((entry) => entry.item);
+        // 모든 후보의 점수와 선택 여부를 돌려준다: 왜 골랐는지(또는 왜 아무것도 고르지 않았는지) 로그에 남기기 위해서다.
+        return { mode: "embedding", selected, scores: ranked.map((entry) => ({ id: entry.item.id, score: entry.score, selected: selected.includes(entry.item) })) };
       }
       const answer = await model.chat(
         fill(target.prompt, {
@@ -96,6 +100,7 @@ export function createSelectors(pool: pg.Pool, model: ModelClient) {
         table: "researchers",
         method: config.researcherMethod,
         topK: config.researcherTopK,
+        minScore: config.researcherMinScore,
         prompt: config.researcherPrompt,
         query,
         candidates,
@@ -112,6 +117,7 @@ export function createSelectors(pool: pg.Pool, model: ModelClient) {
         table: "procedures",
         method: config.procedureMethod,
         topK: config.procedureTopK,
+        minScore: config.procedureMinScore,
         prompt: config.procedurePrompt,
         query,
         candidates,

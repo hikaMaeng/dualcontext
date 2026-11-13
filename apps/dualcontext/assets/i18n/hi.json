@@ -48,7 +48,7 @@
   "router.method.embedding.text": "एम्बेडिंग समानता",
   "router.method.llm.text": "LLM प्रॉम्प्ट",
   "router.prompt.label": "LLM प्रॉम्प्ट ({{query}}, {{topK}}, {{candidates}} उपयोग करें)",
-  "router.hint.message": "यदि कोई विधि विफल हो (मॉडल सर्वर त्रुटि आदि), तो रूटिंग कीवर्ड मिलान पर लौटती है और परीक्षण में यह दिखाया जाता है।",
+  "router.hint.message": "एम्बेडिंग विधि न्यूनतम समानता से नीचे के उम्मीदवारों को शीर्ष N के भीतर होने पर भी हटा देती है। यदि कोई अन्वेषक उपयुक्त नहीं है तो कुछ नहीं चुना जाता और कोई संदर्भ नहीं दिया जाता। यदि कोई विधि विफल हो (मॉडल सर्वर त्रुटि आदि), तो रूटिंग कीवर्ड मिलान पर लौटती है और परीक्षण में यह दिखाया जाता है।",
   "writers.title.text": "लेखक",
   "writers.engine.label": "इंजन",
   "writers.engine.template.text": "सरल संयोजन (बिना मॉडल)",
@@ -97,5 +97,18 @@
   "common.answer.after.label": "संवर्धन के बाद का उत्तर (क्वेरी + संवर्धित संदर्भ)",
   "common.answer.failed.alert": "उत्तर नहीं बन सका",
   "common.seconds.text": "से.",
-  "try.busy.status": "चल रहा है। संवर्धन से पहले और बाद के अंतिम उत्तर बनाने में कई मिनट लग सकते हैं।"
+  "try.busy.status": "रन सर्वर पर जारी रहता है, इसलिए आप यह पेज छोड़कर रन लॉग में उसे देख सकते हैं।",
+  "common.answer.pending.status": "उत्तर बन रहा है…",
+  "try.stage.augment.status": "अन्वेषक और प्रक्रियाएँ चुनकर संदर्भ बनाया जा रहा है।",
+  "try.stage.answering.status": "संदर्भ तैयार है। संवर्धन से पहले और बाद के अंतिम उत्तर बन रहे हैं।",
+  "try.failed.alert": "रन विफल रहा",
+  "runs.running.status": "चल रहा है",
+  "runs.stage.augment.status": "संदर्भ बन रहा है",
+  "runs.stage.answering.status": "अंतिम उत्तर बन रहे हैं",
+  "router.minscore.label": "न्यूनतम समानता (0-1; एम्बेडिंग विधि इससे नीचे के उम्मीदवार हटा देती है; 0 का अर्थ फ़िल्टर बंद)",
+  "common.answer.skipped.status": "कोई संदर्भ नहीं दिया गया, इसलिए संवर्धन के बाद का उत्तर नहीं बनाया गया (यह पहले वाले उत्तर के समान होता)।",
+  "common.routing.scores.label": "अन्वेषक रूटिंग स्कोर (समानता)",
+  "common.routing.selected.status": "चुना गया",
+  "common.routing.excluded.status": "हटाया गया",
+  "common.routing.none.message": "इस क्वेरी के लिए कोई अन्वेषक उपयुक्त नहीं है, इसलिए कोई संदर्भ नहीं दिया गया।"
 }

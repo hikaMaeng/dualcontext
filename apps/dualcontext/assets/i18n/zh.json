@@ -48,7 +48,7 @@
   "router.method.embedding.text": "嵌入相似度",
   "router.method.llm.text": "LLM 提示词",
   "router.prompt.label": "LLM 提示词(可用 {{query}}、{{topK}}、{{candidates}})",
-  "router.hint.message": "如果某种方法失败(如模型服务器出错),将退回关键词匹配,并在试运行中显示这一点。",
+  "router.hint.message": "嵌入方式会剔除低于最低相似度的候选,即使它们位于前 N 名之内。如果没有合适的调查员,则不选任何调查员,也不提供上下文。如果某种方法失败(如模型服务器出错),将退回关键词匹配,并在试运行中显示这一点。",
   "writers.title.text": "撰写器",
   "writers.engine.label": "引擎",
   "writers.engine.template.text": "基础拼装(不用模型)",
@@ -97,5 +97,18 @@
   "common.answer.after.label": "增强后的回答(查询 + 增强后的上下文)",
   "common.answer.failed.alert": "未能生成回答",
   "common.seconds.text": "秒",
-  "try.busy.status": "正在运行。生成增强前后的最终回答可能需要几分钟。"
+  "try.busy.status": "运行在服务器上继续,离开此页面后仍可在运行日志中查看。",
+  "common.answer.pending.status": "正在生成回答…",
+  "try.stage.augment.status": "正在选择调查员和流程并构建上下文。",
+  "try.stage.answering.status": "上下文已生成。正在生成增强前后的最终回答。",
+  "try.failed.alert": "运行失败",
+  "runs.running.status": "运行中",
+  "runs.stage.augment.status": "正在构建上下文",
+  "runs.stage.answering.status": "正在生成最终回答",
+  "router.minscore.label": "最低相似度(0~1,嵌入方式会剔除低于此值的候选,0 表示不过滤)",
+  "common.answer.skipped.status": "没有提供上下文,因此未生成增强后的回答(它将与增强前的回答相同)。",
+  "common.routing.scores.label": "调查员路由分数(相似度)",
+  "common.routing.selected.status": "已选",
+  "common.routing.excluded.status": "已排除",
+  "common.routing.none.message": "没有适合此查询的调查员,因此未提供上下文。"
 }

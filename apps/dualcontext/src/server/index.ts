@@ -1,5 +1,6 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { adminRouter } from "./admin/index.js";
+import { abandonRunningRuns } from "./admin/runs/index.js";
 import { createApp } from "./app.js";
 import { createPool, pingDatabase } from "./db/index.js";
 import { readEnv } from "./env.js";
@@ -22,6 +23,9 @@ if (stdio) {
   console.error("dualcontext mcp stdio ready");
   transport.onclose = () => void pool.end().then(() => process.exit(0));
 } else {
+  // 이전 프로세스에서 진행 중이던 시험 실행은 재시작과 함께 사라졌으므로 닫아 둔다.
+  const abandoned = await abandonRunningRuns(pool);
+  if (abandoned > 0) console.log(`closed ${abandoned} interrupted run(s)`);
   const app = createApp({ checkDatabase: () => pingDatabase(pool), admin: adminRouter(deps) });
   const server = app.listen(env.port, () => {
     console.log(`dualcontext listening on ${env.port}`);

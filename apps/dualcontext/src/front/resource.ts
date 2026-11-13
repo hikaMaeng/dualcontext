@@ -33,5 +33,11 @@ export enum RSC {
   COMMON_ANSWER_BEFORE_LABEL = "common.answer.before.label",
   COMMON_ANSWER_AFTER_LABEL = "common.answer.after.label",
   COMMON_ANSWER_FAILED_ALERT = "common.answer.failed.alert",
-  COMMON_SECONDS_TEXT = "common.seconds.text"
+  COMMON_SECONDS_TEXT = "common.seconds.text",
+  COMMON_ANSWER_PENDING_STATUS = "common.answer.pending.status",
+  COMMON_ANSWER_SKIPPED_STATUS = "common.answer.skipped.status",
+  COMMON_ROUTING_SCORES_LABEL = "common.routing.scores.label",
+  COMMON_ROUTING_SELECTED_STATUS = "common.routing.selected.status",
+  COMMON_ROUTING_EXCLUDED_STATUS = "common.routing.excluded.status",
+  COMMON_ROUTING_NONE_MESSAGE = "common.routing.none.message"
 }

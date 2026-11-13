@@ -12,7 +12,8 @@ export function registerAugmentTool(server: McpServer, deps: Deps) {
     },
     async ({ query }) => {
       const result = await augment(deps, query);
-      return { content: [{ type: "text", text: result.context }] };
+      // 마땅한 조사원이 없으면 컨텍스트를 공급하지 않는다: 빈 결과를 돌려주고, 호출한 쪽은 자기 지식으로 답한다.
+      return { content: result.context === "" ? [] : [{ type: "text", text: result.context }] };
     }
   );
 }

@@ -8,5 +8,8 @@ export enum RSC {
   TRY_PAIRS_LABEL = "try.pairs.label",
   TRY_RESULT_LABEL = "try.result.label",
   TRY_LOGGED_STATUS = "try.logged.status",
-  TRY_BUSY_STATUS = "try.busy.status"
+  TRY_BUSY_STATUS = "try.busy.status",
+  TRY_STAGE_AUGMENT_STATUS = "try.stage.augment.status",
+  TRY_STAGE_ANSWERING_STATUS = "try.stage.answering.status",
+  TRY_FAILED_ALERT = "try.failed.alert"
 }

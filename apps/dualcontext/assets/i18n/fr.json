@@ -48,7 +48,7 @@
   "router.method.embedding.text": "Similarité d'embeddings",
   "router.method.llm.text": "Prompt LLM",
   "router.prompt.label": "Prompt LLM (utilise {{query}}, {{topK}}, {{candidates}})",
-  "router.hint.message": "Si une méthode échoue (erreur du serveur de modèles, etc.), le routage revient à la correspondance de mots-clés et le test l'indique.",
+  "router.hint.message": "La méthode par embeddings écarte les candidats sous la similarité minimale même s'ils sont dans le top N. Si aucun enquêteur ne convient, rien n'est choisi et aucun contexte n'est fourni. Si une méthode échoue (erreur du serveur de modèles, etc.), le routage revient à la correspondance de mots-clés et le test l'indique.",
   "writers.title.text": "Rédacteurs",
   "writers.engine.label": "Moteur",
   "writers.engine.template.text": "Assemblage simple (sans modèle)",
@@ -97,5 +97,18 @@
   "common.answer.after.label": "Réponse après enrichissement (requête + contexte enrichi)",
   "common.answer.failed.alert": "Impossible de produire une réponse",
   "common.seconds.text": "s",
-  "try.busy.status": "Exécution en cours. Produire les réponses avant et après enrichissement peut prendre plusieurs minutes."
+  "try.busy.status": "L'exécution continue sur le serveur ; vous pouvez quitter cette page et la suivre dans le journal des exécutions.",
+  "common.answer.pending.status": "Production de la réponse…",
+  "try.stage.augment.status": "Choix des enquêteurs et des procédures et construction du contexte.",
+  "try.stage.answering.status": "Le contexte est prêt. Production des réponses avant et après enrichissement.",
+  "try.failed.alert": "L'exécution a échoué",
+  "runs.running.status": "En cours",
+  "runs.stage.augment.status": "Construction du contexte",
+  "runs.stage.answering.status": "Production des réponses finales",
+  "router.minscore.label": "Similarité minimale (0-1 ; la méthode par embeddings écarte les candidats en dessous ; 0 désactive le filtre)",
+  "common.answer.skipped.status": "Aucun contexte n'a été fourni, la réponse après enrichissement n'a donc pas été produite (elle serait identique à celle d'avant).",
+  "common.routing.scores.label": "Scores de routage des enquêteurs (similarité)",
+  "common.routing.selected.status": "retenu",
+  "common.routing.excluded.status": "écarté",
+  "common.routing.none.message": "Aucun enquêteur ne convient à cette requête, aucun contexte n'a donc été fourni."
 }

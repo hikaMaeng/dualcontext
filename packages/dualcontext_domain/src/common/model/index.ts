@@ -36,9 +36,12 @@ export type RoutingMethod = "keyword" | "embedding" | "llm";
 export type RouterConfig = {
   researcherMethod: RoutingMethod;
   researcherTopK: number;
+  /** 임베딩 방식에서 이 유사도(코사인, 0~1)보다 낮은 후보는 상위 N 안이어도 제외한다. 0 이면 거르지 않는다. */
+  researcherMinScore: number;
   researcherPrompt: string;
   procedureMethod: RoutingMethod;
   procedureTopK: number;
+  procedureMinScore: number;
   procedurePrompt: string;
 };
 
@@ -54,6 +57,9 @@ export type WriterConfig = {
   prompt: string;
   active: boolean;
 };
+
+/** 라우팅이 후보 하나에 매긴 점수와 선택 여부(임베딩 방식에서만 점수가 있다). */
+export type RoutingScore = { name: string; score: number; selected: boolean };
 
 /** 조사원이 출처에서 모은 원재료 한 조각. */
 export type Material = {
@@ -71,7 +77,13 @@ export type Pair = {
 };
 
 /** LLM 이 만든 최종 답변 하나. 실패하면 text 가 null 이고 error 에 이유가 있다. */
-export type Answer = { text: string | null; error: string | null; ms: number };
+export type Answer = {
+  text: string | null;
+  error: string | null;
+  ms: number;
+  /** 증강 후 답변을 만들지 않았다(컨텍스트가 없어 증강 전 답변과 같다). */
+  skipped?: boolean;
+};
 
 /** 컨텍스트 증강 전(질의만)과 후(질의 + 증강된 컨텍스트)의 최종 답변. */
 export type Answers = { before: Answer; after: Answer };
@@ -88,8 +100,16 @@ export type AugmentPair = {
   procedureRouting: string;
 };
 
+/** 라우팅 판단의 근거. 조사원 후보 점수와, 선택된 조사원마다의 프로시저 후보 점수. */
+export type RoutingTrace = {
+  researchers: RoutingScore[];
+  procedures: { researcher: string; candidates: RoutingScore[] }[];
+};
+
 export type AugmentResult = {
+  /** 비어 있으면 마땅한 조사원이 없어 컨텍스트를 공급하지 않았다는 뜻이다. */
   context: string;
+  routing: RoutingTrace;
   /** 조사원 라우팅이 실제로 쓴 방법. 되돌림이 일어났다면 그 사실이 들어 있다. */
   researcherRouting: string;
   pairs: AugmentPair[];

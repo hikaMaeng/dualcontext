@@ -1,0 +1,321 @@
+{
+  "criterion": "positive: context non-empty and contains an expected researcher; negative: context empty",
+  "positives": {
+    "total": 12,
+    "ok": 12
+  },
+  "negatives": {
+    "total": 12,
+    "ok": 10
+  },
+  "rows": [
+    {
+      "id": "P1",
+      "kind": "positive",
+      "query": "GPU 의 VRAM 용량과 메모리 대역폭이 대규모 모델 학습 속도에 어떤 영향을 주는지 설명해 주세요.",
+      "suppliedNothing": false,
+      "researchers": [
+        "GPU Ark 그래픽카드 사양",
+        "AI 머신러닝 연구 논문 초록"
+      ],
+      "expect": [
+        "GPU Ark"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P2",
+      "kind": "positive",
+      "query": "CVE 취약점의 CVSS 점수는 어떻게 해석하고, 영향 받는 제품의 수정 범위는 어떻게 확인하나요?",
+      "suppliedNothing": false,
+      "researchers": [
+        "CVE 취약점과 영향 정보"
+      ],
+      "expect": [
+        "CVE"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P3",
+      "kind": "positive",
+      "query": "파이썬에서 예외 처리 시 try except finally 블록의 실행 순서와 흔한 실수가 궁금합니다.",
+      "suppliedNothing": false,
+      "researchers": [
+        "소프트웨어 개발 질의응답"
+      ],
+      "expect": [
+        "소프트웨어 개발"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P4",
+      "kind": "positive",
+      "query": "트랜스포머 모델의 어텐션 연산 비용을 줄이는 최근 연구 기법들을 비교해 주세요.",
+      "suppliedNothing": false,
+      "researchers": [
+        "AI 머신러닝 연구 논문 초록"
+      ],
+      "expect": [
+        "AI 머신러닝"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P5",
+      "kind": "positive",
+      "query": "코스피가 하락한 날 금리와 환율 전망은 보통 어떻게 설명되나요?",
+      "suppliedNothing": false,
+      "researchers": [
+        "금융 시황 리포트(합성)",
+        "웹 검색(덕덕고)",
+        "미국 기업 산업 동향 기사"
+      ],
+      "expect": [
+        "금융 시황"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P6",
+      "kind": "positive",
+      "query": "반도체 공급 부족이 서버 업체의 계약 성사율과 매출에 미치는 영향을 알고 싶어요.",
+      "suppliedNothing": false,
+      "researchers": [
+        "산업 뉴스(합성)",
+        "미국 기업 산업 동향 기사",
+        "금융 시황 리포트(합성)"
+      ],
+      "expect": [
+        "산업 뉴스",
+        "금융 시황",
+        "미국 기업"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P7",
+      "kind": "positive",
+      "query": "환자가 지속적인 기침과 호흡곤란을 호소할 때 감별해야 할 질환과 검사는 무엇인가요?",
+      "suppliedNothing": false,
+      "researchers": [
+        "의학 문제은행"
+      ],
+      "expect": [
+        "의학 문제은행"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P8",
+      "kind": "positive",
+      "query": "회사가 합병되어 소멸하는 경우 소멸 법인의 권리와 의무는 어떻게 승계되나요?",
+      "suppliedNothing": false,
+      "researchers": [
+        "법률 용어 사전"
+      ],
+      "expect": [
+        "법률 용어",
+        "판례"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P9",
+      "kind": "positive",
+      "query": "사건의 직권이송에 관한 대법원 판례의 판단 기준을 알려 주세요.",
+      "suppliedNothing": false,
+      "researchers": [
+        "판례·법령 질의응답",
+        "법률 용어 사전"
+      ],
+      "expect": [
+        "판례"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P10",
+      "kind": "positive",
+      "query": "미국 상장 기업이 사업부를 분사하겠다고 발표한 사례와 그 배경을 알려 주세요.",
+      "suppliedNothing": false,
+      "researchers": [
+        "미국 기업 산업 동향 기사",
+        "산업 뉴스(합성)",
+        "금융 시황 리포트(합성)"
+      ],
+      "expect": [
+        "미국 기업",
+        "산업 뉴스"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P11",
+      "kind": "positive",
+      "query": "오늘 서울의 날씨와 현재 달러 환율을 알려 주세요.",
+      "suppliedNothing": false,
+      "researchers": [
+        "웹 검색(덕덕고)",
+        "금융 시황 리포트(합성)"
+      ],
+      "expect": [
+        "웹 검색"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "P12",
+      "kind": "positive",
+      "query": "최신 그래픽카드 신제품의 출시일과 현재 판매 가격이 궁금합니다.",
+      "suppliedNothing": false,
+      "researchers": [
+        "GPU Ark 그래픽카드 사양",
+        "웹 검색(덕덕고)",
+        "산업 뉴스(합성)"
+      ],
+      "expect": [
+        "웹 검색",
+        "GPU Ark"
+      ],
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X1",
+      "kind": "negative",
+      "query": "도자기 그릇을 가마에 구울 때 온도 곡선은 어떻게 잡아야 하나요?",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X2",
+      "kind": "negative",
+      "query": "중학생 아이의 사춘기 반항을 어떻게 대해야 할지 조언해 주세요.",
+      "suppliedNothing": false,
+      "researchers": [
+        "소프트웨어 개발 질의응답"
+      ],
+      "expect": null,
+      "ok": false,
+      "isError": false
+    },
+    {
+      "id": "X3",
+      "kind": "negative",
+      "query": "수채화에서 번짐 효과를 내려면 물 조절을 어떻게 하나요?",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X4",
+      "kind": "negative",
+      "query": "신혼부부에게 어울리는 집들이 선물을 추천해 주세요.",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X5",
+      "kind": "negative",
+      "query": "마라톤 풀코스를 완주하기 위한 12주 훈련 계획을 짜 주세요.",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X6",
+      "kind": "negative",
+      "query": "자동차 엔진에서 달그락거리는 소리가 나는데 원인이 뭘까요?",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X7",
+      "kind": "negative",
+      "query": "소설 도입부에서 독자의 흥미를 끄는 문장을 쓰는 요령이 있나요?",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X8",
+      "kind": "negative",
+      "query": "비 오는 날 우산 없이 젖지 않으려면 어떻게 걸어야 효과적일까요?",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X9",
+      "kind": "negative",
+      "query": "겨울철 고구마를 오래 보관하는 방법을 알려 주세요.",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X10",
+      "kind": "negative",
+      "query": "요가 초보자가 하루 10분으로 유연성을 기르는 루틴을 알려 주세요.",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    },
+    {
+      "id": "X11",
+      "kind": "negative",
+      "query": "여행 중 현지 시장에서 흥정을 잘하는 요령이 있을까요?",
+      "suppliedNothing": false,
+      "researchers": [
+        "웹 검색(덕덕고)"
+      ],
+      "expect": null,
+      "ok": false,
+      "isError": false
+    },
+    {
+      "id": "X12",
+      "kind": "negative",
+      "query": "손으로 쓴 글씨를 예쁘게 만드는 연습법을 알려 주세요.",
+      "suppliedNothing": true,
+      "researchers": [],
+      "expect": null,
+      "ok": true,
+      "isError": false
+    }
+  ]
+}

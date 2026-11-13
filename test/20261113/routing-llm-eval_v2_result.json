@@ -1,0 +1,268 @@
+{
+  "method": "llm (stage 1 only)",
+  "model": "qwen36-35b",
+  "concurrency": 3,
+  "topK": 3,
+  "positives": {
+    "total": 12,
+    "ok": 12
+  },
+  "negatives": {
+    "total": 12,
+    "ok": 12
+  },
+  "seconds": {
+    "min": 2.5,
+    "median": 16.7,
+    "max": 207.8
+  },
+  "rows": [
+    {
+      "id": "P1",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "GPU Ark 그래픽카드 사양",
+        "AI 머신러닝 연구 논문 초록"
+      ],
+      "answer": "[9, 8]",
+      "unparsed": false,
+      "seconds": 97.1
+    },
+    {
+      "id": "P2",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "CVE 취약점과 영향 정보"
+      ],
+      "answer": "[11]",
+      "unparsed": false,
+      "seconds": 25.6
+    },
+    {
+      "id": "P3",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "소프트웨어 개발 질의응답"
+      ],
+      "answer": "[12]",
+      "unparsed": false,
+      "seconds": 82.8
+    },
+    {
+      "id": "P4",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "AI 머신러닝 연구 논문 초록"
+      ],
+      "answer": "[8]",
+      "unparsed": false,
+      "seconds": 44.7
+    },
+    {
+      "id": "P5",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "금융 시황 리포트(합성)"
+      ],
+      "answer": "[6]",
+      "unparsed": false,
+      "seconds": 92.5
+    },
+    {
+      "id": "P6",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "산업 뉴스(합성)",
+        "금융 시황 리포트(합성)",
+        "미국 기업 산업 동향 기사"
+      ],
+      "answer": "[5, 6, 10]",
+      "unparsed": false,
+      "seconds": 207.8
+    },
+    {
+      "id": "P7",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "의학 문제은행"
+      ],
+      "answer": "[4]",
+      "unparsed": false,
+      "seconds": 16.7
+    },
+    {
+      "id": "P8",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "법률 용어 사전",
+        "판례·법령 질의응답"
+      ],
+      "answer": "[2, 3]",
+      "unparsed": false,
+      "seconds": 123.7
+    },
+    {
+      "id": "P9",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "판례·법령 질의응답"
+      ],
+      "answer": "[3]",
+      "unparsed": false,
+      "seconds": 100.1
+    },
+    {
+      "id": "P10",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "미국 기업 산업 동향 기사",
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[10, 7]",
+      "unparsed": false,
+      "seconds": 10.3
+    },
+    {
+      "id": "P11",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "웹 검색(덕덕고)"
+      ],
+      "answer": "[7]",
+      "unparsed": false,
+      "seconds": 4.5
+    },
+    {
+      "id": "P12",
+      "kind": "positive",
+      "ok": true,
+      "chosen": [
+        "GPU Ark 그래픽카드 사양",
+        "웹 검색(덕덕고)",
+        "산업 뉴스(합성)"
+      ],
+      "answer": "[9, 7, 5]",
+      "unparsed": false,
+      "seconds": 9.9
+    },
+    {
+      "id": "X1",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 6.3
+    },
+    {
+      "id": "X2",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 23.3
+    },
+    {
+      "id": "X3",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 5.4
+    },
+    {
+      "id": "X4",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 4.5
+    },
+    {
+      "id": "X5",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 3.2
+    },
+    {
+      "id": "X6",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 11.5
+    },
+    {
+      "id": "X7",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 38.1
+    },
+    {
+      "id": "X8",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 46.5
+    },
+    {
+      "id": "X9",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 2.5
+    },
+    {
+      "id": "X10",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 6.5
+    },
+    {
+      "id": "X11",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 4.8
+    },
+    {
+      "id": "X12",
+      "kind": "negative",
+      "ok": true,
+      "chosen": [],
+      "answer": "[]",
+      "unparsed": false,
+      "seconds": 6.2
+    }
+  ]
+}

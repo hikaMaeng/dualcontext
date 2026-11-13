@@ -48,7 +48,7 @@
   "router.method.embedding.text": "Similitud de embeddings",
   "router.method.llm.text": "Prompt de LLM",
   "router.prompt.label": "Prompt de LLM (usa {{query}}, {{topK}}, {{candidates}})",
-  "router.hint.message": "Si un método falla (error del servidor de modelos, etc.), se vuelve a la coincidencia de palabras clave y la prueba lo indica.",
+  "router.hint.message": "El método de embeddings descarta los candidatos por debajo de la similitud mínima aunque estén dentro del top N. Si ningún investigador es adecuado, no se elige ninguno y no se aporta contexto. Si un método falla (error del servidor de modelos, etc.), se vuelve a la coincidencia de palabras clave y la prueba lo indica.",
   "writers.title.text": "Redactores",
   "writers.engine.label": "Motor",
   "writers.engine.template.text": "Ensamblado simple (sin modelo)",
@@ -97,5 +97,18 @@
   "common.answer.after.label": "Respuesta después del aumento (consulta + contexto aumentado)",
   "common.answer.failed.alert": "No se pudo generar la respuesta",
   "common.seconds.text": "s",
-  "try.busy.status": "Ejecutando. Generar las respuestas antes y después del aumento puede tardar varios minutos."
+  "try.busy.status": "La ejecución continúa en el servidor, así que puedes salir de esta página y seguirla en el registro de ejecuciones.",
+  "common.answer.pending.status": "Generando la respuesta…",
+  "try.stage.augment.status": "Eligiendo investigadores y procedimientos y construyendo el contexto.",
+  "try.stage.answering.status": "El contexto está listo. Generando las respuestas antes y después del aumento.",
+  "try.failed.alert": "La ejecución falló",
+  "runs.running.status": "En ejecución",
+  "runs.stage.augment.status": "Construyendo el contexto",
+  "runs.stage.answering.status": "Generando las respuestas finales",
+  "router.minscore.label": "Similitud mínima (0-1; el método de embeddings descarta los candidatos por debajo; 0 desactiva el filtro)",
+  "common.answer.skipped.status": "No se aportó contexto, así que no se generó la respuesta posterior al aumento (sería igual a la anterior).",
+  "common.routing.scores.label": "Puntuaciones de enrutamiento de investigadores (similitud)",
+  "common.routing.selected.status": "elegido",
+  "common.routing.excluded.status": "excluido",
+  "common.routing.none.message": "Ningún investigador es adecuado para esta consulta, así que no se aportó contexto."
 }

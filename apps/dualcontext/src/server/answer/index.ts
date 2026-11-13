@@ -30,11 +30,29 @@ async function ask(model: ModelClient, prompt: string): Promise<Answer> {
   }
 }
 
-/** 증강 전후 답변을 병렬로 만든다. 한쪽이 실패해도 다른 쪽과 실행 전체는 살린다. */
-export async function generateAnswers(model: ModelClient, query: string, context: string): Promise<Answers> {
+/**
+ * 증강 전후 답변을 병렬로 만든다. 한쪽이 실패해도 다른 쪽과 실행 전체는 살린다.
+ * onAnswer 는 답변 하나가 끝나는 즉시 불린다(비동기 실행이 진행 상황을 기록하는 자리).
+ */
+export async function generateAnswers(
+  model: ModelClient,
+  query: string,
+  context: string,
+  onAnswer?: (which: keyof Answers, answer: Answer) => Promise<void> | void
+): Promise<Answers> {
+  // 마땅한 조사원이 없어 컨텍스트가 비면 증강 후 답변은 증강 전 답변과 같은 입력이다. 모델을 한 번 더 부르지 않는다.
+  const skipAfter = context.trim() === "";
+  const record = async (which: keyof Answers, answer: Answer) => {
+    // 진행 기록이 실패해도(DB 순간 장애 등) 답변 자체는 잃지 않는다.
+    await Promise.resolve(onAnswer?.(which, answer)).catch(() => undefined);
+    return answer;
+  };
   const [before, after] = await Promise.all([
-    ask(model, fill(answerPrompts.before, { query })),
-    ask(model, fill(answerPrompts.after, { query, context }))
+    ask(model, fill(answerPrompts.before, { query })).then((answer) => record("before", answer)),
+    (skipAfter
+      ? Promise.resolve<Answer>({ text: null, error: null, ms: 0, skipped: true })
+      : ask(model, fill(answerPrompts.after, { query, context }))
+    ).then((answer) => record("after", answer))
   ]);
   return { before, after };
 }

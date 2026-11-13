@@ -69,6 +69,11 @@ CREATE TABLE IF NOT EXISTS router_config (
   procedure_prompt    text NOT NULL
 );
 
+-- Minimum similarity (cosine) for the embedding method: candidates below it are dropped even inside the top-N.
+-- A query with no suitable researcher then gets no researcher at all, and therefore no context.
+ALTER TABLE router_config ADD COLUMN IF NOT EXISTS researcher_min_score double precision NOT NULL DEFAULT 0.67;
+ALTER TABLE router_config ADD COLUMN IF NOT EXISTS procedure_min_score  double precision NOT NULL DEFAULT 0;
+
 -- Writer: how the final context is made. At most one is active.
 CREATE TABLE IF NOT EXISTS writers (
   id         serial PRIMARY KEY,
@@ -98,6 +103,10 @@ CREATE TABLE IF NOT EXISTS augment_runs (
 );
 -- Final answers before/after augmentation: {before:{text,error,ms}, after:{text,error,ms}}.
 ALTER TABLE augment_runs ADD COLUMN IF NOT EXISTS answers jsonb;
+-- Async runs: status is running | ok | error; stage is augment | answering | done (null for rows from before).
+ALTER TABLE augment_runs ADD COLUMN IF NOT EXISTS stage text;
+-- Why the router chose what it chose: candidate scores per stage (see RoutingTrace in the domain package).
+ALTER TABLE augment_runs ADD COLUMN IF NOT EXISTS routing jsonb;
 CREATE INDEX IF NOT EXISTS augment_runs_created ON augment_runs (created_at DESC);
 
 -- AI servers (OpenAI-compatible endpoints). Embedding and LLM are separate servers.

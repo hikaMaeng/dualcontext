@@ -7,9 +7,11 @@ const method = z.enum(["keyword", "embedding", "llm"]);
 const body = z.object({
   researcherMethod: method,
   researcherTopK: z.number().int().min(1).max(20),
+  researcherMinScore: z.number().min(0).max(1),
   researcherPrompt: z.string(),
   procedureMethod: method,
   procedureTopK: z.number().int().min(1).max(20),
+  procedureMinScore: z.number().min(0).max(1),
   procedurePrompt: z.string()
 });
 
@@ -27,8 +29,9 @@ export function routerRouter(pool: pg.Pool) {
     const d = parsed.data;
     await pool.query(
       `update router_config set researcher_method = $1, researcher_top_k = $2, researcher_prompt = $3,
-         procedure_method = $4, procedure_top_k = $5, procedure_prompt = $6 where id = 1`,
-      [d.researcherMethod, d.researcherTopK, d.researcherPrompt, d.procedureMethod, d.procedureTopK, d.procedurePrompt]
+         procedure_method = $4, procedure_top_k = $5, procedure_prompt = $6,
+         researcher_min_score = $7, procedure_min_score = $8 where id = 1`,
+      [d.researcherMethod, d.researcherTopK, d.researcherPrompt, d.procedureMethod, d.procedureTopK, d.procedurePrompt, d.researcherMinScore, d.procedureMinScore]
     );
     response.json(await readRouterConfig(pool));
   });
