@@ -1,23 +1,29 @@
-# Overview
+# 개요
 
-`dualcontext` is the deployable service module: an Express server with a
-health endpoint, and a Vite React shadcn/ui front shell that the server serves
-as static assets in production.
+`dualcontext` 는 「확장된 Dual RAG」를 구현하는 **MCP 서버 + 관리자 사이트** 서비스 모듈이다.
+(책의 Dual RAG 구현이 아니라 강사의 확장 해석을 구현한다.)
 
-## Ownership boundary
+## MCP 계약
 
-This module owns orchestration — framework lifecycle, HTTP and static serving,
-composition, and process wiring. Domain rules, invariants, and any logic that
-would survive replacing Express belong in `packages/dualcontext_domain`.
+* 도구는 **하나**: `augment_context`. 인자는 원래 질의(`query`) 하나뿐이다.
+* 응답은 질의를 증강한 컨텍스트 텍스트다.
+* 내부 동작: 연구원 다수 × 사서의 프로시저 다수를 라우팅으로 고르고, 라이터가 모든 쌍을 받아 컨텍스트를 만든다.
+* 기본 전송은 stdio. 서비스 자체는 Docker 컨테이너 하나에서 돈다.
 
-## Invariants
+## 관리자 사이트
 
-* One service, one app module, one paired domain package.
-* Production traffic is served by Express only.
-* The deployed container is the test target, not a dev server.
+연구원 · 프로시저 · 자료를 등록하고 삭제하며, 「시험 실행」으로 MCP 도구와 같은 증강 경로를 직접 돌려 본다.
+Express 가 빌드된 프런트를 서빙한다(`/`), 관리 API 는 `/api/admin` 이다.
 
-## Scope
+## 소유 경계
 
-The baseline is deliberately small: health endpoint, one accessible view, a
-deploy path, docs, and smoke tests. It is a platform baseline, not a product.
-Add a feature only when it is asked for.
+앱은 프레임워크 수명주기, HTTP/stdio 전송, 저장소(PostgreSQL), 출처 접근을 소유한다.
+증강 규칙(라우팅 · 라이터 · 조립)은 `packages/dualcontext_domain` 이 소유한다.
+
+## 현재 한계
+
+* 라이터는 LLM 이 아닌 결정적 조립이다. 프로시저가 요구하는 임팩트를 모델이 추출하는 단계는 없다.
+* 연구원 종류는 문서 연구원(한국어 전문 검색) 하나뿐이다. 웹 검색 · DB 조회 등은 `collect` 포트에 추가해야 한다.
+* 라우팅은 키워드 일치다. 임베딩 · 분류기 · LLM 재평가 · 히스토리 튜닝은 없다.
+* 관리자 화면에 수정(PUT) UI 가 없다(API 는 있다). 삭제 후 재등록한다.
+* 이 확장 정의의 이득은 아직 측정되지 않았다.

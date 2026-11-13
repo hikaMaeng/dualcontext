@@ -17,12 +17,18 @@ services:
       - path: apps/dualcontext/docker/.env
         required: false
     ports:
-      - "${DUALCONTEXT_HOST_PORT:-18081}:18081"
+      # Loopback only: the admin site has no authentication yet.
+      - "127.0.0.1:${DUALCONTEXT_HOST_PORT:-18081}:18081"
+    volumes:
+      # The only volume. Each persisted concern is a subfolder of it
+      # (pgdata/ today); do not add a second volume. The target is the path the
+      # base image declares as VOLUME, so no anonymous volume is created.
+      - dualcontext_data:/var/lib/postgresql/data
     networks:
       - dualcontext_internal
 
-# Add a named volume here when a service actually persists data, and mount it
-# in that service. The scaffold persists nothing, so it declares none.
+volumes:
+  dualcontext_data:
 
 networks:
   # Project-scoped: no other compose project joins this network. Publishing a

@@ -1,23 +1,12 @@
-# Internals
+# 내부 결정
 
-The scaffold intentionally contains no product workflow or domain model. What
-follows is the small set of decisions that are not obvious from the code.
+코드만으로는 드러나지 않는 결정들이다.
 
-## Decisions
-
-* **Health is served at two paths.** `/health` is what the deploy and the image
-  probe use; `/api/health` exists so a future API surface keeps health under the
-  same prefix as everything else. Why: moving it later would break the deploy
-  report and the container `HEALTHCHECK` at the same time.
-* **`readEnv` throws instead of defaulting.** A service that silently starts on
-  the wrong port is harder to diagnose than one that refuses to start. Why: the
-  port is also a compose contract, so a mismatch is a deployment defect, not a
-  runtime preference.
-* **The listener is closed on `SIGTERM`.** Without it the process ignores the
-  signal and the container runtime waits out its kill timeout on every stop,
-  restart, and deploy. See `src/server/index.ts`.
-* **The SPA fallback is registered last.** It matches every path, so any route
-  declared after it becomes unreachable.
-* **`dist` is a single bundled file, not a dependency tree.** That is why the
-  runtime image needs no package manager and why its Node major is independent
-  of the version the build ran on.
+* **도구가 하나인 이유.** 호출자는 질의만 안다. 어떤 연구원 · 프로시저를 쓸지는 서버 내부의 라우팅이 정한다. 도구를 늘리면 그 결정이 클라이언트로 새어 나간다.
+* **MCP 와 시험 실행이 `src/server/augment` 를 공유한다.** 시험 화면에서 본 결과가 곧 MCP 응답이어야 하기 때문이다.
+* **`/health` 가 DB 를 확인한다.** DB 가 죽은 컨테이너를 healthy 로 보고하지 않기 위해서다.
+* **전문 검색 질의를 AND 에서 OR 로 바꾼다.** `plainto_tsquery` 는 모든 형태소를 AND 로 묶어 자연어 질문에서 거의 0건이다. 그래서 `&` 를 `|` 로 치환하고 `ts_rank` 로 정렬해 상위 3건만 쓴다(`admin/documents`).
+* **pgvector 는 설치만 하고 쓰지 않는다.** 임베딩 모델을 아직 붙이지 않았다. 확장은 초기화 SQL 이 만들어 두므로 붙일 때 컬럼과 인덱스만 추가하면 된다.
+* **초기화 SQL 은 매 시작마다 돈다.** 모든 문장이 `IF NOT EXISTS` 라 멱등이다. 마이그레이션 도구는 아직 없다. 스키마를 바꾸는 순간 필요해진다.
+* **엔트리포인트는 `wait -n` 으로 두 프로세스를 감시한다.** 하나가 죽으면 나머지를 내리고 종료 코드를 그대로 낸다. `init: true`(tini)가 PID 1 의 신호 전달을 맡는다.
+* **`dist` 는 번들 하나다.** 런타임 이미지에 npm 이 필요 없다. Node 바이너리만 `node:26-bookworm-slim` 에서 복사하고, 그 바이너리가 링크하는 `libatomic1` 을 apt 로 둔다.

@@ -1,6 +1,7 @@
 export type ServerEnv = {
   port: number;
   nodeEnv: "development" | "test" | "production";
+  databaseUrl: string;
 };
 
 export function readEnv(source: NodeJS.ProcessEnv = process.env): ServerEnv {
@@ -16,8 +17,14 @@ export function readEnv(source: NodeJS.ProcessEnv = process.env): ServerEnv {
     throw new Error("NODE_ENV must be development, test, or production");
   }
 
+  const databaseUrl = source.DUALCONTEXT_DATABASE_URL;
+  if (!databaseUrl || !/^postgres(ql)?:\/\//.test(databaseUrl)) {
+    throw new Error("DUALCONTEXT_DATABASE_URL must be a postgresql:// URL");
+  }
+
   return {
     port: parsedPort,
-    nodeEnv
+    nodeEnv,
+    databaseUrl
   };
 }
