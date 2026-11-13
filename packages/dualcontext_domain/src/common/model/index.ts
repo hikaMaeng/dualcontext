@@ -70,6 +70,12 @@ export type Pair = {
   error?: string;
 };
 
+/** LLM 이 만든 최종 답변 하나. 실패하면 text 가 null 이고 error 에 이유가 있다. */
+export type Answer = { text: string | null; error: string | null; ms: number };
+
+/** 컨텍스트 증강 전(질의만)과 후(질의 + 증강된 컨텍스트)의 최종 답변. */
+export type Answers = { before: Answer; after: Answer };
+
 /** 증강 결과에 담기는, 선택된 (조사원, 프로시저) 쌍의 요약. */
 export type AugmentPair = {
   researcher: string;

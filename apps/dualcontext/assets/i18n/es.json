@@ -92,5 +92,10 @@
   "runs.settings.label": "Configuración al ejecutar (enrutador, redactor, modelos)",
   "runs.pairs.label": "Pares (investigador, procedimiento) elegidos y sus materiales",
   "runs.materials.label": "Materiales",
-  "runs.context.label": "Contexto generado"
+  "runs.context.label": "Contexto generado",
+  "common.answer.before.label": "Respuesta antes del aumento (solo la consulta)",
+  "common.answer.after.label": "Respuesta después del aumento (consulta + contexto aumentado)",
+  "common.answer.failed.alert": "No se pudo generar la respuesta",
+  "common.seconds.text": "s",
+  "try.busy.status": "Ejecutando. Generar las respuestas antes y después del aumento puede tardar varios minutos."
 }

@@ -96,6 +96,8 @@ CREATE TABLE IF NOT EXISTS augment_runs (
   pairs              jsonb NOT NULL DEFAULT '[]',
   context            text
 );
+-- Final answers before/after augmentation: {before:{text,error,ms}, after:{text,error,ms}}.
+ALTER TABLE augment_runs ADD COLUMN IF NOT EXISTS answers jsonb;
 CREATE INDEX IF NOT EXISTS augment_runs_created ON augment_runs (created_at DESC);
 
 -- AI servers (OpenAI-compatible endpoints). Embedding and LLM are separate servers.

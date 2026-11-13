@@ -29,9 +29,9 @@ export function adminRouter(deps: Deps) {
   router.post("/augment", async (request, response) => {
     const parsed = z.object({ query: z.string().trim().min(1), writerId: z.number().int().optional() }).safeParse(request.body);
     if (!parsed.success) return void response.status(400).json({ error: parsed.error.message });
-    const { runId, result, error } = await runAndLog(deps, parsed.data.query, parsed.data.writerId);
+    const { runId, result, answers, error } = await runAndLog(deps, parsed.data.query, parsed.data.writerId);
     if (error) return void response.status(502).json({ error, runId });
-    response.json({ ...result, runId });
+    response.json({ ...result, answers, runId });
   });
 
   return router;

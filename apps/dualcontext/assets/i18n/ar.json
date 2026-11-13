@@ -92,5 +92,10 @@
   "runs.settings.label": "الإعدادات وقت التشغيل (الموجّه، الكاتب، النماذج)",
   "runs.pairs.label": "الأزواج المختارة (الباحث، الإجراء) ومواردها",
   "runs.materials.label": "المواد",
-  "runs.context.label": "السياق المُنشأ"
+  "runs.context.label": "السياق المُنشأ",
+  "common.answer.before.label": "الإجابة قبل الإثراء (الاستعلام فقط)",
+  "common.answer.after.label": "الإجابة بعد الإثراء (الاستعلام + السياق المُثرى)",
+  "common.answer.failed.alert": "تعذّر إنتاج الإجابة",
+  "common.seconds.text": "ث",
+  "try.busy.status": "قيد التشغيل. قد يستغرق إنتاج الإجابتين قبل الإثراء وبعده عدة دقائق."
 }

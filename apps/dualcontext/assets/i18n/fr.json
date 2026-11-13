@@ -92,5 +92,10 @@
   "runs.settings.label": "Réglages au moment de l'exécution (routeur, rédacteur, modèles)",
   "runs.pairs.label": "Paires (enquêteur, procédure) choisies et leurs documents",
   "runs.materials.label": "Documents",
-  "runs.context.label": "Contexte généré"
+  "runs.context.label": "Contexte généré",
+  "common.answer.before.label": "Réponse avant enrichissement (requête seule)",
+  "common.answer.after.label": "Réponse après enrichissement (requête + contexte enrichi)",
+  "common.answer.failed.alert": "Impossible de produire une réponse",
+  "common.seconds.text": "s",
+  "try.busy.status": "Exécution en cours. Produire les réponses avant et après enrichissement peut prendre plusieurs minutes."
 }

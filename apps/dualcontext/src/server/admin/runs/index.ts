@@ -1,5 +1,6 @@
 import express from "express";
-import type { AugmentResult } from "dualcontext_domain/common";
+import type { Answers, AugmentResult } from "dualcontext_domain/common";
+import { answerPrompts, generateAnswers } from "../../answer/index.js";
 import { augment, type Deps } from "../../augment/index.js";
 import { readRouterConfig } from "../../routing/index.js";
 import { loadWriter } from "../../writer/index.js";
@@ -17,7 +18,8 @@ async function snapshot(deps: Deps, writerId?: number) {
     router,
     writer: writer && { id: writer.id, name: writer.name, engine: writer.engine, mode: writer.mode, prompt: writer.prompt },
     embedding: { baseUrl: ai.embedding.baseUrl, model: ai.embedding.model },
-    chat: { baseUrl: ai.chat.baseUrl, model: ai.chat.model }
+    chat: { baseUrl: ai.chat.baseUrl, model: ai.chat.model },
+    answer: answerPrompts
   };
 }
 
@@ -26,20 +28,23 @@ export async function runAndLog(deps: Deps, query: string, writerId?: number) {
   const started = Date.now();
   const settings = await snapshot(deps, writerId);
   let result: AugmentResult | null = null;
+  let answers: Answers | null = null;
   let error: string | null = null;
   try {
     result = await augment(deps, query, writerId);
+    // 증강한 컨텍스트로 최종 답변까지 받는다. 비교를 위해 증강 전(질의만) 답변도 함께 만든다.
+    answers = await generateAnswers(deps.model, query, result.context);
   } catch (caught) {
     error = caught instanceof Error ? caught.message : String(caught);
   }
 
   const { rows } = await deps.pool.query<{ id: number }>(
-    `insert into augment_runs (query, status, error, duration_ms, researcher_routing, settings, pairs, context)
-     values ($1, $2, $3, $4, $5, $6, $7, $8) returning id`,
-    [query, error ? "error" : "ok", error, Date.now() - started, result?.researcherRouting ?? null, settings, JSON.stringify(result?.pairs ?? []), result?.context ?? null]
+    `insert into augment_runs (query, status, error, duration_ms, researcher_routing, settings, pairs, context, answers)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id`,
+    [query, error ? "error" : "ok", error, Date.now() - started, result?.researcherRouting ?? null, settings, JSON.stringify(result?.pairs ?? []), result?.context ?? null, answers]
   );
   await deps.pool.query(`delete from augment_runs where id not in (select id from augment_runs order by id desc limit $1)`, [keepLatest]);
-  return { runId: rows[0].id, result, error };
+  return { runId: rows[0].id, result, answers, error };
 }
 
 export function runsRouter(deps: Deps) {
@@ -58,7 +63,7 @@ export function runsRouter(deps: Deps) {
   router.get("/runs/:id", async (request, response) => {
     const { rows } = await deps.pool.query(
       `select id, created_at as "createdAt", query, status, error, duration_ms as "durationMs",
-              researcher_routing as "researcherRouting", settings, pairs, context
+              researcher_routing as "researcherRouting", settings, pairs, context, answers
          from augment_runs where id = $1`,
       [Number(request.params.id)]
     );

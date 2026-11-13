@@ -7,5 +7,6 @@ export enum RSC {
   TRY_ROUTING_LABEL = "try.routing.label",
   TRY_PAIRS_LABEL = "try.pairs.label",
   TRY_RESULT_LABEL = "try.result.label",
-  TRY_LOGGED_STATUS = "try.logged.status"
+  TRY_LOGGED_STATUS = "try.logged.status",
+  TRY_BUSY_STATUS = "try.busy.status"
 }

@@ -29,5 +29,9 @@ export enum RSC {
   COMMON_LIST_LABEL = "common.list.label",
   COMMON_EMPTY_MESSAGE = "common.empty.message",
   COMMON_ERROR_ALERT = "common.error.alert",
-  COMMON_SAVED_STATUS = "common.saved.status"
+  COMMON_SAVED_STATUS = "common.saved.status",
+  COMMON_ANSWER_BEFORE_LABEL = "common.answer.before.label",
+  COMMON_ANSWER_AFTER_LABEL = "common.answer.after.label",
+  COMMON_ANSWER_FAILED_ALERT = "common.answer.failed.alert",
+  COMMON_SECONDS_TEXT = "common.seconds.text"
 }

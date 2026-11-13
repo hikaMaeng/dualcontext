@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
-import type { AugmentResult, WriterConfig } from "dualcontext_domain/common";
+import type { Answers, AugmentResult, WriterConfig } from "dualcontext_domain/common";
+import { AnswerCompare } from "../../components/answers";
 import { Button } from "../../components/ui/button";
 import { Input, Select } from "../../components/ui/input";
 import { Field } from "../../components/layout";
@@ -13,7 +14,7 @@ export function TryView({ t }: { t: Texts }) {
   const [query, setQuery] = useState("");
   const [writers, setWriters] = useState<WriterConfig[]>([]);
   const [writerId, setWriterId] = useState("");
-  const [result, setResult] = useState<(AugmentResult & { runId: number }) | null>(null);
+  const [result, setResult] = useState<(AugmentResult & { runId: number; answers: Answers }) | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -25,7 +26,7 @@ export function TryView({ t }: { t: Texts }) {
     event.preventDefault();
     setBusy(true);
     try {
-      setResult(await api<AugmentResult & { runId: number }>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } }));
+      setResult(await api<AugmentResult & { runId: number; answers: Answers }>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } }));
       setFailed(false);
     } catch {
       setFailed(true);
@@ -47,6 +48,7 @@ export function TryView({ t }: { t: Texts }) {
         </Field>
         <Button type="submit" disabled={busy} className="justify-self-start">{t[RSC.TRY_RUN_BUTTON]}</Button>
       </form>
+      {busy && <p role="status" data-testid="busy-state" className="text-sm text-muted">{t[RSC.TRY_BUSY_STATUS]}</p>}
       {failed && <p role="alert" className="text-sm text-danger">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
       {result && (
         <>
@@ -54,6 +56,7 @@ export function TryView({ t }: { t: Texts }) {
           <p role="status" data-testid="logged-state" className="text-sm text-muted">
             <a className="text-accent underline" href="#runs">{t[RSC.TRY_LOGGED_STATUS]} #{result.runId}</a>
           </p>
+          <AnswerCompare answers={result.answers} t={t} />
           <ul aria-label={t[RSC.TRY_PAIRS_LABEL]} className="grid gap-1 text-sm text-muted">
             {result.pairs.map((pair, index) => (
               <li key={index} data-testid="pair-item">{pair.researcher} / {pair.procedure ?? "-"} ({pair.materialCount}) [{pair.procedureRouting}]</li>

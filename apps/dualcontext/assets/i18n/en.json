@@ -92,5 +92,10 @@
   "runs.settings.label": "Settings at run time (router, writer, models)",
   "runs.pairs.label": "Chosen (researcher, procedure) pairs and their materials",
   "runs.materials.label": "Materials",
-  "runs.context.label": "Generated context"
+  "runs.context.label": "Generated context",
+  "common.answer.before.label": "Answer before augmentation (query only)",
+  "common.answer.after.label": "Answer after augmentation (query + augmented context)",
+  "common.answer.failed.alert": "Could not produce an answer",
+  "common.seconds.text": "s",
+  "try.busy.status": "Running. Producing the answers before and after augmentation can take several minutes."
 }

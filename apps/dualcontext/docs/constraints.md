@@ -48,5 +48,6 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `data-testid="routing-state"`, `"logged-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과와 로그 링크 |
 | `data-testid="run-item"` | 실행 로그 목록 항목 |
 | `data-testid="run-detail"`, `"run-routing"`, `"run-settings"`, `"run-pair"`, `"run-context"` | 실행 로그 상세 |
+| `data-testid="answer-before"`, `"answer-after"`, `"busy-state"` | 증강 전 · 후 최종 답변(시험 실행과 로그 상세 공통), 실행 중 표시 |
 | `data-testid="researcher-method"`, `"procedure-method"` | 라우터 방법 선택 |
 | `data-testid="embedding-url"`, `"embedding-model"`, `"chat-url"`, `"chat-model"` | AI 서버 입력 |

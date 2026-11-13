@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import type { AugmentPair } from "dualcontext_domain/common";
+import type { Answers, AugmentPair } from "dualcontext_domain/common";
+import { AnswerCompare } from "../../components/answers";
 import { Button } from "../../components/ui/button";
 import { ListDetail } from "../../components/layout";
 import { api } from "../../lib/api";
@@ -29,6 +30,7 @@ type RunDetail = {
   settings: unknown;
   pairs: AugmentPair[];
   context: string | null;
+  answers: Answers | null;
 };
 
 const when = (iso: string) => new Date(iso).toLocaleString();
@@ -108,6 +110,7 @@ export function RunsView({ t }: { t: Texts }) {
               {detail.error && (
                 <p role="alert" className="rounded-md border border-line p-3 text-sm text-danger">{t[RSC.RUNS_FAILURE_LABEL]}: {detail.error}</p>
               )}
+              {detail.answers && <AnswerCompare answers={detail.answers} t={t} />}
               <section aria-label={t[RSC.RUNS_SETTINGS_LABEL]} className="grid gap-1">
                 <h3 className="text-sm font-semibold text-muted">{t[RSC.RUNS_SETTINGS_LABEL]}</h3>
                 <pre data-testid="run-settings" className="max-h-64 overflow-auto whitespace-pre-wrap rounded-md border border-line bg-sidebar p-3 font-mono text-xs">{JSON.stringify(detail.settings, null, 2)}</pre>

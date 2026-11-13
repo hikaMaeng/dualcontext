@@ -92,5 +92,10 @@
   "runs.settings.label": "रन के समय की सेटिंग (राउटर, लेखक, मॉडल)",
   "runs.pairs.label": "चुने गए (अन्वेषक, प्रक्रिया) जोड़े और उनकी सामग्री",
   "runs.materials.label": "सामग्री",
-  "runs.context.label": "उत्पन्न संदर्भ"
+  "runs.context.label": "उत्पन्न संदर्भ",
+  "common.answer.before.label": "संवर्धन से पहले का उत्तर (केवल क्वेरी)",
+  "common.answer.after.label": "संवर्धन के बाद का उत्तर (क्वेरी + संवर्धित संदर्भ)",
+  "common.answer.failed.alert": "उत्तर नहीं बन सका",
+  "common.seconds.text": "से.",
+  "try.busy.status": "चल रहा है। संवर्धन से पहले और बाद के अंतिम उत्तर बनाने में कई मिनट लग सकते हैं।"
 }

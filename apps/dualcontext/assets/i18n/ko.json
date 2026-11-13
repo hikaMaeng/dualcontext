@@ -92,5 +92,10 @@
   "runs.settings.label": "실행 당시 설정(라우터 · 라이터 · 모델)",
   "runs.pairs.label": "선택된 (조사원, 프로시저) 쌍과 근거 자료",
   "runs.materials.label": "근거 자료",
-  "runs.context.label": "생성된 컨텍스트"
+  "runs.context.label": "생성된 컨텍스트",
+  "common.answer.before.label": "증강 전 답변(질의만)",
+  "common.answer.after.label": "증강 후 답변(질의 + 증강된 컨텍스트)",
+  "common.answer.failed.alert": "답변을 만들지 못했습니다",
+  "common.seconds.text": "초",
+  "try.busy.status": "실행 중입니다. 증강 전후 최종 답변까지 만드느라 수 분 걸릴 수 있습니다."
 }

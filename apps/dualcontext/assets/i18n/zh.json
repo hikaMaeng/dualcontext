@@ -92,5 +92,10 @@
   "runs.settings.label": "运行时的设置(路由器、撰写器、模型)",
   "runs.pairs.label": "已选(调查员,流程)配对及其资料",
   "runs.materials.label": "资料",
-  "runs.context.label": "生成的上下文"
+  "runs.context.label": "生成的上下文",
+  "common.answer.before.label": "增强前的回答(仅查询)",
+  "common.answer.after.label": "增强后的回答(查询 + 增强后的上下文)",
+  "common.answer.failed.alert": "未能生成回答",
+  "common.seconds.text": "秒",
+  "try.busy.status": "正在运行。生成增强前后的最终回答可能需要几分钟。"
 }
