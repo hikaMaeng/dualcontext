@@ -1,68 +1,134 @@
 // 허깅페이스 데이터셋을 받아 임베딩하고 컨테이너 DB 의 ds_* 테이블에 적재한다(호스트에서 실행).
-//   node apps/dualcontext/seed-data/load-datasets.mjs [테이블이름 ...]
-// 환경 변수: EMBED_URL, EMBED_MODEL, EMBED_API_KEY, CONTAINER, LIMIT(테이블당 행 수), MRL_DIM
-// 같은 테이블을 다시 적재하면 비우고 새로 채운다(truncate). 라이선스는 아래 sources 에 적혀 있다.
+//
+//   node apps/dualcontext/seed-data/load-datasets.mjs [옵션] [이름 ...]
+//
+// 옵션
+//   --dry-run      데이터를 몇 행만 받아 매핑 결과와 검증 오류를 출력한다. 임베딩 · DB · API 는 건드리지 않는다.
+//   --no-register  적재만 하고 조사원/프로시저 등록(관리 API)은 하지 않는다.
+//
+// 대상: 내장 5개(법률 용어 · 판례 · 의학 · 산업 뉴스 · 금융)와 seed-data/domains/<이름>/domain.json 전부.
+// 이름을 주면 그 이름(domain.json 의 name 또는 테이블 이름)만 처리한다.
+// 환경 변수: EMBED_URL, EMBED_MODEL, EMBED_API_KEY, CONTAINER, LIMIT(내장용 행 수, 기본 600), MRL_DIM, ADMIN_URL
+//
+// domain.json 형식은 apps/dualcontext/docs/usage.md 의 「분야 추가」 절을 본다.
+// 같은 테이블을 다시 적재하면 비우고 새로 채운다(truncate).
 import { spawn } from "node:child_process";
+import { readdir, readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const EMBED_URL = process.env.EMBED_URL ?? "http://127.0.0.1:12345/v1";
 const EMBED_MODEL = process.env.EMBED_MODEL ?? "embeddinggemma2:mp";
 const EMBED_API_KEY = process.env.EMBED_API_KEY ?? "";
 const CONTAINER = process.env.CONTAINER ?? "dualcontext";
-const LIMIT = Number(process.env.LIMIT ?? 1500);
+const ADMIN_URL = process.env.ADMIN_URL ?? "http://127.0.0.1:18081/api/admin";
+const BUILTIN_LIMIT = Number(process.env.LIMIT ?? 600);
 const MRL_DIM = Number(process.env.MRL_DIM ?? 256);
 const PAGE = 100;
+const MAX = { title: 300, body: 1500, embed: 1200 };
+
+const args = process.argv.slice(2);
+const dryRun = args.includes("--dry-run");
+const register = !args.includes("--no-register");
+const wanted = args.filter((arg) => !arg.startsWith("--"));
 
 const cut = (text, length) => String(text ?? "").replace(/\r/g, "").slice(0, length);
 
-const sources = [
+// ---------------------------------------------------------------- 내장 5개 ----
+
+const builtins = [
   {
-    table: "ds_legal_terms",
-    dataset: "JusWis/korean-legal-terminology",
-    license: "cc-by-4.0",
-    map: (row) => ({
-      id: "",
-      title: cut(row.input.replace(/^다음 법률 용어.*?설명해줘:\s*/, ""), 200),
-      body: cut(row.output, 1500),
-      embedText: `${row.input}\n${row.output}`
-    })
+    name: "ds_legal_terms", table: "ds_legal_terms", dataset: "JusWis/korean-legal-terminology", license: "cc-by-4.0", limit: BUILTIN_LIMIT,
+    map: (row) => ({ id: "", title: cut(row.input.replace(/^다음 법률 용어.*?설명해줘:\s*/, ""), 200), body: cut(row.output, 1500), embedText: `${row.input}\n${row.output}` })
   },
   {
-    table: "ds_legal_cases",
-    dataset: "ggh5454/korean-legal-qa-dataset",
-    license: "cc-by-4.0",
+    name: "ds_legal_cases", table: "ds_legal_cases", dataset: "ggh5454/korean-legal-qa-dataset", license: "cc-by-4.0", limit: BUILTIN_LIMIT,
     // rows API 가 열 구성 차이로 실패해 원본 jsonl 파일을 받는다(30건).
     file: "https://huggingface.co/datasets/ggh5454/korean-legal-qa-dataset/resolve/main/dataset.jsonl",
     map: (row) => ({ id: row.id, title: cut(row.question, 300), body: cut(row.answer, 1500), embedText: `${row.question}\n${row.answer}` })
   },
   {
-    table: "ds_medical_exam",
-    dataset: "hcw0329/medical-korean-alpaca",
-    license: "apache-2.0",
-    map: (row) => ({
-      id: "",
-      title: cut(`[${row.input}] ${row.instruction}`, 120),
-      body: cut(`${row.instruction}\n정답: ${row.output}`, 1500),
-      embedText: `${row.input}\n${row.instruction}\n정답: ${row.output}`
-    })
+    name: "ds_medical_exam", table: "ds_medical_exam", dataset: "hcw0329/medical-korean-alpaca", license: "apache-2.0", limit: BUILTIN_LIMIT,
+    map: (row) => ({ id: "", title: cut(`[${row.input}] ${row.instruction}`, 120), body: cut(`${row.instruction}\n정답: ${row.output}`, 1500), embedText: `${row.input}\n${row.instruction}\n정답: ${row.output}` })
   },
   {
-    table: "ds_industry_news",
-    dataset: "podongchip/korean-synthetic-industry-news",
-    license: "cc-by-4.0 (합성 데이터)",
+    name: "ds_industry_news", table: "ds_industry_news", dataset: "podongchip/korean-synthetic-industry-news", license: "cc-by-4.0 (합성 데이터)", limit: BUILTIN_LIMIT,
     map: (row) => ({ id: row.id, title: cut(row.title, 300), body: cut(row.body, 1500), embedText: `${row.title}\n${row.body}` })
   },
   {
-    table: "ds_finance_reports",
-    dataset: "nmixx-fin/synthetic_financial_report_korean",
-    license: "apache-2.0 (합성 데이터)",
-    map: (row) => ({
-      id: "",
-      title: cut(`[${row.category}] ${row.text.trim()}`, 100),
-      body: cut(row.text.trim(), 1500),
-      embedText: `${row.category}\n${row.text}`
-    })
+    name: "ds_finance_reports", table: "ds_finance_reports", dataset: "nmixx-fin/synthetic_financial_report_korean", license: "apache-2.0 (합성 데이터)", limit: BUILTIN_LIMIT,
+    map: (row) => ({ id: "", title: cut(`[${row.category}] ${row.text.trim()}`, 100), body: cut(row.text.trim(), 1500), embedText: `${row.category}\n${row.text}` })
   }
 ];
+
+// ------------------------------------------------------------- domain.json ----
+
+const lookup = (row, key) => key.split(".").reduce((value, part) => (value === null || value === undefined ? undefined : value[part]), row);
+
+/** `{열}` / `{열.하위}` 자리표시자를 행의 값으로 바꾼다. 객체는 JSON 으로, 없는 값은 빈 문자열로. */
+function render(template, row) {
+  return template.replace(/\{([\w.]+)\}/g, (_match, key) => {
+    const value = lookup(row, key);
+    if (value === undefined || value === null) return "";
+    return typeof value === "object" ? JSON.stringify(value) : String(value);
+  });
+}
+
+const placeholders = (template) => [...String(template).matchAll(/\{([\w.]+)\}/g)].map((match) => match[1]);
+
+function validateDomain(spec, folder) {
+  const errors = [];
+  const need = (condition, message) => condition || errors.push(message);
+  need(/^[a-z0-9-]+$/.test(spec.name ?? ""), "name 은 소문자·숫자·하이픈");
+  need(spec.name === folder, `name(${spec.name}) 은 폴더 이름(${folder})과 같아야 한다`);
+  need(/^ds_[a-z0-9_]+$/.test(spec.table ?? ""), "table 은 ds_ 로 시작하는 소문자·숫자·밑줄");
+  need(Boolean(spec.dataset) !== Boolean(spec.file) || Boolean(spec.dataset), "dataset(허깅페이스 id) 또는 file(jsonl URL) 이 필요하다");
+  need(typeof spec.license === "string" && spec.license.trim() !== "", "license 가 비어 있다");
+  need(Number.isInteger(spec.limit) && spec.limit >= 1 && spec.limit <= 1000, "limit 은 1~1000 정수");
+  for (const key of ["title", "body", "embed"]) need(typeof spec.map?.[key] === "string" && spec.map[key] !== "", `map.${key} 템플릿이 필요하다`);
+  const researcher = spec.researcher ?? {};
+  need(typeof researcher.name === "string" && researcher.name.trim() !== "", "researcher.name");
+  need(typeof researcher.description === "string" && researcher.description.length >= 40, "researcher.description(임베딩 라우팅이 읽는 글) 은 40자 이상으로 어떤 질의를 맡는지 구체적으로");
+  need(Array.isArray(researcher.keywords) && researcher.keywords.length >= 3, "researcher.keywords 는 3개 이상");
+  need(Array.isArray(spec.procedures) && spec.procedures.length >= 2, "procedures 는 2개 이상");
+  for (const procedure of spec.procedures ?? []) {
+    need(typeof procedure.name === "string" && procedure.name.trim() !== "", "procedure.name");
+    need(Array.isArray(procedure.steps) && procedure.steps.length >= 2, `procedure ${procedure.name}: steps 2개 이상`);
+    need(Array.isArray(procedure.impacts) && procedure.impacts.length >= 1, `procedure ${procedure.name}: impacts 1개 이상`);
+    need(Array.isArray(procedure.appliesWhen), `procedure ${procedure.name}: appliesWhen 은 배열(비어도 된다)`);
+    need(typeof procedure.outputFormat === "string", `procedure ${procedure.name}: outputFormat`);
+  }
+  return errors;
+}
+
+async function loadDomains() {
+  const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "domains");
+  const folders = await readdir(root, { withFileTypes: true }).catch(() => []);
+  const specs = [];
+  for (const folder of folders.filter((entry) => entry.isDirectory())) {
+    const raw = JSON.parse(await readFile(path.join(root, folder.name, "domain.json"), "utf8"));
+    const errors = validateDomain(raw, folder.name);
+    if (errors.length > 0) {
+      console.error(`[${folder.name}] domain.json 오류:\n  - ${errors.join("\n  - ")}`);
+      process.exitCode = 2;
+      continue;
+    }
+    specs.push({
+      ...raw,
+      domain: true,
+      templates: raw.map,
+      map: (row) => ({
+        id: raw.map.id ? render(raw.map.id, row) : "",
+        title: cut(render(raw.map.title, row), MAX.title),
+        body: cut(render(raw.map.body, row), MAX.body),
+        embedText: render(raw.map.embed, row)
+      })
+    });
+  }
+  return specs;
+}
+
+// ---------------------------------------------------------------- 가져오기 ----
 
 // 행 API 는 간헐적으로 502/429 를 낸다. 점점 늘려 가며 최대 6번 시도한다.
 async function fetchJson(url) {
@@ -74,19 +140,33 @@ async function fetchJson(url) {
   }
 }
 
-/** 데이터셋 전체에서 고르게 LIMIT 행을 뽑는다(앞쪽만 읽으면 정렬된 데이터가 한 과목으로 쏠린다). */
-async function fetchRows(dataset) {
-  const base = `https://datasets-server.huggingface.co`;
-  const total = (await fetchJson(`${base}/size?dataset=${dataset}`)).size.dataset.num_rows;
-  const pages = Math.max(1, Math.ceil(Math.min(LIMIT, total) / PAGE));
+/** 데이터셋 전체에서 고르게 limit 행을 뽑는다(앞쪽만 읽으면 정렬된 데이터가 한 곳으로 쏠린다). */
+async function fetchRows(source, limit) {
+  const base = "https://datasets-server.huggingface.co";
+  const config = source.config ?? "default";
+  const split = source.split ?? "train";
+  const total = (await fetchJson(`${base}/size?dataset=${source.dataset}`)).size.dataset.num_rows;
+  const pages = Math.max(1, Math.ceil(Math.min(limit, total) / PAGE));
   const rows = [];
   for (let page = 0; page < pages; page += 1) {
     const offset = pages === 1 ? 0 : Math.floor((page * (total - PAGE)) / (pages - 1));
-    const json = await fetchJson(`${base}/rows?dataset=${dataset}&config=default&split=train&offset=${offset}&length=${PAGE}`);
+    const length = Math.min(PAGE, limit);
+    const json = await fetchJson(`${base}/rows?dataset=${source.dataset}&config=${config}&split=${split}&offset=${offset}&length=${length}`);
     rows.push(...json.rows.map((entry) => entry.row));
   }
-  return rows.slice(0, LIMIT);
+  return { rows: rows.slice(0, limit), total };
 }
+
+async function fetchSource(source, limit) {
+  if (source.file) {
+    const text = await (await fetch(source.file, { signal: AbortSignal.timeout(120_000) })).text();
+    const rows = text.trim().split("\n").map((line) => JSON.parse(line));
+    return { rows: rows.slice(0, limit), total: rows.length };
+  }
+  return fetchRows(source, limit);
+}
+
+// ---------------------------------------------------------------- 임베딩 ----
 
 async function embed(texts) {
   const response = await fetch(`${EMBED_URL}/embeddings`, {
@@ -119,18 +199,84 @@ function psql(command, input) {
   });
 }
 
-const wanted = process.argv.slice(2);
-for (const source of sources.filter((entry) => wanted.length === 0 || wanted.includes(entry.table))) {
-  console.log(`== ${source.table} <- ${source.dataset} (${source.license})`);
-  const raw = source.file
-    ? (await (await fetch(source.file, { signal: AbortSignal.timeout(60_000) })).text()).trim().split("\n").map((line) => JSON.parse(line))
-    : await fetchRows(source.dataset);
-  const items = raw.map(source.map);
+/** 표준 모양의 테이블과 축소 컬럼 HNSW 인덱스를 만든다(이미 있으면 그대로). */
+const ensureTable = (table) =>
+  psql(
+    `create table if not exists ${table} (id serial primary key, source_id text, title text not null, body text not null, embedding vector(768), embedding_mrl vector(256));
+     create index if not exists ${table}_mrl on ${table} using hnsw (embedding_mrl vector_cosine_ops);`
+  );
+
+// ----------------------------------------------------------------- 등록 ----
+
+async function admin(method, route, body) {
+  const response = await fetch(`${ADMIN_URL}${route}`, {
+    method,
+    headers: { "content-type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+  if (!response.ok) throw new Error(`${method} ${route} -> ${response.status} ${(await response.text()).slice(0, 300)}`);
+  return response.status === 204 ? null : response.json();
+}
+
+/** 프로시저는 이름으로, 조사원은 이름으로 만들거나 갱신한다. 연결할 프로시저는 이름으로 찾는다. */
+async function registerDomain(spec) {
+  const existingProcedures = await admin("GET", "/procedures");
+  const ids = new Map(existingProcedures.map((procedure) => [procedure.name, procedure.id]));
+  const own = [];
+  for (const procedure of spec.procedures) {
+    const body = { name: procedure.name, appliesWhen: procedure.appliesWhen, steps: procedure.steps, impacts: procedure.impacts, outputFormat: procedure.outputFormat, enabled: true };
+    const saved = ids.has(procedure.name) ? await admin("PUT", `/procedures/${ids.get(procedure.name)}`, body) : await admin("POST", "/procedures", body);
+    ids.set(procedure.name, saved.id);
+    own.push(saved.id);
+  }
+  const linked = (spec.link ?? []).map((name) => {
+    if (!ids.has(name)) throw new Error(`link 의 프로시저가 없다: ${name}`);
+    return ids.get(name);
+  });
+  const config = { table: spec.table, vectorColumn: "embedding", reducedColumn: "embedding_mrl", reducedDim: MRL_DIM, textColumn: "body", titleColumn: "title", topK: spec.researcher.topK ?? 3 };
+  const body = {
+    name: spec.researcher.name, description: spec.researcher.description, keywords: spec.researcher.keywords,
+    enabled: true, type: "pgvector", config, procedureIds: [...own, ...linked]
+  };
+  const existing = (await admin("GET", "/researchers")).find((researcher) => researcher.name === spec.researcher.name);
+  const saved = existing ? await admin("PUT", `/researchers/${existing.id}`, body) : await admin("POST", "/researchers", body);
+  console.log(`  registered researcher #${saved.id} ${saved.name} with ${saved.procedureIds.length} procedures`);
+}
+
+// ------------------------------------------------------------------- 실행 ----
+
+async function dryRunOne(source) {
+  const limit = 5;
+  const { rows, total } = await fetchSource(source, limit);
+  console.log(`  total rows: ${total}; fetched ${rows.length}; columns: ${Object.keys(rows[0] ?? {}).join(", ")}`);
+  if (source.templates) {
+    const unknown = [...new Set(Object.values(source.templates).flatMap(placeholders))].filter((key) => rows.every((row) => lookup(row, key) === undefined));
+    if (unknown.length > 0) {
+      console.log(`  <-- 템플릿이 가리키는데 행에 없는 열: ${unknown.join(", ")}`);
+      process.exitCode = 2;
+    }
+  }
+  const mapped = rows.map(source.map);
+  mapped.slice(0, 3).forEach((item, index) => {
+    console.log(`  [${index}] id=${JSON.stringify(item.id)} title=${JSON.stringify(item.title.slice(0, 80))}`);
+    console.log(`      body(${item.body.length})=${JSON.stringify(item.body.slice(0, 120))}`);
+    console.log(`      embed(${item.embedText.length})=${JSON.stringify(item.embedText.slice(0, 120))}`);
+  });
+  const empty = mapped.filter((item) => item.title.trim() === "" || item.body.trim() === "").length;
+  console.log(`  empty title/body rows: ${empty}/${mapped.length}${empty > 0 ? "  <-- 템플릿의 열 이름을 확인하라" : ""}`);
+  if (empty > 0) process.exitCode = 2;
+}
+
+async function loadOne(source) {
+  const limit = source.limit ?? BUILTIN_LIMIT;
+  const { rows } = await fetchSource(source, limit);
+  const items = rows.map(source.map).filter((item) => item.title.trim() !== "" && item.body.trim() !== "");
+  console.log(`  ${items.length} usable rows of ${rows.length}`);
 
   const lines = [];
   for (let start = 0; start < items.length; start += 16) {
     const batch = items.slice(start, start + 16);
-    const vectors = await embed(batch.map((item) => cut(item.embedText, 1200)));
+    const vectors = await embed(batch.map((item) => cut(item.embedText, MAX.embed)));
     batch.forEach((item, index) => {
       lines.push([item.id, item.title, item.body, `[${vectors[index].join(",")}]`, `[${reduce(vectors[index]).join(",")}]`].map(csv).join(","));
     });
@@ -138,7 +284,19 @@ for (const source of sources.filter((entry) => wanted.length === 0 || wanted.inc
   }
   process.stdout.write("\n");
 
+  await ensureTable(source.table);
   await psql(`truncate table ${source.table} restart identity`);
   await psql(`\\copy ${source.table} (source_id, title, body, embedding, embedding_mrl) from stdin with (format csv)`, lines.join("\n") + "\n");
-  console.log(`  loaded ${lines.length} rows`);
+  console.log(`  loaded ${lines.length} rows into ${source.table}`);
+  if (source.domain && register) await registerDomain(source);
+}
+
+const sources = [...builtins, ...(await loadDomains())].filter((source) => wanted.length === 0 || wanted.includes(source.name) || wanted.includes(source.table));
+if (wanted.length > 0 && sources.length === 0) {
+  console.error(`일치하는 이름이 없다: ${wanted.join(", ")}`);
+  process.exit(2);
+}
+for (const source of sources) {
+  console.log(`== ${source.name} <- ${source.dataset ?? source.file} (${source.license})${dryRun ? " [dry-run]" : ""}`);
+  await (dryRun ? dryRunOne(source) : loadOne(source));
 }

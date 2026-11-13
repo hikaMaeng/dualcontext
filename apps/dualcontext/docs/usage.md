@@ -56,6 +56,50 @@ LIMIT=600 node apps/dualcontext/seed-data/load-datasets.mjs ds_legal_terms   # �
 
 다시 실행하면 테이블을 비우고 새로 채운다. 허깅페이스 행 API 는 간헐적으로 502 를 내서 재시도한다.
 
+### 분야 추가(`seed-data/domains/<이름>/domain.json`)
+
+코드를 고치지 않고 폴더 하나로 분야(조사원 1개 + 전용 프로시저)를 더한다. 스크립트가 테이블 생성 → 임베딩 적재 → 관리 API 로 조사원 · 프로시저 등록까지 한다.
+
+```json
+{
+  "name": "gpu-hardware",
+  "table": "ds_gpu_hardware",
+  "dataset": "owner/name",
+  "config": "default",
+  "split": "train",
+  "license": "apache-2.0",
+  "limit": 300,
+  "map": {
+    "id": "{id}",
+    "title": "[{category}] {name}",
+    "body": "{description}\n사양: {specs}",
+    "embed": "{name}\n{description}"
+  },
+  "researcher": {
+    "name": "GPU 하드웨어 사양",
+    "description": "GPU 와 그래픽 카드의 아키텍처, 메모리, 성능 사양을 설명하는 자료. 어떤 GPU 가 어떤 사양을 가졌는지, 세대 간 차이가 무엇인지 묻는 질의를 맡는다.",
+    "keywords": ["GPU", "그래픽카드", "VRAM"],
+    "topK": 3
+  },
+  "procedures": [
+    { "name": "[GPU] 사양 비교 분석", "appliesWhen": ["비교", "차이", "vs"], "steps": ["비교 대상을 확정한다", "…"], "impacts": ["핵심 사양 차이"], "outputFormat": "비교표" }
+  ],
+  "link": ["근거 신뢰도 점검", "수치·사실 추출"]
+}
+```
+
+* `file`(jsonl URL)로 `dataset` 을 대신할 수 있다. 행 API 가 열 구성이 다른 파일 때문에 실패하는 데이터셋용이다.
+* `map` 의 템플릿은 `{열}` · `{열.하위}` 자리표시자를 행 값으로 바꾼다(객체는 JSON, 없는 값은 빈 문자열). 길이는 제목 300 · 본문 1500 · 임베딩 1200 자로 잘린다. 제목과 본문이 빈 행은 버린다.
+* 규칙: `name` 은 폴더 이름과 같고 소문자·숫자·하이픈, `table` 은 `ds_` 로 시작하는 소문자·숫자·밑줄, `limit` 은 1~1000(임베딩이 텍스트당 약 0.5초라 300 권장), 프로시저 2개 이상(각각 steps 2개 이상 · impacts 1개 이상), 조사원 키워드 3개 이상, 조사원 설명 40자 이상.
+* 프로시저 이름은 DB 전체에서 유일하다. 다른 분야와 겹치지 않게 분야 표식(`[GPU]` 등)을 붙인다. `link` 는 이미 있는 공용 프로시저(「근거 신뢰도 점검」, 「수치·사실 추출」, 「비교 분석」 등)를 이름으로 연결한다.
+* 먼저 `--dry-run` 으로 검증한다(데이터를 몇 행만 받아 매핑 결과와 오류를 보여 주고 임베딩 · DB 는 건드리지 않는다).
+
+```sh
+node apps/dualcontext/seed-data/load-datasets.mjs --dry-run gpu-hardware
+node apps/dualcontext/seed-data/load-datasets.mjs gpu-hardware          # 적재 + 등록
+node apps/dualcontext/seed-data/load-datasets.mjs --no-register gpu-hardware   # 적재만
+```
+
 ## 폴더 조사원
 
 볼륨 안의 폴더를 지정한다(예: `manuals`). 파일은 볼륨에 직접 넣는다.
