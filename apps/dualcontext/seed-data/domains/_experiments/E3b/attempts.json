@@ -1,0 +1,26 @@
+[
+  {
+    "id": "E3b-1",
+    "attempt": 1,
+    "status": 200,
+    "ms": 239177
+  },
+  {
+    "id": "E3b-2",
+    "attempt": 1,
+    "status": 200,
+    "ms": 240961
+  },
+  {
+    "id": "E3b-3",
+    "attempt": 1,
+    "status": 200,
+    "ms": 301268
+  },
+  {
+    "id": "E3b-4",
+    "attempt": 1,
+    "status": 200,
+    "ms": 175822
+  }
+]

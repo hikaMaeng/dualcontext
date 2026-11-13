@@ -1,0 +1,28 @@
+{
+  "name": "gpu-hardware",
+  "table": "ds_gpu_hardware",
+  "dataset": "Intelion/gpuark-gpu-dataset",
+  "config": "gpu_specs",
+  "split": "train",
+  "license": "cc-by-4.0",
+  "limit": 300,
+  "map": {
+    "id": "{id}",
+    "title": "{name}",
+    "body": "GPU: {name}\nManufacturer: {manufacturer}\nVendor: {vendor}\nArchitecture: {arch_name}\nRelease date: {card_release_date}\nCores: {cores}\nTensor cores: {tensor_cores}\nBase clock: {base_clock}\nBoost clock: {boost_clock}\nVRAM (unit varies): {ram}\nMemory type: {ram_type}\nMemory bus: {bus_width}\nMemory bandwidth: {ram_bandwidth}\nBus interface: {bus_interface}\nFP32 performance: {fp32_performance}\nTDP: {tdp}\nSuggested PSU: {suggested_psu}\nSlot width: {slot_width}\nPower connectors: {power_connectors}\nCUDA: {api_cuda}",
+    "embed": "{name}\n{manufacturer} {vendor} {arch_name}\n{card_release_date}\nVRAM: {ram} {ram_type}\n{ram_bandwidth} {bus_interface}\nTDP: {tdp} PSU: {suggested_psu}\nCUDA: {api_cuda}"
+  },
+  "researcher": {
+    "name": "GPU Ark 그래픽카드 사양",
+    "description": "그래픽카드와 GPU 제품의 아키텍처, 출시일, VRAM, 메모리 대역폭, PCIe, TDP 및 권장 전원 사양을 비교하거나 게임·AI 용도와 PC 장착 조건을 검토하는 질의를 맡는 영문 자료. VRAM 단위가 행마다 다를 수 있다. (Intelion/gpuark-gpu-dataset, cc-by-4.0)",
+    "keywords": ["GPU", "그래픽카드", "VRAM", "PCIe", "소비전력", "CUDA", "GPU 사양 비교"],
+    "topK": 3
+  },
+  "procedures": [
+    {"name":"[GPU Ark] 제품 사양과 세대 비교","appliesWhen":["비교","차이","세대","vs"],"steps":["제품명과 출시일을 각각 확인하고 동일한 제품 또는 보드 변형인지 구분한다.","아키텍처, 메모리 종류·대역폭, 인터페이스, TDP를 나란히 적고 누락값을 미확인으로 표시한다.","VRAM의 단위가 일관되지 않으므로 단위를 외부 사양으로 확인하기 전에는 용량을 수치 비교하지 않는다."],"impacts":["제품 선택에 영향을 주는 확인된 사양 차이와 비교 불가능한 항목"],"outputFormat":"제품별 비교표와 출처·출시 시점 및 미확인 항목"},
+    {"name":"[GPU Ark] 작업별 GPU 적합성 검토","appliesWhen":["게임","AI","추론","학습","편집","적합"],"steps":["요청한 작업과 필요한 VRAM, API 및 성능 조건을 질의에서 추출하고 없는 조건은 미확인으로 표시한다.","GPU의 메모리, CUDA 및 대역폭 필드를 요구 조건과 대조하되 VRAM 단위와 CUDA 값의 의미는 원자료로 확인하기 전까지 확정하지 않는다.","명목 사양만으로 실제 게임 프레임이나 모델 실행 가능성을 단정하지 않고 필요한 실측 또는 추가 자료를 열거한다."],"impacts":["작업별 후보의 확인 가능한 제약과 추가 검증이 필요한 조건"],"outputFormat":"요구 조건별 근거와 적합성 보류 사유"},
+    {"name":"[GPU Ark] 장착 및 전원 조건 점검","appliesWhen":["호환","장착","파워","전원","슬롯","PCIe"],"steps":["GPU의 버스 인터페이스, 슬롯 폭, 전원 커넥터, 권장 PSU를 추출하고 누락값을 표시한다.","사용자가 제공한 메인보드 슬롯, 케이스 여유 공간, PSU 용량과 커넥터를 각 항목에 대조한다.","카드 길이, 실제 시스템 소비전력 또는 상대 부품 정보가 없으면 호환 여부를 확정하지 않는다."],"impacts":["장착 또는 전원 구성에서 확인할 불일치와 미확인 위험"],"outputFormat":"항목별 확인·불일치·미확인 목록"},
+    {"name":"[GPU Ark] 전력 대비 사양 검토","appliesWhen":["전력 효율","와트","TDP","전성비","소비전력"],"steps":["비교 제품의 TDP와 같은 종류의 명목 성능 수치를 추출하고 단위와 측정 기준을 확인한다.","기준이 확인된 같은 지표만 TDP와 함께 비교하고 결측값이나 서로 다른 산정 조건은 계산에서 제외한다.","TDP와 이론 성능은 실측 소비전력 및 실제 작업 성능이 아니므로 실측 효율 판단에 필요한 벤치마크를 명시한다."],"impacts":["명목 전력 대비 사양의 비교 가능성 및 실사용 효율 판단의 한계"],"outputFormat":"수치와 단위·조건을 포함한 비교표 및 실측 필요사항"}
+  ],
+  "link": ["근거 신뢰도 점검", "수치·사실 추출"]
+}

@@ -1,0 +1,562 @@
+{
+  "summary": {
+    "query_count": 4,
+    "http_success_count": 4,
+    "before": {
+      "hit": 0,
+      "denominator": 5
+    },
+    "after": {
+      "hit": 2,
+      "denominator": 7
+    },
+    "paired_before": {
+      "hit": 0,
+      "denominator": 5
+    },
+    "paired_after": {
+      "hit": 2,
+      "denominator": 5
+    },
+    "context_evidence": {
+      "found": 2,
+      "denominator": 7
+    }
+  },
+  "results": [
+    {
+      "id": "E3b-1",
+      "runId": 7,
+      "http_success": true,
+      "elapsed_ms": 239177,
+      "answer_ms": {
+        "before": 235464,
+        "after": 67955
+      },
+      "answer_errors": {
+        "before": null,
+        "after": null
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "invalid": false,
+          "invalid_reason": null,
+          "before": {
+            "status": "contradict",
+            "reason": "약 45~55% 수준"
+          },
+          "after": {
+            "status": "miss",
+            "reason": "12월 금리 인하 가능성: 언급 없음"
+          },
+          "context_has_evidence": false
+        },
+        {
+          "id": "F2",
+          "invalid": false,
+          "invalid_reason": null,
+          "before": {
+            "status": "contradict",
+            "reason": "약 45~55% 수준"
+          },
+          "after": {
+            "status": "miss",
+            "reason": "12월 금리 인하 가능성: 언급 없음"
+          },
+          "context_has_evidence": false
+        },
+        {
+          "id": "F3",
+          "invalid": false,
+          "invalid_reason": null,
+          "before": {
+            "status": "contradict",
+            "reason": "약 8.98 백만 건"
+          },
+          "after": {
+            "status": "miss",
+            "reason": "10월 구인 건수: 언급 없음"
+          },
+          "context_has_evidence": false
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "금융 시황 리포트(합성)",
+          "산업 뉴스(합성)",
+          "웹 검색(덕덕고)"
+        ],
+        "procedures": [
+          "시황·동향 요약",
+          "수치·사실 추출",
+          "근거 신뢰도 점검"
+        ],
+        "pairs": [
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 5,
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "materialCount": 5,
+            "error": null
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [
+            "금융 시황 리포트(합성)"
+          ],
+          "missing": [],
+          "extra": [
+            "산업 뉴스(합성)",
+            "웹 검색(덕덕고)"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [
+            "시황·동향 요약",
+            "근거 신뢰도 점검"
+          ],
+          "missing": [],
+          "extra": [
+            "수치·사실 추출"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "10월 구인 898만 건 및 예상 880만~890만 건, 인하 확률 45~55%: 대상 덤프 행과 불일치",
+          "2024년 11월 5일 발표 등 특정 날짜는 검색된 근거로 확인되지 않음"
+        ],
+        "after": [
+          "합성 금융 시황 자료 전체에 인하 가능성과 구인 건수가 전혀 없다는 단정은 덤프의 1·3행과 모순",
+          "Christian Daily 기사에 2026.10.06 날짜를 부여했으나 검색 결과 본문은 연·월 없이 6일만 제시",
+          "서로 다른 시점일 수 있는 합성 고용 수치와 웹 고용 수치를 정반대 모순이라 단정"
+        ]
+      },
+      "after_declared_gaps": "컨텍스트에 없다고 밝히나 전체 자료에도 없다고 과잉 일반화",
+      "web_observation": null
+    },
+    {
+      "id": "E3b-2",
+      "runId": 10,
+      "http_success": true,
+      "elapsed_ms": 240961,
+      "answer_ms": {
+        "before": 230110,
+        "after": 25712
+      },
+      "answer_errors": {
+        "before": null,
+        "after": null
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "invalid": false,
+          "invalid_reason": null,
+          "before": {
+            "status": "miss",
+            "reason": "정확한 순유입 규모 ... 확인해 드리지 못합니다"
+          },
+          "after": {
+            "status": "hit",
+            "reason": "380억 달러 (2024년 11월까지)"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F2",
+          "invalid": false,
+          "invalid_reason": null,
+          "before": {
+            "status": "miss",
+            "reason": "정확한 순유입 규모 ... 확인해 드리지 못합니다"
+          },
+          "after": {
+            "status": "hit",
+            "reason": "314억 달러 (암호화폐 관련 레버리지 및 인버스 ETF)"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F3",
+          "invalid": true,
+          "invalid_reason": "질문에 특정 코스피 보고서나 시점이 지정되지 않아 다른 행의 코스피 수치도 유효한 답이다.",
+          "before": {
+            "status": "miss",
+            "reason": "해당 수치 없음"
+          },
+          "after": {
+            "status": "miss",
+            "reason": "1.19% 하락 ... 2,857.00포인트는 다른 보고서의 수치"
+          },
+          "context_has_evidence": false
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "금융 시황 리포트(합성)",
+          "산업 뉴스(합성)",
+          "판례·법령 질의응답"
+        ],
+        "procedures": [
+          "시황·동향 요약",
+          "수치·사실 추출",
+          "근거 신뢰도 점검"
+        ],
+        "pairs": [
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [
+            "금융 시황 리포트(합성)"
+          ],
+          "missing": [],
+          "extra": [
+            "산업 뉴스(합성)",
+            "판례·법령 질의응답"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [
+            "수치·사실 추출",
+            "근거 신뢰도 점검"
+          ],
+          "missing": [],
+          "extra": [
+            "시황·동향 요약"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [
+          "2024년 코스피 연초 약 2,400, 5월 약 2,600, 연말 약 2,480 등은 제공된 근거 없이 제시"
+        ],
+        "after": []
+      },
+      "after_declared_gaps": "부산 거주 투자자 순매수액은 컨텍스트에 없다고 명시",
+      "web_observation": null
+    },
+    {
+      "id": "E3b-3",
+      "runId": 13,
+      "http_success": true,
+      "elapsed_ms": 301268,
+      "answer_ms": {
+        "before": 299981,
+        "after": 28819
+      },
+      "answer_errors": {
+        "before": "The operation was aborted due to timeout",
+        "after": null
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "invalid": false,
+          "invalid_reason": null,
+          "before": {
+            "status": null,
+            "reason": "답변 생성 시간 초과"
+          },
+          "after": {
+            "status": "miss",
+            "reason": "미국 구인 건수: 컨텍스트에 없음"
+          },
+          "context_has_evidence": false
+        },
+        {
+          "id": "F2",
+          "invalid": false,
+          "invalid_reason": null,
+          "before": {
+            "status": null,
+            "reason": "답변 생성 시간 초과"
+          },
+          "after": {
+            "status": "miss",
+            "reason": "코스피 지수: 컨텍스트에 없음"
+          },
+          "context_has_evidence": false
+        },
+        {
+          "id": "F3",
+          "invalid": true,
+          "invalid_reason": "F1과 같은 구인 건수 및 예상치 초과를 반복하며 독립적인 원자적 사실이 아니다.",
+          "before": {
+            "status": null,
+            "reason": "답변 생성 시간 초과"
+          },
+          "after": {
+            "status": "miss",
+            "reason": "미국 구인 건수: 컨텍스트에 없음"
+          },
+          "context_has_evidence": false
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "금융 시황 리포트(합성)",
+          "산업 뉴스(합성)",
+          "판례·법령 질의응답"
+        ],
+        "procedures": [
+          "시황·동향 요약",
+          "수치·사실 추출",
+          "근거 신뢰도 점검"
+        ],
+        "pairs": [
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "판례·법령 질의응답",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [
+            "금융 시황 리포트(합성)"
+          ],
+          "missing": [
+            "웹 검색(덕덕고)"
+          ],
+          "extra": [
+            "산업 뉴스(합성)",
+            "판례·법령 질의응답"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [
+            "수치·사실 추출",
+            "근거 신뢰도 점검"
+          ],
+          "missing": [],
+          "extra": [
+            "시황·동향 요약"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [],
+        "after": []
+      },
+      "after_declared_gaps": "구인·코스피 수치와 최신 웹 결정에 대한 근거 부족을 명시",
+      "web_observation": "웹 조사원 미선택, 웹 결과 없음"
+    },
+    {
+      "id": "E3b-4",
+      "runId": 16,
+      "http_success": true,
+      "elapsed_ms": 175822,
+      "answer_ms": {
+        "before": 109097,
+        "after": 171233
+      },
+      "answer_errors": {
+        "before": null,
+        "after": null
+      },
+      "facts": [],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": [
+          "산업 뉴스(합성)",
+          "웹 검색(덕덕고)",
+          "의학 문제은행"
+        ],
+        "procedures": [
+          "수치·사실 추출",
+          "비교 분석",
+          "근거 신뢰도 점검",
+          "문제 풀이 근거 정리"
+        ],
+        "pairs": [
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "비교 분석",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "materialCount": 5,
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "비교 분석",
+            "procedureRouting": "embedding",
+            "materialCount": 5,
+            "error": null
+          },
+          {
+            "researcher": "의학 문제은행",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          },
+          {
+            "researcher": "의학 문제은행",
+            "procedure": "문제 풀이 근거 정리",
+            "procedureRouting": "embedding",
+            "materialCount": 3,
+            "error": null
+          }
+        ],
+        "researcher_comparison": {
+          "matched": [
+            "웹 검색(덕덕고)"
+          ],
+          "missing": [],
+          "extra": [
+            "산업 뉴스(합성)",
+            "의학 문제은행"
+          ]
+        },
+        "procedure_comparison": {
+          "matched": [
+            "근거 신뢰도 점검"
+          ],
+          "missing": [],
+          "extra": [
+            "수치·사실 추출",
+            "비교 분석",
+            "문제 풀이 근거 정리"
+          ]
+        }
+      },
+      "hallucination": {
+        "before": [],
+        "after": []
+      },
+      "after_declared_gaps": "구체적 조작 순서가 컨텍스트에 없다고 밝힘. 무관한 산업·의학 자료를 편집 근거로 인용하지 않음",
+      "web_observation": "웹 조사원 선택, 사진 합치기 관련 결과 5개"
+    }
+  ]
+}

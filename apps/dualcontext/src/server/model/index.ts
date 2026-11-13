@@ -26,7 +26,9 @@ export function createModelClient(pool: pg.Pool, envApiKey: string) {
       method: body === undefined ? "GET" : "POST",
       headers: { "content-type": "application/json", ...(endpoint.apiKey ? { authorization: `Bearer ${endpoint.apiKey}` } : {}) },
       body: body === undefined ? undefined : JSON.stringify(body),
-      signal: AbortSignal.timeout(300_000)
+      // 추론 모델은 긴 컨텍스트에서 수 분이 걸리고, 한 서버를 여럿이 나눠 쓰면 대기까지 더해진다.
+      // 300초는 시험 실행의 증강 전/후 답변을 자주 끊었다(실험 E1b~E3b 8개 중 5개).
+      signal: AbortSignal.timeout(900_000)
     });
     if (!response.ok) throw new Error(`AI server ${path} answered ${response.status}: ${(await response.text()).slice(0, 200)}`);
     return (await response.json()) as Record<string, any>;

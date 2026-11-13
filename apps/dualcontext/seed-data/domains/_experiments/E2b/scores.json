@@ -1,0 +1,571 @@
+[
+  {
+    "id": "Q1",
+    "runId": 9,
+    "http_success": true,
+    "invalid": true,
+    "invalid_reason": "질문에 특정 발표 월이나 보고서 식별 조건이 없어 다른 시기의 관련 행도 정답이 될 수 있다.",
+    "facts": [
+      {
+        "id": "F1",
+        "invalid": true,
+        "invalid_reason": "질문에 특정 발표 월이나 보고서 식별 조건이 없어 다른 시기의 관련 행도 정답이 될 수 있다.",
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "miss",
+          "evidence": "다른 5월 구인 818만 건을 제시"
+        },
+        "context_has_evidence": false
+      },
+      {
+        "id": "F2",
+        "invalid": true,
+        "invalid_reason": "질문에 특정 발표 월이나 보고서 식별 조건이 없어 다른 시기의 관련 행도 정답이 될 수 있다.",
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "miss",
+          "evidence": "9월 인하 확률 약 60%를 제시"
+        },
+        "context_has_evidence": false
+      },
+      {
+        "id": "F3",
+        "invalid": true,
+        "invalid_reason": "질문에 특정 발표 월이나 보고서 식별 조건이 없어 다른 시기의 관련 행도 정답이 될 수 있다.",
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "miss",
+          "evidence": "미국 주요 주식지수의 방향에 대한 언급이 없습니다"
+        },
+        "context_has_evidence": false
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "actual_researchers": [
+        "금융 시황 리포트(합성)",
+        "산업 뉴스(합성)",
+        "웹 검색(덕덕고)"
+      ],
+      "expected_researchers": [
+        "금융 시황 리포트(합성)"
+      ],
+      "matched_researchers": [
+        "금융 시황 리포트(합성)"
+      ],
+      "missing_researchers": [],
+      "extra_researchers": [
+        "산업 뉴스(합성)",
+        "웹 검색(덕덕고)"
+      ],
+      "actual_procedures_target_researcher": [
+        "시황·동향 요약",
+        "수치·사실 추출"
+      ],
+      "expected_procedures": [
+        "시황·동향 요약",
+        "비교 분석"
+      ],
+      "matched_procedures": [
+        "시황·동향 요약"
+      ],
+      "missing_procedures": [
+        "비교 분석"
+      ],
+      "extra_procedures": [
+        "수치·사실 추출"
+      ],
+      "all_selected_pairs": [
+        {
+          "researcher": "금융 시황 리포트(합성)",
+          "procedure": "시황·동향 요약",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "금융 시황 리포트(합성)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "산업 뉴스(합성)",
+          "procedure": "시황·동향 요약",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "산업 뉴스(합성)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding",
+          "error": null
+        }
+      ]
+    },
+    "hallucination": {
+      "before": [],
+      "after": []
+    },
+    "after_declared_gaps": "미국 주요 지수 방향과 5월 구인 예상치 부재를 명시",
+    "answers": {
+      "before": {
+        "error": "The operation was aborted due to timeout",
+        "ms": 299983
+      },
+      "after": {
+        "error": null,
+        "ms": 256949
+      }
+    },
+    "wall_ms": 304789
+  },
+  {
+    "id": "Q2",
+    "runId": 12,
+    "http_success": true,
+    "invalid": true,
+    "invalid_reason": "세 사례의 분류만 지정했으며 동일 분류에 다른 관련 기사가 존재해 선정한 세 행을 유일한 정답으로 특정하지 못했다.",
+    "facts": [
+      {
+        "id": "F1",
+        "invalid": true,
+        "invalid_reason": "세 사례의 분류만 지정했으며 동일 분류에 다른 관련 기사가 존재해 선정한 세 행을 유일한 정답으로 특정하지 못했다.",
+        "before": {
+          "status": "miss",
+          "evidence": "TSMC 2024년 3nm 매출 약 108억 달러"
+        },
+        "after": {
+          "status": "miss",
+          "evidence": "미국 주요 클라우드 인프라 공급사: 납기일 3개월 이상"
+        },
+        "context_has_evidence": false
+      },
+      {
+        "id": "F2",
+        "invalid": true,
+        "invalid_reason": "세 사례의 분류만 지정했으며 동일 분류에 다른 관련 기사가 존재해 선정한 세 행을 유일한 정답으로 특정하지 못했다.",
+        "before": {
+          "status": "miss",
+          "evidence": "수출 통제 27개 품목"
+        },
+        "after": {
+          "status": "hit",
+          "evidence": "3개월 내외의 납기 연장 예측"
+        },
+        "context_has_evidence": true
+      },
+      {
+        "id": "F3",
+        "invalid": true,
+        "invalid_reason": "세 사례의 분류만 지정했으며 동일 분류에 다른 관련 기사가 존재해 선정한 세 행을 유일한 정답으로 특정하지 못했다.",
+        "before": {
+          "status": "miss",
+          "evidence": "MLCC 납기 20~30주"
+        },
+        "after": {
+          "status": "miss",
+          "evidence": "동남아 패키지·디스플레이 사례를 제시"
+        },
+        "context_has_evidence": false
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "actual_researchers": [
+        "산업 뉴스(합성)",
+        "금융 시황 리포트(합성)",
+        "웹 검색(덕덕고)"
+      ],
+      "expected_researchers": [
+        "산업 뉴스(합성)"
+      ],
+      "matched_researchers": [
+        "산업 뉴스(합성)"
+      ],
+      "missing_researchers": [],
+      "extra_researchers": [
+        "금융 시황 리포트(합성)",
+        "웹 검색(덕덕고)"
+      ],
+      "actual_procedures_target_researcher": [
+        "산업 이슈 영향 분석",
+        "수치·사실 추출"
+      ],
+      "expected_procedures": [
+        "산업 이슈 영향 분석",
+        "근거 신뢰도 점검"
+      ],
+      "matched_procedures": [
+        "산업 이슈 영향 분석"
+      ],
+      "missing_procedures": [
+        "근거 신뢰도 점검"
+      ],
+      "extra_procedures": [
+        "수치·사실 추출"
+      ],
+      "all_selected_pairs": [
+        {
+          "researcher": "산업 뉴스(합성)",
+          "procedure": "산업 이슈 영향 분석",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "산업 뉴스(합성)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "금융 시황 리포트(합성)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "금융 시황 리포트(합성)",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding",
+          "error": null
+        }
+      ]
+    },
+    "hallucination": {
+      "before": [
+        "TSMC 2024년 3nm 매출 약 108억 달러 및 2023년 53억 달러: 제공된 근거 없음",
+        "2019년 10월 일본 수출 통제 27개 품목 확대: 제공된 근거 없음",
+        "MLCC 납기 20~30주 및 이전 10~12주가 Yole 보고서 기준이라는 주장: 제공된 근거 없음"
+      ],
+      "after": [
+        "공정 소재 사례의 생산 라인 운영 비용 상승을 확정적으로 기술했으나 원문은 상승 전망으로 제시함"
+      ]
+    },
+    "after_declared_gaps": "합성 데이터로 실제 사실 확인 전이며 전자제품 사례의 명시적 납기 수치가 없다고 표시",
+    "answers": {
+      "before": {
+        "error": null,
+        "ms": 111074
+      },
+      "after": {
+        "error": null,
+        "ms": 285022
+      }
+    },
+    "wall_ms": 300347
+  },
+  {
+    "id": "Q3",
+    "runId": 15,
+    "http_success": true,
+    "invalid": false,
+    "invalid_reason": null,
+    "facts": [
+      {
+        "id": "F1",
+        "invalid": false,
+        "invalid_reason": null,
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "hit",
+          "evidence": "신분은 보유하지만 직무에는 종사하지 못함"
+        },
+        "context_has_evidence": true
+      },
+      {
+        "id": "F2",
+        "invalid": false,
+        "invalid_reason": null,
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "hit",
+          "evidence": "사용자의 귀책사유로 휴업하는 경우, 휴업기간 동안 평균임금의 100분의 70 이상의 수당"
+        },
+        "context_has_evidence": true
+      },
+      {
+        "id": "F3",
+        "invalid": false,
+        "invalid_reason": null,
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "hit",
+          "evidence": "요양으로 인하여 근로자가 노동불능이 되어 임금을 받을 수 없게 된 때, 일정한 경우를 제외하고는 ... 평균임금의 100분의 60"
+        },
+        "context_has_evidence": true
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "actual_researchers": [
+        "법률 용어 사전",
+        "판례·법령 질의응답",
+        "웹 검색(덕덕고)"
+      ],
+      "expected_researchers": [
+        "법률 용어 사전"
+      ],
+      "matched_researchers": [
+        "법률 용어 사전"
+      ],
+      "missing_researchers": [],
+      "extra_researchers": [
+        "판례·법령 질의응답",
+        "웹 검색(덕덕고)"
+      ],
+      "actual_procedures_target_researcher": [
+        "수치·사실 추출",
+        "용어 정의 정리"
+      ],
+      "expected_procedures": [
+        "용어 정의 정리",
+        "근거 신뢰도 점검"
+      ],
+      "matched_procedures": [
+        "용어 정의 정리"
+      ],
+      "missing_procedures": [
+        "근거 신뢰도 점검"
+      ],
+      "extra_procedures": [
+        "수치·사실 추출"
+      ],
+      "all_selected_pairs": [
+        {
+          "researcher": "법률 용어 사전",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "법률 용어 사전",
+          "procedure": "용어 정의 정리",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "판례-법령 연결 분석",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding",
+          "error": null
+        }
+      ]
+    },
+    "hallucination": {
+      "before": [],
+      "after": [
+        "검색 발췌문에는 시행일이나 현행성이 제시되지 않았는데 근로기준법 제46조가 현행 법과 일치한다고 단정"
+      ]
+    },
+    "after_declared_gaps": "공무원 휴직 근거와 휴업보상 비율의 현재 적용 여부를 확인할 수 없다고 명시",
+    "answers": {
+      "before": {
+        "error": "The operation was aborted due to timeout",
+        "ms": 299980
+      },
+      "after": {
+        "error": null,
+        "ms": 265177
+      }
+    },
+    "wall_ms": 302061
+  },
+  {
+    "id": "Q4",
+    "runId": 18,
+    "http_success": true,
+    "invalid": false,
+    "invalid_reason": null,
+    "facts": [
+      {
+        "id": "F1",
+        "invalid": false,
+        "invalid_reason": null,
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "context_has_evidence": true
+      },
+      {
+        "id": "F2",
+        "invalid": false,
+        "invalid_reason": null,
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "context_has_evidence": true
+      },
+      {
+        "id": "F3",
+        "invalid": false,
+        "invalid_reason": null,
+        "before": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "after": {
+          "status": "unavailable",
+          "evidence": "답변 생성 실패: The operation was aborted due to timeout"
+        },
+        "context_has_evidence": true
+      }
+    ],
+    "routing": {
+      "researcherRouting": "embedding",
+      "actual_researchers": [
+        "의학 문제은행",
+        "판례·법령 질의응답",
+        "웹 검색(덕덕고)"
+      ],
+      "expected_researchers": [
+        "의학 문제은행"
+      ],
+      "matched_researchers": [
+        "의학 문제은행"
+      ],
+      "missing_researchers": [],
+      "extra_researchers": [
+        "판례·법령 질의응답",
+        "웹 검색(덕덕고)"
+      ],
+      "actual_procedures_target_researcher": [
+        "문제 풀이 근거 정리",
+        "근거 신뢰도 점검"
+      ],
+      "expected_procedures": [
+        "문제 풀이 근거 정리",
+        "근거 신뢰도 점검"
+      ],
+      "matched_procedures": [
+        "문제 풀이 근거 정리",
+        "근거 신뢰도 점검"
+      ],
+      "missing_procedures": [],
+      "extra_procedures": [],
+      "all_selected_pairs": [
+        {
+          "researcher": "의학 문제은행",
+          "procedure": "문제 풀이 근거 정리",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "의학 문제은행",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "판례·법령 질의응답",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "근거 신뢰도 점검",
+          "procedureRouting": "embedding",
+          "error": null
+        },
+        {
+          "researcher": "웹 검색(덕덕고)",
+          "procedure": "수치·사실 추출",
+          "procedureRouting": "embedding",
+          "error": null
+        }
+      ]
+    },
+    "hallucination": {
+      "before": [],
+      "after": []
+    },
+    "after_declared_gaps": "답변 생성 실패로 평가 불가",
+    "answers": {
+      "before": {
+        "error": "The operation was aborted due to timeout",
+        "ms": 299981
+      },
+      "after": {
+        "error": "The operation was aborted due to timeout",
+        "ms": 299981
+      }
+    },
+    "wall_ms": 302089
+  }
+]

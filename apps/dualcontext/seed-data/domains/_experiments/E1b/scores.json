@@ -1,0 +1,763 @@
+{
+  "scoring_policy": "완전 일치 hit만 적중. 오류 답변은 unavailable로 표기하고 분모 제외. invalid 사실은 삭제하지 않고 집계에서 제외. 근거는 pairs 재료의 원문 인용 존재 기준.",
+  "scores": [
+    {
+      "id": "E1b-01",
+      "runId": 8,
+      "execution": [
+        {
+          "id": "E1b-01",
+          "attempt": 1,
+          "status": "success",
+          "http": 200,
+          "elapsed_ms": 243375
+        }
+      ],
+      "answer_errors": {
+        "before": null,
+        "after": null
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "partial",
+            "evidence": "조립·시험 라인 가동 중지 또는 부분 가동"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "생산 라인 전체가 일시 정지"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F2",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "contradict",
+            "evidence": "평균임금의 75% 이상"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "컨텍스트에 해당 정보가 없습니다"
+          },
+          "context_has_evidence": false
+        },
+        {
+          "id": "F3",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "partial",
+            "evidence": "기관지 확장제, 흡입 스테로이드 등 대증 치료"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "제시된 치료: 글루코코르티코이드 치료"
+          },
+          "context_has_evidence": true
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": {
+          "expected": [
+            "산업 뉴스(합성)",
+            "법률 용어 사전",
+            "의학 문제은행"
+          ],
+          "actual": [
+            "의학 문제은행",
+            "산업 뉴스(합성)",
+            "웹 검색(덕덕고)"
+          ],
+          "matched": [
+            "산업 뉴스(합성)",
+            "의학 문제은행"
+          ],
+          "missing": [
+            "법률 용어 사전"
+          ],
+          "extra": [
+            "웹 검색(덕덕고)"
+          ],
+          "exact": false
+        },
+        "procedures": {
+          "expected": [
+            "산업 이슈 영향 분석",
+            "용어 정의 정리",
+            "문제 풀이 근거 정리"
+          ],
+          "actual": [
+            "문제 풀이 근거 정리",
+            "근거 신뢰도 점검",
+            "수치·사실 추출",
+            "산업 이슈 영향 분석"
+          ],
+          "matched": [
+            "산업 이슈 영향 분석",
+            "문제 풀이 근거 정리"
+          ],
+          "missing": [
+            "용어 정의 정리"
+          ],
+          "extra": [
+            "근거 신뢰도 점검",
+            "수치·사실 추출"
+          ],
+          "exact": false
+        },
+        "pairs": [
+          {
+            "researcher": "의학 문제은행",
+            "procedure": "문제 풀이 근거 정리",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "의학 문제은행",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "산업 이슈 영향 분석",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "error": null
+          }
+        ]
+      },
+      "hallucination": {
+        "before": [
+          "휴업수당 75% 이상: 목표 법률 자료의 70% 이상과 불일치",
+          "근로기준법 제24조 및 시행령 제30조를 해당 기준의 근거로 명시: 제공 근거에 없음"
+        ],
+        "after": []
+      },
+      "after_declared_gaps": "휴업수당 정보가 컨텍스트에 없다고 명시; 개별 진료 조언이 아님을 표시.",
+      "metrics": {
+        "before": {
+          "hit": 0,
+          "denominator": 3,
+          "rate": 0
+        },
+        "after": {
+          "hit": 2,
+          "denominator": 3,
+          "rate": 0.6666666666666666
+        },
+        "context": {
+          "count": 2,
+          "denominator": 3,
+          "rate": 0.6666666666666666
+        }
+      },
+      "timing": {
+        "elapsed_ms": 243375,
+        "before_ms": 240522,
+        "after_ms": 159435
+      }
+    },
+    {
+      "id": "E1b-02",
+      "runId": 11,
+      "execution": [
+        {
+          "id": "E1b-02",
+          "attempt": 1,
+          "status": "success",
+          "http": 200,
+          "elapsed_ms": 302142
+        }
+      ],
+      "answer_errors": {
+        "before": "The operation was aborted due to timeout",
+        "after": null
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "계약 성사율이 12% 하락"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F2",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "연간 매출이 전년 대비 9% 감소"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F3",
+          "valid": false,
+          "invalid_reason": "해당 시황의 기준 시점이나 행을 지정하지 않아 다른 시황 행도 적합하다.",
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "partial",
+            "evidence": "HBM 제품; 24종 장비와 3종 소프트웨어는 없음"
+          },
+          "context_has_evidence": false
+        },
+        {
+          "id": "F4",
+          "valid": false,
+          "invalid_reason": "기준 시점이나 행을 지정하지 않아 다른 시황 값도 답이 된다.",
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "코스피는 0.06% 하락: 다른 시황 행의 값"
+          },
+          "context_has_evidence": false
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": {
+          "expected": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)"
+          ],
+          "actual": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)",
+            "웹 검색(덕덕고)"
+          ],
+          "matched": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)"
+          ],
+          "missing": [],
+          "extra": [
+            "웹 검색(덕덕고)"
+          ],
+          "exact": false
+        },
+        "procedures": {
+          "expected": [
+            "산업 이슈 영향 분석",
+            "수치·사실 추출",
+            "시황·동향 요약"
+          ],
+          "actual": [
+            "산업 이슈 영향 분석",
+            "시황·동향 요약",
+            "근거 신뢰도 점검",
+            "수치·사실 추출"
+          ],
+          "matched": [
+            "산업 이슈 영향 분석",
+            "수치·사실 추출",
+            "시황·동향 요약"
+          ],
+          "missing": [],
+          "extra": [
+            "근거 신뢰도 점검"
+          ],
+          "exact": false
+        },
+        "pairs": [
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "산업 이슈 영향 분석",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "error": null
+          }
+        ]
+      },
+      "hallucination": {
+        "before": [],
+        "after": []
+      },
+      "after_declared_gaps": "미국 소프트웨어 기업의 이름이나 제조사와의 연관이 시황에 없다고 적었으나, 별개 기업이라고 단정.",
+      "metrics": {
+        "before": {
+          "hit": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "after": {
+          "hit": 2,
+          "denominator": 2,
+          "rate": 1
+        },
+        "context": {
+          "count": 2,
+          "denominator": 2,
+          "rate": 1
+        }
+      },
+      "timing": {
+        "elapsed_ms": 302142,
+        "before_ms": 299982,
+        "after_ms": 228308
+      }
+    },
+    {
+      "id": "E1b-03",
+      "runId": 14,
+      "execution": [
+        {
+          "id": "E1b-03",
+          "attempt": 1,
+          "status": "success",
+          "http": 200,
+          "elapsed_ms": 235495
+        }
+      ],
+      "answer_errors": {
+        "before": null,
+        "after": null
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "partial",
+            "evidence": "해운 물류 병목, 환율 변동"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "인프라 문제와 물류 제약으로 생산량을 줄여"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F2",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "miss",
+            "evidence": "조달처 다각화 및 장기 계약 체결"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "생산 비용 절감 및 마케팅 전략 재조정"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F3",
+          "valid": false,
+          "invalid_reason": "목표 시황의 연도나 행을 특정하지 않아 다른 출처·시점의 누적 수출액도 답이 될 수 있다.",
+          "before": {
+            "status": "miss",
+            "evidence": "현재 누적 수출액을 이전 최고치 ... 대비"
+          },
+          "after": {
+            "status": "miss",
+            "evidence": "2026년 상반기 누적 수출액 70억 달러 돌파"
+          },
+          "context_has_evidence": false
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": {
+          "expected": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)"
+          ],
+          "actual": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)",
+            "웹 검색(덕덕고)"
+          ],
+          "matched": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)"
+          ],
+          "missing": [],
+          "extra": [
+            "웹 검색(덕덕고)"
+          ],
+          "exact": false
+        },
+        "procedures": {
+          "expected": [
+            "산업 이슈 영향 분석",
+            "수치·사실 추출",
+            "비교 분석"
+          ],
+          "actual": [
+            "시황·동향 요약",
+            "산업 이슈 영향 분석",
+            "수치·사실 추출",
+            "근거 신뢰도 점검"
+          ],
+          "matched": [
+            "산업 이슈 영향 분석",
+            "수치·사실 추출"
+          ],
+          "missing": [
+            "비교 분석"
+          ],
+          "extra": [
+            "시황·동향 요약",
+            "근거 신뢰도 점검"
+          ],
+          "exact": false
+        },
+        "pairs": [
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "산업 이슈 영향 분석",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "웹 검색(덕덕고)",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "error": null
+          }
+        ]
+      },
+      "hallucination": {
+        "before": [
+          "일본 원료 공급 차질의 원인을 지진·태풍 및 수출 규제 강화 등으로 단정: 목표 기사에 근거 없음"
+        ],
+        "after": [
+          "일본 원료 공급 차질을 중동 정세 불안과 연결: 제시된 별개 기사들에 동일 사건이라는 근거 없음"
+        ]
+      },
+      "after_declared_gaps": "특정 기업의 영업이익·순이익 등 근거가 부족해 수익성 확정 불가를 명시. 목표 시황의 이전 최고치 부재는 명시하지 않음.",
+      "metrics": {
+        "before": {
+          "hit": 0,
+          "denominator": 2,
+          "rate": 0
+        },
+        "after": {
+          "hit": 2,
+          "denominator": 2,
+          "rate": 1
+        },
+        "context": {
+          "count": 2,
+          "denominator": 2,
+          "rate": 1
+        }
+      },
+      "timing": {
+        "elapsed_ms": 235495,
+        "before_ms": 233712,
+        "after_ms": 70883
+      }
+    },
+    {
+      "id": "E1b-04",
+      "runId": 17,
+      "execution": [
+        {
+          "id": "E1b-04",
+          "attempt": 1,
+          "status": "success",
+          "http": 200,
+          "elapsed_ms": 301422
+        }
+      ],
+      "answer_errors": {
+        "before": "The operation was aborted due to timeout",
+        "after": null
+      },
+      "facts": [
+        {
+          "id": "F1",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "예상보다 낮은 투자자 관심으로 인수 조건이 재조정"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F2",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "생산 라인 확장 계획이 지연"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F3",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "hit",
+            "evidence": "포괄적 주식 교환을 통해 100% 자회사로 편입 ... 상장폐지"
+          },
+          "context_has_evidence": true
+        },
+        {
+          "id": "F4",
+          "valid": true,
+          "invalid_reason": null,
+          "before": {
+            "status": "unavailable",
+            "evidence": "증강 전 답변 시간 초과"
+          },
+          "after": {
+            "status": "partial",
+            "evidence": "존속법인(또는 신설회사)에게 포괄적으로 승계: 흡수합병에 신설회사를 병기"
+          },
+          "context_has_evidence": true
+        }
+      ],
+      "routing": {
+        "researcherRouting": "embedding",
+        "researchers": {
+          "expected": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)",
+            "법률 용어 사전"
+          ],
+          "actual": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)",
+            "법률 용어 사전"
+          ],
+          "matched": [
+            "산업 뉴스(합성)",
+            "금융 시황 리포트(합성)",
+            "법률 용어 사전"
+          ],
+          "missing": [],
+          "extra": [],
+          "exact": true
+        },
+        "procedures": {
+          "expected": [
+            "산업 이슈 영향 분석",
+            "수치·사실 추출",
+            "용어 정의 정리"
+          ],
+          "actual": [
+            "산업 이슈 영향 분석",
+            "시황·동향 요약",
+            "수치·사실 추출",
+            "근거 신뢰도 점검"
+          ],
+          "matched": [
+            "산업 이슈 영향 분석",
+            "수치·사실 추출"
+          ],
+          "missing": [
+            "용어 정의 정리"
+          ],
+          "extra": [
+            "시황·동향 요약",
+            "근거 신뢰도 점검"
+          ],
+          "exact": false
+        },
+        "pairs": [
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "산업 이슈 영향 분석",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "산업 뉴스(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "시황·동향 요약",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "금융 시황 리포트(합성)",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "법률 용어 사전",
+            "procedure": "수치·사실 추출",
+            "procedureRouting": "embedding",
+            "error": null
+          },
+          {
+            "researcher": "법률 용어 사전",
+            "procedure": "근거 신뢰도 점검",
+            "procedureRouting": "embedding",
+            "error": null
+          }
+        ]
+      },
+      "hallucination": {
+        "before": [],
+        "after": [
+          "흡수합병에서 소멸 법인 권리의무 승계 대상에 신설회사를 병기: 흡수합병과 신설합병을 혼동"
+        ]
+      },
+      "after_declared_gaps": "계획의 실제 이행 여부를 확인하지 않았다는 별도 한계 표시는 없음; 예정이라고 표현.",
+      "metrics": {
+        "before": {
+          "hit": 0,
+          "denominator": 0,
+          "rate": null
+        },
+        "after": {
+          "hit": 3,
+          "denominator": 4,
+          "rate": 0.75
+        },
+        "context": {
+          "count": 4,
+          "denominator": 4,
+          "rate": 1
+        }
+      },
+      "timing": {
+        "elapsed_ms": 301422,
+        "before_ms": 299981,
+        "after_ms": 155634
+      }
+    }
+  ],
+  "totals": {
+    "before": {
+      "hit": 0,
+      "denominator": 5,
+      "rate": 0
+    },
+    "after": {
+      "hit": 9,
+      "denominator": 11,
+      "rate": 0.8181818181818182
+    },
+    "paired_before": {
+      "hit": 0,
+      "denominator": 5
+    },
+    "paired_after": {
+      "hit": 4,
+      "denominator": 5
+    },
+    "context": {
+      "count": 10,
+      "denominator": 11
+    }
+  }
+}

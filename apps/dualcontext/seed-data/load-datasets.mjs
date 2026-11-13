@@ -5,6 +5,7 @@
 // 옵션
 //   --dry-run      데이터를 몇 행만 받아 매핑 결과와 검증 오류를 출력한다. 임베딩 · DB · API 는 건드리지 않는다.
 //   --no-register  적재만 하고 조사원/프로시저 등록(관리 API)은 하지 않는다.
+//   --register-only  적재는 건너뛰고 조사원/프로시저 등록만 한다(테이블이 이미 채워져 있을 때).
 //
 // 대상: 내장 5개(법률 용어 · 판례 · 의학 · 산업 뉴스 · 금융)와 seed-data/domains/<이름>/domain.json 전부.
 // 이름을 주면 그 이름(domain.json 의 name 또는 테이블 이름)만 처리한다.
@@ -30,6 +31,7 @@ const MAX = { title: 300, body: 1500, embed: 1200 };
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const register = !args.includes("--no-register");
+const registerOnly = args.includes("--register-only");
 const wanted = args.filter((arg) => !arg.startsWith("--"));
 
 const cut = (text, length) => String(text ?? "").replace(/\r/g, "").slice(0, length);
@@ -105,7 +107,8 @@ async function loadDomains() {
   const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "domains");
   const folders = await readdir(root, { withFileTypes: true }).catch(() => []);
   const specs = [];
-  for (const folder of folders.filter((entry) => entry.isDirectory())) {
+  // `_` 로 시작하는 폴더(예: _experiments)는 분야가 아니라 산출물 자리다.
+  for (const folder of folders.filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))) {
     const raw = JSON.parse(await readFile(path.join(root, folder.name, "domain.json"), "utf8"));
     const errors = validateDomain(raw, folder.name);
     if (errors.length > 0) {
@@ -145,7 +148,10 @@ async function fetchRows(source, limit) {
   const base = "https://datasets-server.huggingface.co";
   const config = source.config ?? "default";
   const split = source.split ?? "train";
-  const total = (await fetchJson(`${base}/size?dataset=${source.dataset}`)).size.dataset.num_rows;
+  // 행 수는 데이터셋 전체가 아니라 쓰는 구성(config)의 것이어야 한다. 구성이 여럿인 데이터셋에서
+  // 전체 행 수로 오프셋을 잡으면 마지막 쪽이 범위를 벗어난다.
+  const size = (await fetchJson(`${base}/size?dataset=${source.dataset}`)).size;
+  const total = size.configs?.find((entry) => entry.config === config)?.num_rows ?? size.dataset.num_rows;
   const pages = Math.max(1, Math.ceil(Math.min(limit, total) / PAGE));
   const rows = [];
   for (let page = 0; page < pages; page += 1) {
@@ -245,10 +251,15 @@ async function registerDomain(spec) {
 
 // ------------------------------------------------------------------- 실행 ----
 
+// dry-run 도 실제 적재와 같은 표본(전체 limit 행, 오프셋 포함)을 가져온다. 앞 몇 행만 보면 범위 밖 오프셋 같은 오류를 놓친다.
 async function dryRunOne(source) {
-  const limit = 5;
+  const limit = source.limit ?? BUILTIN_LIMIT;
   const { rows, total } = await fetchSource(source, limit);
-  console.log(`  total rows: ${total}; fetched ${rows.length}; columns: ${Object.keys(rows[0] ?? {}).join(", ")}`);
+  console.log(`  total rows: ${total}; fetched ${rows.length} (planned ${limit}); columns: ${Object.keys(rows[0] ?? {}).join(", ")}`);
+  if (rows.length < Math.min(limit, total)) {
+    console.log(`  <-- 계획한 ${Math.min(limit, total)}행보다 적게 가져왔다`);
+    process.exitCode = 2;
+  }
   if (source.templates) {
     const unknown = [...new Set(Object.values(source.templates).flatMap(placeholders))].filter((key) => rows.every((row) => lookup(row, key) === undefined));
     if (unknown.length > 0) {
@@ -268,6 +279,11 @@ async function dryRunOne(source) {
 }
 
 async function loadOne(source) {
+  // 테이블은 이미 적재됐고 조사원/프로시저 등록만 다시 하고 싶을 때.
+  if (registerOnly) {
+    if (!source.domain) return console.log("  (내장 분야는 서버 시작 시 등록되므로 건너뜀)");
+    return registerDomain(source);
+  }
   const limit = source.limit ?? BUILTIN_LIMIT;
   const { rows } = await fetchSource(source, limit);
   const items = rows.map(source.map).filter((item) => item.title.trim() !== "" && item.body.trim() !== "");
