@@ -4,12 +4,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex h-10 items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex h-10 items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-slate-950 text-white hover:bg-slate-800",
-        outline: "border border-slate-300 bg-white text-slate-950 hover:bg-slate-100"
+        default: "bg-accent text-white hover:bg-accent/90",
+        outline: "border border-line bg-transparent text-fg hover:bg-surface",
+        ghost: "justify-start text-muted hover:bg-surface hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg"
       },
       size: {
         default: "px-4 py-2",

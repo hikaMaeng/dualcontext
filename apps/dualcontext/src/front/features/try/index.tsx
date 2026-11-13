@@ -1,55 +1,62 @@
-import { useState, type FormEvent } from "react";
-import type { AugmentResult } from "dualcontext_domain/common";
+import { useEffect, useState, type FormEvent } from "react";
+import type { AugmentResult, WriterConfig } from "dualcontext_domain/common";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Input, Select } from "../../components/ui/input";
+import { Field } from "../../components/layout";
 import { api } from "../../lib/api";
 import type { Texts } from "../../i18n";
 import { RSC as SHARED } from "../../resource";
 import { RSC } from "./resource";
 
-/** MCP 도구와 같은 증강 경로를 관리자가 직접 시험한다. */
+/** MCP 도구와 같은 증강 경로를 관리자가 직접 시험한다. 라이터를 골라 돌려 볼 수 있다. */
 export function TryView({ t }: { t: Texts }) {
   const [query, setQuery] = useState("");
+  const [writers, setWriters] = useState<WriterConfig[]>([]);
+  const [writerId, setWriterId] = useState("");
   const [result, setResult] = useState<AugmentResult | null>(null);
+  const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    api<AugmentResult>("/augment", { method: "POST", body: { query } })
-      .then((next) => {
-        setResult(next);
-        setFailed(false);
-      })
-      .catch(() => setFailed(true));
-  };
+  useEffect(() => {
+    api<WriterConfig[]>("/writers").then(setWriters).catch(() => setFailed(true));
+  }, []);
 
-  const routingStatus = {
-    matched: t[RSC.TRY_ROUTING_MATCHED_STATUS],
-    "fallback-all": t[RSC.TRY_ROUTING_FALLBACK_STATUS],
-    none: t[RSC.TRY_ROUTING_NONE_STATUS]
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      setResult(await api<AugmentResult>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } }));
+      setFailed(false);
+    } catch {
+      setFailed(true);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <section aria-labelledby="try-title" className="grid gap-4">
-      <h2 id="try-title" className="text-xl font-semibold">
-        {t[RSC.TRY_TITLE_TEXT]}
-      </h2>
-      <form onSubmit={submit} className="grid gap-3" aria-labelledby="try-title">
-        <label className="grid gap-1 text-sm">
-          {t[RSC.TRY_QUERY_LABEL]}
-          <Input required value={query} onChange={(event) => setQuery(event.target.value)} />
-        </label>
-        <Button type="submit" className="justify-self-start">
-          {t[RSC.TRY_RUN_BUTTON]}
-        </Button>
+    <section aria-labelledby="page-title" className="grid gap-4">
+      <h1 id="page-title" className="text-2xl font-semibold">{t[RSC.TRY_TITLE_TEXT]}</h1>
+      <form onSubmit={submit} className="grid gap-3" aria-labelledby="page-title">
+        <Field label={t[RSC.TRY_QUERY_LABEL]}><Input required value={query} onChange={(e) => setQuery(e.target.value)} /></Field>
+        <Field label={t[RSC.TRY_WRITER_LABEL]}>
+          <Select value={writerId} onChange={(e) => setWriterId(e.target.value)}>
+            <option value="">{t[RSC.TRY_WRITER_ACTIVE_TEXT]}</option>
+            {writers.map((writer) => <option key={writer.id} value={writer.id}>{writer.name}</option>)}
+          </Select>
+        </Field>
+        <Button type="submit" disabled={busy} className="justify-self-start">{t[RSC.TRY_RUN_BUTTON]}</Button>
       </form>
-      {failed && <p role="alert" className="text-sm text-red-700">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
+      {failed && <p role="alert" className="text-sm text-danger">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
       {result && (
         <>
-          <p role="status" data-testid="routing-state" className="text-sm text-slate-700">
-            {routingStatus[result.researcherRouting]}
-          </p>
-          <pre aria-label={t[RSC.TRY_RESULT_LABEL]} data-testid="augmented-context" className="whitespace-pre-wrap rounded-md border border-slate-200 bg-white p-4 text-sm">
+          <p role="status" data-testid="routing-state" className="text-sm text-muted">{t[RSC.TRY_ROUTING_LABEL]}: {result.researcherRouting}</p>
+          <ul aria-label={t[RSC.TRY_PAIRS_LABEL]} className="grid gap-1 text-sm text-muted">
+            {result.pairs.map((pair, index) => (
+              <li key={index} data-testid="pair-item">{pair.researcher} / {pair.procedure ?? "-"} ({pair.materialCount}) [{pair.procedureRouting}]</li>
+            ))}
+          </ul>
+          <pre aria-label={t[RSC.TRY_RESULT_LABEL]} data-testid="augmented-context" className="whitespace-pre-wrap rounded-md border border-line bg-sidebar p-4 font-mono text-sm">
             {result.context}
           </pre>
         </>

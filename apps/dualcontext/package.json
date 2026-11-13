@@ -10,7 +10,7 @@
     "build": "npm run build:front && npm run build:server",
     "build:front": "vite build --config vite.config.ts",
     "build:server": "esbuild src/server/index.ts --bundle --platform=node --target=node26 --format=esm --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\" --outfile=dist/server/index.js",
-    "test": "node --import tsx --test src/server/*.test.ts",
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
     "lint": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.server.json"
   },
   "dependencies": {

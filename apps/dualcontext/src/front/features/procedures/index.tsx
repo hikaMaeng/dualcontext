@@ -1,117 +1,102 @@
 import { useEffect, useState, type FormEvent } from "react";
-import type { Procedure, Researcher } from "dualcontext_domain/common";
+import type { Procedure } from "dualcontext_domain/common";
 import { Button } from "../../components/ui/button";
-import { Input, Select, Textarea } from "../../components/ui/input";
+import { Checkbox, Input, Textarea } from "../../components/ui/input";
+import { Field, ListDetail } from "../../components/layout";
 import { api, splitList } from "../../lib/api";
 import type { Texts } from "../../i18n";
 import { RSC as SHARED } from "../../resource";
 import { RSC } from "./resource";
 
+type Form = { id: number | null; name: string; applies: string; steps: string; impacts: string; outputFormat: string; enabled: boolean };
+const blank: Form = { id: null, name: "", applies: "", steps: "", impacts: "", outputFormat: "", enabled: true };
+
+const toForm = (item: Procedure): Form => ({
+  id: item.id, name: item.name, applies: item.appliesWhen.join(", "), steps: item.steps.join("\n"),
+  impacts: item.impacts.join("\n"), outputFormat: item.outputFormat, enabled: item.enabled
+});
+
 export function ProceduresView({ t }: { t: Texts }) {
   const [items, setItems] = useState<Procedure[]>([]);
-  const [researchers, setResearchers] = useState<Researcher[]>([]);
-  const [failed, setFailed] = useState(false);
-  const [researcherId, setResearcherId] = useState("");
-  const [name, setName] = useState("");
-  const [applies, setApplies] = useState("");
-  const [steps, setSteps] = useState("");
-  const [impacts, setImpacts] = useState("");
-  const [outputFormat, setOutputFormat] = useState("");
+  const [form, setForm] = useState<Form>(blank);
+  const [state, setState] = useState<"idle" | "saved" | "failed">("idle");
 
-  const load = () =>
-    Promise.all([api<Procedure[]>("/procedures"), api<Researcher[]>("/researchers")])
-      .then(([procedures, owners]) => {
-        setItems(procedures);
-        setResearchers(owners);
-      })
-      .catch(() => setFailed(true));
+  const load = async () => {
+    try {
+      setItems(await api<Procedure[]>("/procedures"));
+    } catch {
+      setState("failed");
+    }
+  };
   useEffect(() => void load(), []);
 
-  const submit = (event: FormEvent) => {
+  const set = <K extends keyof Form>(key: K, value: Form[K]) => setForm((current) => ({ ...current, [key]: value }));
+
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
-    api("/procedures", {
-      method: "POST",
-      body: {
-        researcherId: Number(researcherId),
-        name,
-        appliesWhen: splitList(applies, /,/),
-        steps: splitList(steps, /\n/),
-        impacts: splitList(impacts, /\n/),
-        outputFormat
-      }
-    })
-      .then(() => {
-        setName("");
-        setApplies("");
-        setSteps("");
-        setImpacts("");
-        setOutputFormat("");
-        setFailed(false);
-        return load();
-      })
-      .catch(() => setFailed(true));
+    const body = {
+      name: form.name, appliesWhen: splitList(form.applies, /,/), steps: splitList(form.steps, /\n/),
+      impacts: splitList(form.impacts, /\n/), outputFormat: form.outputFormat, enabled: form.enabled
+    };
+    try {
+      const saved = await api<Procedure>(form.id === null ? "/procedures" : `/procedures/${form.id}`, { method: form.id === null ? "POST" : "PUT", body });
+      setForm(toForm(saved));
+      setState("saved");
+      await load();
+    } catch {
+      setState("failed");
+    }
   };
 
-  const remove = (id: number) => api(`/procedures/${id}`, { method: "DELETE" }).then(load).catch(() => setFailed(true));
+  const remove = async () => {
+    if (form.id === null) return;
+    try {
+      await api(`/procedures/${form.id}`, { method: "DELETE" });
+      setForm(blank);
+      setState("idle");
+      await load();
+    } catch {
+      setState("failed");
+    }
+  };
 
   return (
-    <section aria-labelledby="procedures-title" className="grid gap-4">
-      <h2 id="procedures-title" className="text-xl font-semibold">
-        {t[RSC.PROCEDURES_TITLE_TEXT]}
-      </h2>
-      <form onSubmit={submit} className="grid gap-3" aria-labelledby="procedures-title">
-        <label className="grid gap-1 text-sm">
-          {t[SHARED.COMMON_RESEARCHER_LABEL]}
-          <Select required value={researcherId} onChange={(event) => setResearcherId(event.target.value)}>
-            <option value="" />
-            {researchers.map((researcher) => (
-              <option key={researcher.id} value={researcher.id}>
-                {researcher.name}
-              </option>
-            ))}
-          </Select>
-        </label>
-        <label className="grid gap-1 text-sm">
-          {t[SHARED.COMMON_NAME_LABEL]}
-          <Input required value={name} onChange={(event) => setName(event.target.value)} />
-        </label>
-        <label className="grid gap-1 text-sm">
-          {t[RSC.PROCEDURES_APPLIES_LABEL]}
-          <Input value={applies} onChange={(event) => setApplies(event.target.value)} />
-        </label>
-        <label className="grid gap-1 text-sm">
-          {t[RSC.PROCEDURES_STEPS_LABEL]}
-          <Textarea value={steps} onChange={(event) => setSteps(event.target.value)} />
-        </label>
-        <label className="grid gap-1 text-sm">
-          {t[RSC.PROCEDURES_IMPACTS_LABEL]}
-          <Textarea value={impacts} onChange={(event) => setImpacts(event.target.value)} />
-        </label>
-        <label className="grid gap-1 text-sm">
-          {t[RSC.PROCEDURES_FORMAT_LABEL]}
-          <Input value={outputFormat} onChange={(event) => setOutputFormat(event.target.value)} />
-        </label>
-        <Button type="submit" className="justify-self-start">
-          {t[SHARED.COMMON_SAVE_BUTTON]}
-        </Button>
-      </form>
-      {failed && <p role="alert" className="text-sm text-red-700">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
-      {items.length === 0 ? (
-        <p className="text-sm text-slate-600">{t[SHARED.COMMON_EMPTY_MESSAGE]}</p>
-      ) : (
-        <ul aria-labelledby="procedures-title" className="grid gap-2">
-          {items.map((item) => (
-            <li key={item.id} data-testid="procedure-item" className="flex items-center justify-between rounded-md border border-slate-200 bg-white p-3 text-sm">
-              <span>
-                <strong>{item.name}</strong> {researchers.find((researcher) => researcher.id === item.researcherId)?.name}
-              </span>
-              <Button variant="outline" size="sm" onClick={() => void remove(item.id)}>
-                {t[SHARED.COMMON_DELETE_BUTTON]}
-              </Button>
+    <section aria-labelledby="page-title" className="grid gap-4">
+      <h1 id="page-title" className="text-2xl font-semibold">{t[RSC.PROCEDURES_TITLE_TEXT]}</h1>
+      <ListDetail
+        listLabel={t[SHARED.COMMON_LIST_LABEL]}
+        list={
+          <>
+            <li>
+              <Button variant="outline" size="sm" className="w-full" onClick={() => setForm(blank)}>{t[SHARED.COMMON_NEW_BUTTON]}</Button>
             </li>
-          ))}
-        </ul>
-      )}
+            {items.length === 0 && <li className="text-sm text-muted">{t[SHARED.COMMON_EMPTY_MESSAGE]}</li>}
+            {items.map((item) => (
+              <li key={item.id}>
+                <Button variant="ghost" size="sm" className="w-full" aria-current={form.id === item.id ? "page" : undefined} data-testid="procedure-item" onClick={() => setForm(toForm(item))}>
+                  {item.name}
+                </Button>
+              </li>
+            ))}
+          </>
+        }
+        form={
+          <form onSubmit={submit} className="grid gap-3" aria-labelledby="page-title">
+            <Field label={t[SHARED.COMMON_NAME_LABEL]}><Input required value={form.name} onChange={(e) => set("name", e.target.value)} /></Field>
+            <Field label={t[RSC.PROCEDURES_APPLIES_LABEL]}><Input value={form.applies} onChange={(e) => set("applies", e.target.value)} /></Field>
+            <Field label={t[RSC.PROCEDURES_STEPS_LABEL]}><Textarea value={form.steps} onChange={(e) => set("steps", e.target.value)} /></Field>
+            <Field label={t[RSC.PROCEDURES_IMPACTS_LABEL]}><Textarea value={form.impacts} onChange={(e) => set("impacts", e.target.value)} /></Field>
+            <Field label={t[RSC.PROCEDURES_FORMAT_LABEL]}><Input value={form.outputFormat} onChange={(e) => set("outputFormat", e.target.value)} /></Field>
+            <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.enabled} onChange={(e) => set("enabled", e.target.checked)} />{t[SHARED.COMMON_ENABLED_LABEL]}</label>
+            <div className="flex items-center gap-3">
+              <Button type="submit">{t[SHARED.COMMON_SAVE_BUTTON]}</Button>
+              {form.id !== null && <Button type="button" variant="outline" className="text-danger" onClick={() => void remove()}>{t[SHARED.COMMON_DELETE_BUTTON]}</Button>}
+              {state === "saved" && <p role="status" className="text-sm text-muted">{t[SHARED.COMMON_SAVED_STATUS]}</p>}
+              {state === "failed" && <p role="alert" className="text-sm text-danger">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
+            </div>
+          </form>
+        }
+      />
     </section>
   );
 }

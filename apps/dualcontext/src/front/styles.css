@@ -1,7 +1,26 @@
 @import "tailwindcss";
 
+/* Claude Code 다크 모드 팔레트: 따뜻한 회색 바탕, 크림색 글자, 테라코타 강조. */
+@theme {
+  --color-canvas: #262624;
+  --color-sidebar: #1f1e1d;
+  --color-surface: #30302e;
+  --color-line: #3d3d3a;
+  --color-fg: #faf9f5;
+  --color-muted: #a8a69e;
+  --color-accent: #d97757;
+  --color-danger: #e5736b;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
   body {
-    @apply bg-slate-50 antialiased;
+    @apply bg-canvas text-fg antialiased;
+  }
+  ::placeholder {
+    color: var(--color-muted);
   }
 }

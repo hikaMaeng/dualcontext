@@ -19,6 +19,10 @@ services:
     ports:
       # Loopback only: the admin site has no authentication yet.
       - "127.0.0.1:${DUALCONTEXT_HOST_PORT:-18081}:18081"
+    extra_hosts:
+      # Lets the container reach AI servers running on the host (Docker Desktop
+      # defines this name already; Linux needs the mapping).
+      - "host.docker.internal:host-gateway"
     volumes:
       # The only volume. Each persisted concern is a subfolder of it
       # (pgdata/ today); do not add a second volume. The target is the path the

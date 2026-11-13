@@ -1,29 +1,32 @@
 import express from "express";
-import type pg from "pg";
 import { z } from "zod";
+import { augment, type Deps } from "../augment/index.js";
 import { readDatabaseStatus } from "../db/index.js";
-import { augment } from "../augment/index.js";
-import { documentsRouter } from "./documents/index.js";
+import { aiServerRouter } from "./ai-server/index.js";
 import { proceduresRouter } from "./procedures/index.js";
 import { researchersRouter } from "./researchers/index.js";
+import { routerRouter } from "./router/index.js";
+import { writersRouter } from "./writers/index.js";
 
 /** 관리자 API. /api/admin 아래에 붙는다. 인증이 없으므로 게시 포트는 루프백으로만 연다. */
-export function adminRouter(pool: pg.Pool) {
+export function adminRouter(deps: Deps) {
   const router = express.Router();
   router.use(express.json());
-  router.use(researchersRouter(pool));
-  router.use(proceduresRouter(pool));
-  router.use(documentsRouter(pool));
+  router.use(researchersRouter(deps.pool));
+  router.use(proceduresRouter(deps.pool));
+  router.use(routerRouter(deps.pool));
+  router.use(writersRouter(deps.pool));
+  router.use(aiServerRouter(deps.pool, deps.model));
 
   router.get("/status", async (_request, response) => {
-    response.json(await readDatabaseStatus(pool));
+    response.json(await readDatabaseStatus(deps.pool));
   });
 
-  // 시험 실행: MCP 도구와 동일한 증강 경로. 결과에 라우팅 결과도 함께 돌려준다.
+  // 시험 실행: MCP 도구와 동일한 증강 경로. writerId 를 주면 그 라이터로 돌려 본다.
   router.post("/augment", async (request, response) => {
-    const parsed = z.object({ query: z.string().trim().min(1) }).safeParse(request.body);
+    const parsed = z.object({ query: z.string().trim().min(1), writerId: z.number().int().optional() }).safeParse(request.body);
     if (!parsed.success) return void response.status(400).json({ error: parsed.error.message });
-    response.json(await augment(pool, parsed.data.query));
+    response.json(await augment(deps, parsed.data.query, parsed.data.writerId));
   });
 
   return router;

@@ -4,6 +4,8 @@ import { createApp } from "./app.js";
 import { createPool, pingDatabase } from "./db/index.js";
 import { readEnv } from "./env.js";
 import { createMcpServer } from "./mcp/index.js";
+import { createModelClient } from "./model/index.js";
+import { ensureDefaults } from "./seed/index.js";
 
 // `--stdio` runs the MCP server over stdin/stdout and nothing else. Stdout is
 // the protocol channel there, so every log line goes to stderr.
@@ -11,14 +13,16 @@ import { createMcpServer } from "./mcp/index.js";
 const stdio = process.argv.includes("--stdio");
 const env = readEnv();
 const pool = createPool(env.databaseUrl);
+const deps = { pool, model: createModelClient(pool, env.llmApiKey), dataDir: env.dataDir };
+await ensureDefaults(pool);
 
 if (stdio) {
   const transport = new StdioServerTransport();
-  await createMcpServer(pool).connect(transport);
+  await createMcpServer(deps).connect(transport);
   console.error("dualcontext mcp stdio ready");
   transport.onclose = () => void pool.end().then(() => process.exit(0));
 } else {
-  const app = createApp({ checkDatabase: () => pingDatabase(pool), admin: adminRouter(pool) });
+  const app = createApp({ checkDatabase: () => pingDatabase(pool), admin: adminRouter(deps) });
   const server = app.listen(env.port, () => {
     console.log(`dualcontext listening on ${env.port}`);
   });

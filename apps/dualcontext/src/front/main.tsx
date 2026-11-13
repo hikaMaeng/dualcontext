@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
-import { Activity, Server } from "lucide-react";
+import { Activity, Bot, FlaskConical, GitBranch, ListChecks, PenLine, Search } from "lucide-react";
 import { Button } from "./components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
-import { DocumentsView } from "./features/documents";
+import { AiServerView } from "./features/aiserver";
 import { ProceduresView } from "./features/procedures";
 import { ResearchersView } from "./features/researchers";
+import { RouterView } from "./features/router";
 import { TryView } from "./features/try";
+import { WritersView } from "./features/writers";
 import { direction, resolveLanguage, texts } from "./i18n";
 import { api } from "./lib/api";
 import { RSC } from "./resource";
@@ -18,87 +19,66 @@ const t = texts(language);
 document.documentElement.lang = language;
 document.documentElement.dir = direction(language);
 
-type Tab = "researchers" | "procedures" | "documents" | "try";
+type Page = "researchers" | "procedures" | "router" | "writers" | "aiserver" | "try";
 type DatabaseStatus = { koreanConfig: boolean; koreanSample: string | null };
 
-const tabs: { id: Tab; label: string }[] = [
-  { id: "researchers", label: t[RSC.APP_TAB_RESEARCHERS_BUTTON] },
-  { id: "procedures", label: t[RSC.APP_TAB_PROCEDURES_BUTTON] },
-  { id: "documents", label: t[RSC.APP_TAB_DOCUMENTS_BUTTON] },
-  { id: "try", label: t[RSC.APP_TAB_TRY_BUTTON] }
+const pages: { id: Page; label: string; icon: typeof Search }[] = [
+  { id: "researchers", label: t[RSC.APP_NAV_RESEARCHERS_BUTTON], icon: Search },
+  { id: "procedures", label: t[RSC.APP_NAV_PROCEDURES_BUTTON], icon: ListChecks },
+  { id: "router", label: t[RSC.APP_NAV_ROUTER_BUTTON], icon: GitBranch },
+  { id: "writers", label: t[RSC.APP_NAV_WRITERS_BUTTON], icon: PenLine },
+  { id: "aiserver", label: t[RSC.APP_NAV_AISERVER_BUTTON], icon: Bot },
+  { id: "try", label: t[RSC.APP_NAV_TRY_BUTTON], icon: FlaskConical }
 ];
 
+const fromHash = (): Page => (pages.find((entry) => `#${entry.id}` === window.location.hash)?.id ?? "researchers");
+
 function App() {
-  const [tab, setTab] = useState<Tab>("researchers");
+  const [page, setPage] = useState<Page>(fromHash);
   const [status, setStatus] = useState<DatabaseStatus | "error" | null>(null);
 
   useEffect(() => {
     api<DatabaseStatus>("/status").then(setStatus).catch(() => setStatus("error"));
+    const onHash = () => setPage(fromHash());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
-      <header className="border-b border-slate-200 bg-white">
-        <nav aria-label={t[RSC.APP_SHELL_NAV_PRIMARY_LABEL]} className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <a className="text-base font-semibold" href="/">
-            {t[RSC.APP_BRAND_NAME_TEXT]}
-          </a>
+    <div className="flex min-h-screen bg-canvas text-fg">
+      <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col gap-4 border-e border-line bg-sidebar p-3">
+        <a className="px-2 pt-1 text-base font-semibold" href="/">{t[RSC.APP_BRAND_NAME_TEXT]}</a>
+        <nav aria-label={t[RSC.APP_SHELL_NAV_PRIMARY_LABEL]} className="grid gap-1">
+          {pages.map(({ id, label, icon: Icon }) => (
+            <Button key={id} variant="ghost" size="sm" aria-current={page === id ? "page" : undefined} onClick={() => { window.location.hash = id; }}>
+              <Icon aria-hidden="true" className="h-4 w-4" />
+              {label}
+            </Button>
+          ))}
+        </nav>
+        <div className="mt-auto grid gap-2 px-1">
+          <p role="status" data-testid="service-state" className="text-xs leading-5 text-muted">
+            {status === "error" || (status && !status.koreanConfig)
+              ? t[RSC.APP_RUNTIME_ERROR_ALERT]
+              : status
+                ? `${t[RSC.APP_RUNTIME_READY_STATUS]} ${status.koreanSample ?? ""}`
+                : ""}
+          </p>
           <Button asChild variant="outline" size="sm">
             <a href="/health">
               <Activity aria-hidden="true" className="h-4 w-4" />
               {t[RSC.APP_SHELL_HEALTH_BUTTON]}
             </a>
           </Button>
-        </nav>
-      </header>
-      <main className="mx-auto grid max-w-5xl gap-6 px-6 py-10" aria-labelledby="page-title">
-        <section aria-labelledby="page-title" className="grid gap-3">
-          <h1 id="page-title" className="text-3xl font-semibold tracking-normal">
-            {t[RSC.APP_SHELL_TITLE_TEXT]}
-          </h1>
-          <p className="max-w-2xl text-sm leading-6 text-slate-600">{t[RSC.APP_SHELL_SUBTITLE_TEXT]}</p>
-        </section>
-        <section aria-labelledby="runtime-title">
-          <Card>
-            <CardHeader>
-              <CardTitle id="runtime-title" className="flex items-center gap-2">
-                <Server aria-hidden="true" className="h-5 w-5 text-emerald-600" />
-                {t[RSC.APP_RUNTIME_TITLE_TEXT]}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p role="status" data-testid="service-state" className="text-sm text-slate-700">
-                {status === "error" || (status && !status.koreanConfig)
-                  ? t[RSC.APP_RUNTIME_ERROR_ALERT]
-                  : status
-                    ? `${t[RSC.APP_RUNTIME_READY_STATUS]} ${status.koreanSample ?? ""}`
-                    : ""}
-              </p>
-            </CardContent>
-          </Card>
-        </section>
-        <div role="tablist" aria-label={t[RSC.APP_TABS_LABEL]} className="flex gap-2">
-          {tabs.map((entry) => (
-            <Button
-              key={entry.id}
-              role="tab"
-              id={`tab-${entry.id}`}
-              aria-selected={tab === entry.id}
-              aria-controls="tab-panel"
-              variant={tab === entry.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setTab(entry.id)}
-            >
-              {entry.label}
-            </Button>
-          ))}
         </div>
-        <div role="tabpanel" id="tab-panel" aria-labelledby={`tab-${tab}`}>
-          {tab === "researchers" && <ResearchersView t={t} />}
-          {tab === "procedures" && <ProceduresView t={t} />}
-          {tab === "documents" && <DocumentsView t={t} />}
-          {tab === "try" && <TryView t={t} />}
-        </div>
+      </aside>
+      <main className="min-w-0 flex-1 p-8">
+        {page === "researchers" && <ResearchersView t={t} />}
+        {page === "procedures" && <ProceduresView t={t} />}
+        {page === "router" && <RouterView t={t} />}
+        {page === "writers" && <WritersView t={t} />}
+        {page === "aiserver" && <AiServerView t={t} />}
+        {page === "try" && <TryView t={t} />}
       </main>
     </div>
   );
