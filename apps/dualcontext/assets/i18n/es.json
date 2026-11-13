@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "Principal",
+  "app.shell.health.button": "Estado",
+  "app.shell.title.text": "Servicio dualcontext",
+  "app.shell.subtitle.text": "Andamiaje mínimo de Express y React con un endpoint de estado desplegado.",
+  "app.runtime.title.text": "Estado del entorno",
+  "app.runtime.ready.status": "Listo para la verificación de humo con Docker local."
+}

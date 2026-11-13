@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "Principal",
+  "app.shell.health.button": "État",
+  "app.shell.title.text": "Service dualcontext",
+  "app.shell.subtitle.text": "Squelette minimal Express et React avec un point de terminaison d'état déployé.",
+  "app.runtime.title.text": "État d'exécution",
+  "app.runtime.ready.status": "Prêt pour la vérification de fumée Docker locale."
+}

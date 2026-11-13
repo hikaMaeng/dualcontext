@@ -1,0 +1,31 @@
+name: dualcontext
+
+services:
+  dualcontext:
+    build:
+      context: .
+      dockerfile: apps/dualcontext/docker/Dockerfile
+    image: dualcontext-root-dualcontext:latest
+    container_name: dualcontext
+    # Reap zombies and forward signals, so stopping the stack is immediate
+    # instead of waiting out the kill timeout.
+    init: true
+    restart: unless-stopped
+    env_file:
+      # Generated from docker/env.defaults and never committed. The image
+      # carries its own defaults, so a missing file is not fatal.
+      - path: apps/dualcontext/docker/.env
+        required: false
+    ports:
+      - "${DUALCONTEXT_HOST_PORT:-18081}:18081"
+    networks:
+      - dualcontext_internal
+
+# Add a named volume here when a service actually persists data, and mount it
+# in that service. The scaffold persists nothing, so it declares none.
+
+networks:
+  # Project-scoped: no other compose project joins this network. Publishing a
+  # port to the host is how the outside reaches the service.
+  dualcontext_internal:
+    internal: false

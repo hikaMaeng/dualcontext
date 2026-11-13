@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "التنقل الرئيسي",
+  "app.shell.health.button": "الحالة",
+  "app.shell.title.text": "خدمة dualcontext",
+  "app.shell.subtitle.text": "هيكل مبدئي بسيط باستخدام Express وReact مع نقطة نهاية للحالة.",
+  "app.runtime.title.text": "حالة التشغيل",
+  "app.runtime.ready.status": "جاهز للتحقق الأولي عبر Docker محليًا."
+}

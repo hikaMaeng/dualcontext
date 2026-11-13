@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "मुख्य",
+  "app.shell.health.button": "स्वास्थ्य",
+  "app.shell.title.text": "dualcontext सेवा",
+  "app.shell.subtitle.text": "परिनियोजित स्वास्थ्य एंडपॉइंट वाला न्यूनतम Express और React स्कैफ़ोल्ड।",
+  "app.runtime.title.text": "रनटाइम स्थिति",
+  "app.runtime.ready.status": "स्थानीय Docker स्मोक सत्यापन के लिए तैयार।"
+}

@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "Principal",
+  "app.shell.health.button": "Integridade",
+  "app.shell.title.text": "Serviço dualcontext",
+  "app.shell.subtitle.text": "Estrutura mínima em Express e React com um endpoint de integridade implantado.",
+  "app.runtime.title.text": "Status de execução",
+  "app.runtime.ready.status": "Pronto para a verificação de fumaça com Docker local."
+}

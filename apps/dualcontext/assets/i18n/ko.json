@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "주 메뉴",
+  "app.shell.health.button": "상태",
+  "app.shell.title.text": "dualcontext 서비스",
+  "app.shell.subtitle.text": "배포된 상태 확인 엔드포인트를 갖춘 최소 Express + React 스캐폴드입니다.",
+  "app.runtime.title.text": "런타임 상태",
+  "app.runtime.ready.status": "로컬 Docker 스모크 검증 준비가 끝났습니다."
+}

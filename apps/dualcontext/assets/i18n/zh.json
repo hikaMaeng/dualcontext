@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "主导航",
+  "app.shell.health.button": "健康检查",
+  "app.shell.title.text": "dualcontext 服务",
+  "app.shell.subtitle.text": "包含已部署健康检查端点的最小 Express 与 React 脚手架。",
+  "app.runtime.title.text": "运行时状态",
+  "app.runtime.ready.status": "已准备好进行本地 Docker 冒烟验证。"
+}

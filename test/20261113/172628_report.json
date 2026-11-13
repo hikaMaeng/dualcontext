@@ -1,0 +1,62 @@
+{
+  "@meta": {
+    "subagents": [],
+    "elapsed": 0,
+    "result": true,
+    "detail": "1 passed / 0 failed",
+    "started": "2026-11-13T08:26:28.000Z"
+  },
+  "scaffold": [
+    {
+      "id": "baseline-files",
+      "title": "Baseline files exist",
+      "test": "The web-service scaffold baseline was copied from bundled assets.",
+      "steps": [
+        {
+          "id": "root-files",
+          "instruction": "Check root package.json, turbo.json, docker-compose.yml, AGENTS.md, and .codex/skills.",
+          "expected": "All root scaffold contract files exist.",
+          "result": true,
+          "descript": "Root baseline files were generated from bundled assets and the scaffold lockfile template.",
+          "evidence": [
+            "/f/dev/dualcontext/package.json",
+
+            "/f/dev/dualcontext/turbo.json",
+            "/f/dev/dualcontext/docker-compose.yml",
+            "/f/dev/dualcontext/AGENTS.md",
+            "/f/dev/dualcontext/.codex/skills/web-deploy-docker/SKILL.md"
+          ]
+        },
+        {
+          "id": "service-files",
+          "instruction": "Check apps/dualcontext server, front, docker, README, and docs files.",
+          "expected": "All service baseline files exist.",
+          "result": true,
+          "descript": "Service baseline files were generated from bundled assets.",
+          "evidence": [
+            "/f/dev/dualcontext/apps/dualcontext/src/server/index.ts",
+            "/f/dev/dualcontext/apps/dualcontext/src/front/main.tsx",
+            "/f/dev/dualcontext/apps/dualcontext/docker/Dockerfile",
+            "/f/dev/dualcontext/apps/dualcontext/README.md",
+            "/f/dev/dualcontext/apps/dualcontext/docs"
+          ]
+        },
+        {
+          "id": "domain-package-files",
+          "instruction": "Check packages/dualcontext_domain package, source partitions, README, and docs files.",
+          "expected": "The paired domain package baseline exists for apps/dualcontext.",
+          "result": true,
+          "descript": "The service domain package was generated from bundled assets and wired as a workspace package.",
+          "evidence": [
+            "/f/dev/dualcontext/packages/dualcontext_domain/package.json",
+            "/f/dev/dualcontext/packages/dualcontext_domain/src/common/index.ts",
+            "/f/dev/dualcontext/packages/dualcontext_domain/src/server/index.ts",
+            "/f/dev/dualcontext/packages/dualcontext_domain/src/front/index.ts",
+            "/f/dev/dualcontext/packages/dualcontext_domain/README.md",
+            "/f/dev/dualcontext/packages/dualcontext_domain/docs"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "app.brand.name.text": "dualcontext",
+  "app.shell.nav.primary.label": "Primary",
+  "app.shell.health.button": "Health",
+  "app.shell.title.text": "dualcontext service",
+  "app.shell.subtitle.text": "Minimal Express and React scaffold with a deployed health endpoint.",
+  "app.runtime.title.text": "Runtime status",
+  "app.runtime.ready.status": "Ready for local Docker smoke verification."
+}
