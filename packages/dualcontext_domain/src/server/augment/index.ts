@@ -39,6 +39,12 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
       (found) => ({ found, error: undefined }),
       (error: unknown) => ({ found: [] as Material[], error: error instanceof Error ? error.message : String(error) })
     );
+    // 자료가 하나도 없으면 분석 관점을 붙일 대상이 없다. 프로시저를 고르지 않는다(관련 없는 절차가 컨텍스트에 실리는 것을 막는다).
+    if (materials.found.length === 0 && materials.error === undefined) {
+      pairs.push({ researcher, materials: [], procedure: null });
+      procedureRoutings.push("skipped(no-material)");
+      continue;
+    }
     const linked = await ports.listProceduresOf(researcher);
     const procedureSelection = await ports.selectProcedures(query, researcher, linked);
     routing.procedures.push({ researcher: researcher.name, candidates: trace(linked, procedureSelection.scores) });

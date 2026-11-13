@@ -48,7 +48,7 @@
 | type | config |
 | --- | --- |
 | `duckduckgo` | `{ topK }` |
-| `pgvector` | `{ table, vectorColumn, textColumn, titleColumn?, reducedColumn?, reducedDim?, snippetChars?, topK }` — `reducedColumn` 이 있으면 축소 차원으로 후보 topK×8 을 뽑고 전체 차원으로 재순위화한다. `snippetChars`(100~8000, 기본 1200)는 컨텍스트에 싣는 자료 글자 수다 |
+| `pgvector` | `{ table, vectorColumn, textColumn, titleColumn?, reducedColumn?, reducedDim?, snippetChars?, minScore?, topK }` — `reducedColumn` 이 있으면 축소 차원으로 후보 topK×8 을 뽑고 전체 차원으로 재순위화한다. `snippetChars`(100~8000, 기본 1200)는 컨텍스트에 싣는 자료 글자 수이며 문장 경계에서 자른다. `minScore`(0~1, 기본 0.72)는 자료(행) 단위 관련도 기준으로, 질의와의 코사인 유사도가 이보다 낮은 행은 버린다(0 이면 거르지 않는다). 자료마다 `score` 가 붙는다 |
 | `folder` | `{ path, topK }` — `path` 는 볼륨 기준 상대 경로 |
 
 ## 모듈 표면

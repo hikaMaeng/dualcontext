@@ -65,6 +65,8 @@ export type RoutingScore = { name: string; score: number; selected: boolean };
 export type Material = {
   title: string;
   text: string;
+  /** 질의와 이 자료의 코사인 유사도(벡터 조사원만). 웹 검색 같은 출처는 점수가 없다. */
+  score?: number;
 };
 
 /** 라이터 입력 한 쌍: 조사원이 모은 정보와 그 정보에 묶인 프로시저. */

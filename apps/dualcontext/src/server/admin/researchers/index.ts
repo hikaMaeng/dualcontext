@@ -29,6 +29,8 @@ const body = z.discriminatedUnion("type", [
       reducedDim: z.number().int().min(1).optional(),
       /** 컨텍스트에 싣는 자료 길이(글자 수). 기본 1200. */
       snippetChars: z.number().int().min(100).max(8000).optional(),
+      /** 자료(행) 단위 관련도 기준(코사인 유사도). 기본 0.72, 0 이면 거르지 않는다. */
+      minScore: z.number().min(0).max(1).optional(),
       topK: topK.default(3)
     })
   }),

@@ -71,7 +71,7 @@ test("per_pair 라이터는 쌍 수만큼 호출되고 결과가 이어 붙는�
 
 test("수집 실패는 숨기지 않고 컨텍스트에 이유와 함께 남는다", async () => {
   const result = await augmentQuery("환불", ports("batch", { collect: async () => { throw new Error("폴더 없음"); } }));
-  assert.match(result.context, /사내문서: 수집 실패 - 폴더 없음/);
+  assert.match(result.context, /사내문서: 수집에 실패했다 - 폴더 없음/);
 });
 
 test("조사원은 골랐지만 어느 출처에서도 자료가 나오지 않으면(오류 없이) 컨텍스트를 만들지 않는다", async () => {
@@ -103,4 +103,21 @@ test("조사원이 없으면 컨텍스트가 비고 점수표는 비어 있다",
   assert.equal(result.researcherRouting, "none");
   assert.equal(result.context, "");
   assert.deepEqual(result.routing.researchers, []);
+});
+
+test("자료가 하나도 없는 조사원에는 프로시저 라우팅을 하지 않는다(관련 없는 절차가 실리는 것을 막는다)", async () => {
+  let procedureRouted = 0;
+  const result = await augmentQuery(
+    "환불",
+    ports("batch", {
+      collect: async (r) => (r.id === 1 ? [] : [{ title: "문서", text: "원문" }]),
+      selectResearchers: async (_q, candidates) => ({ mode: "fixed", selected: candidates }),
+      selectProcedures: async (_q, _r, candidates) => { procedureRouted += 1; return { mode: "fixed", selected: candidates }; }
+    })
+  );
+  assert.equal(procedureRouted, 1); // 자료가 있는 조사원(웹)만
+  const empty = result.pairs.find((p) => p.researcher === "사내문서");
+  assert.equal(empty?.procedure, null);
+  assert.equal(empty?.procedureRouting, "skipped(no-material)");
+  assert.match(result.context, /사내문서: 질의와 관련된 자료를 찾지 못했다/);
 });
