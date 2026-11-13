@@ -66,11 +66,13 @@ const negatives = [
   { id: 'N24', query: '수학 문제집에서 이차방정식의 근의 공식을 유도하는 과정을 보여 주세요.' }
 ];
 
+// F3-4(제빵)는 설계상 범위 밖이라 음성으로 센다(처음에는 양성에 섞였다).
+const OUT_OF_SCOPE = new Set(["F3/F3-4"]);
 const rows = [];
 for (const item of [...positives.map((p) => ({ ...p, kind: "positive" })), ...negatives.map((n) => ({ ...n, kind: "negative", expect: [] }))]) {
   const vector = await embed(item.query);
   const scores = researchers.map((r) => ({ name: r.name, score: Number(cosine(vector, r.vector).toFixed(4)) }));
-  rows.push({ id: item.id, kind: item.kind, expect: item.expect, query: item.query.slice(0, 70), scores });
+  rows.push({ id: item.id, kind: OUT_OF_SCOPE.has(item.id) ? "negative" : item.kind, expect: item.expect, query: item.query.slice(0, 70), scores });
   process.stderr.write(`${item.id}\n`);
 }
 
@@ -85,7 +87,33 @@ const extrasOfPositive = rows.filter((r) => r.kind === "positive").flatMap((r) =
 const negativeAll = rows.filter((r) => r.kind === "negative").flatMap((r) => r.scores.map((s) => s.score));
 const negativeBest = rows.filter((r) => r.kind === "negative").map((r) => Math.max(...r.scores.map((s) => s.score)));
 
+const positiveRows = rows.filter((r) => r.kind === "positive");
+const negativeRows = rows.filter((r) => r.kind === "negative");
+const top = (r) => Math.max(...r.scores.map((s) => s.score));
+const mean = (r) => r.scores.reduce((a, s) => a + s.score, 0) / r.scores.length;
+const second = (r) => r.scores.map((s) => s.score).sort((a, b) => b - a)[1];
+const sd = (a) => { const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length); };
+const names = [...new Set(rows.flatMap((r) => r.scores.map((s) => s.name)))];
+const stat = Object.fromEntries(names.map((n) => { const v = rows.map((r) => r.scores.find((s) => s.name === n).score); return [n, [v.reduce((a, b) => a + b, 0) / v.length, sd(v)]]; }));
+const zmax = (r) => Math.max(...r.scores.map((s) => (s.score - stat[s.name][0]) / stat[s.name][1]));
+const auc = (f) => { let w = 0; for (const p of positiveRows) for (const n of negativeRows) { const a = f(p); const b = f(n); w += a > b ? 1 : a === b ? 0.5 : 0; } return Number((w / (positiveRows.length * negativeRows.length)).toFixed(3)); };
+const expectedPairs = positiveRows.reduce((a, r) => a + r.expect.length, 0);
+const thresholds = [0.65, 0.66, 0.67, 0.68, 0.7].map((t) => ({
+  threshold: t,
+  negativeNone: negativeRows.filter((r) => top(r) < t).length + "/" + negativeRows.length,
+  positiveNone: positiveRows.filter((r) => top(r) < t).length + "/" + positiveRows.length,
+  expectedPairsKept: positiveRows.reduce((a, r) => a + r.expect.filter((e) => r.scores.find((s) => s.name === e).score >= t).length, 0) + "/" + expectedPairs
+}));
+const summary = {
+  positives: positiveRows.length,
+  negatives: negativeRows.length,
+  auc: { top: auc(top), topMinusMean: auc((r) => top(r) - mean(r)), topMinusSecond: auc((r) => top(r) - second(r)), zMax: auc(zmax) },
+  thresholds,
+  band_0_65_to_0_70: rows.filter((r) => top(r) >= 0.65 && top(r) < 0.7).length + "/" + rows.length
+};
+
 console.log(JSON.stringify({
+  summary,
   note: "cosine(query, researcher routing embedding)",
   expectedResearchers: stats(expected),
   otherResearchersOnPositiveQueries: stats(extrasOfPositive),
