@@ -77,5 +77,20 @@
   "try.run.button": "संवर्धन चलाएँ",
   "try.routing.label": "अन्वेषक रूटिंग",
   "try.pairs.label": "चुने गए (अन्वेषक, प्रक्रिया) जोड़े",
-  "try.result.label": "संवर्धित संदर्भ"
+  "try.result.label": "संवर्धित संदर्भ",
+  "app.nav.runs.button": "रन लॉग",
+  "try.logged.status": "रन लॉग में सहेजा गया:",
+  "runs.title.text": "रन लॉग",
+  "runs.detail.heading.text": "रन विवरण",
+  "runs.query.label": "क्वेरी",
+  "runs.time.label": "रन का समय",
+  "runs.duration.label": "अवधि (सेकंड)",
+  "runs.ok.status": "सफल",
+  "runs.failed.alert": "विफल",
+  "runs.failure.label": "विफलता का कारण",
+  "runs.routing.label": "अन्वेषक रूटिंग",
+  "runs.settings.label": "रन के समय की सेटिंग (राउटर, लेखक, मॉडल)",
+  "runs.pairs.label": "चुने गए (अन्वेषक, प्रक्रिया) जोड़े और उनकी सामग्री",
+  "runs.materials.label": "सामग्री",
+  "runs.context.label": "उत्पन्न संदर्भ"
 }

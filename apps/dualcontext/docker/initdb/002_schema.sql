@@ -81,6 +81,23 @@ CREATE TABLE IF NOT EXISTS writers (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS writers_one_active ON writers (active) WHERE active;
 
+-- Run log of the admin "try a query" page. settings is a snapshot of every knob
+-- that shaped the result (router, writer, models), so a run can be understood later
+-- even after those settings change. Bounded: the server keeps the latest 500 rows.
+CREATE TABLE IF NOT EXISTS augment_runs (
+  id                 serial PRIMARY KEY,
+  created_at         timestamptz NOT NULL DEFAULT now(),
+  query              text NOT NULL,
+  status             text NOT NULL,
+  error              text,
+  duration_ms        integer NOT NULL,
+  researcher_routing text,
+  settings           jsonb NOT NULL,
+  pairs              jsonb NOT NULL DEFAULT '[]',
+  context            text
+);
+CREATE INDEX IF NOT EXISTS augment_runs_created ON augment_runs (created_at DESC);
+
 -- AI servers (OpenAI-compatible endpoints). Embedding and LLM are separate servers.
 -- The api_key columns are write-only through the admin API (never returned);
 -- when empty, DUALCONTEXT_LLM_API_KEY is used instead.

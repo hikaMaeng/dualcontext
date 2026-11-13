@@ -77,5 +77,20 @@
   "try.run.button": "Run augmentation",
   "try.routing.label": "Researcher routing",
   "try.pairs.label": "Chosen (researcher, procedure) pairs",
-  "try.result.label": "Augmented context"
+  "try.result.label": "Augmented context",
+  "app.nav.runs.button": "Run log",
+  "try.logged.status": "Saved to the run log:",
+  "runs.title.text": "Run log",
+  "runs.detail.heading.text": "Run detail",
+  "runs.query.label": "Query",
+  "runs.time.label": "Run time",
+  "runs.duration.label": "Duration (seconds)",
+  "runs.ok.status": "Succeeded",
+  "runs.failed.alert": "Failed",
+  "runs.failure.label": "Reason for failure",
+  "runs.routing.label": "Researcher routing",
+  "runs.settings.label": "Settings at run time (router, writer, models)",
+  "runs.pairs.label": "Chosen (researcher, procedure) pairs and their materials",
+  "runs.materials.label": "Materials",
+  "runs.context.label": "Generated context"
 }

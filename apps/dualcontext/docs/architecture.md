@@ -10,7 +10,7 @@
 | `src/server/collect` | 조사원 타입별 수집기 폴더: `duckduckgo`, `pgvector`, `folder`. | `collect/index.ts` |
 | `src/server/writer` | 라이터 설정을 `{mode, write}` 로 바꾼다(LLM 실패 시 기본 조립으로 대체). | `writer/index.ts` |
 | `src/server/model` | AI 서버 클라이언트(임베딩 · LLM, OpenAI 호환). | `model/index.ts` |
-| `src/server/admin` | 관리 API. 엔티티별 폴더: `researchers`, `procedures`, `router`, `writers`, `ai-server`. | `admin/index.ts` |
+| `src/server/admin` | 관리 API. 엔티티별 폴더: `researchers`, `procedures`, `router`, `writers`, `ai-server`, `runs`(시험 실행 로그). | `admin/index.ts` |
 | `src/server/seed` | 기본 라우터 · 라이터 · AI 서버 값과 사전 정의 프리셋(한 번만). | `seed/index.ts` |
 | `src/server/db` | 커넥션 풀과 상태 조회. | `db/index.ts` |
 | `src/front` | Vite React 관리자. `features/*` 폴더마다 화면과 `resource.ts`. 왼쪽 메뉴 셸은 `main.tsx`. | `main.tsx` |
@@ -33,5 +33,6 @@
 | `router_config` | 1행. 1단계(조사원) · 2단계(프로시저)의 방법 · 상위 개수 · 프롬프트 |
 | `writers` | 라이터. 엔진 · 호출 방식 · 프롬프트, 활성은 최대 1개 |
 | `ai_server` | 1행. 임베딩/LLM 서버 주소 · 모델 · (쓰기 전용) API 키 |
+| `augment_runs` | 시험 실행 로그. 질의 · 상태 · 소요 시간 · 라우팅 방법 · 설정 스냅샷(jsonb) · 쌍과 자료(jsonb) · 컨텍스트. 최근 500건만 보관 |
 | `ds_*` | 사전 정의 테이블형 조사원의 데이터. `embedding vector(768)` 와 `embedding_mrl vector(256)`, HNSW 는 후자에만 |
 | `seed_state` | 일회성 시드 표식 |

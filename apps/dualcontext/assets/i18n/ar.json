@@ -77,5 +77,20 @@
   "try.run.button": "تشغيل الإثراء",
   "try.routing.label": "توجيه الباحثين",
   "try.pairs.label": "الأزواج المختارة (الباحث، الإجراء)",
-  "try.result.label": "السياق المُثرى"
+  "try.result.label": "السياق المُثرى",
+  "app.nav.runs.button": "سجل التشغيل",
+  "try.logged.status": "تم الحفظ في سجل التشغيل:",
+  "runs.title.text": "سجل التشغيل",
+  "runs.detail.heading.text": "تفاصيل التشغيل",
+  "runs.query.label": "الاستعلام",
+  "runs.time.label": "وقت التشغيل",
+  "runs.duration.label": "المدة (بالثواني)",
+  "runs.ok.status": "نجح",
+  "runs.failed.alert": "فشل",
+  "runs.failure.label": "سبب الفشل",
+  "runs.routing.label": "توجيه الباحثين",
+  "runs.settings.label": "الإعدادات وقت التشغيل (الموجّه، الكاتب، النماذج)",
+  "runs.pairs.label": "الأزواج المختارة (الباحث، الإجراء) ومواردها",
+  "runs.materials.label": "المواد",
+  "runs.context.label": "السياق المُنشأ"
 }

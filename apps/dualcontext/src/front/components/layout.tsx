@@ -14,10 +14,10 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 export function ListDetail({ listLabel, list, form }: { listLabel: string; list: ReactNode; form: ReactNode }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
-      <ul aria-label={listLabel} className="grid content-start gap-2">
+      <ul aria-label={listLabel} className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2">
         {list}
       </ul>
-      <div className="grid content-start gap-4">{form}</div>
+      <div className="grid min-w-0 content-start gap-4">{form}</div>
     </div>
   );
 }

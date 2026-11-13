@@ -77,5 +77,20 @@
   "try.run.button": "증강 실행",
   "try.routing.label": "조사원 라우팅",
   "try.pairs.label": "선택된 (조사원, 프로시저) 쌍",
-  "try.result.label": "증강된 컨텍스트"
+  "try.result.label": "증강된 컨텍스트",
+  "app.nav.runs.button": "실행 로그",
+  "try.logged.status": "실행 로그에 저장했습니다:",
+  "runs.title.text": "실행 로그",
+  "runs.detail.heading.text": "실행 상세",
+  "runs.query.label": "질의",
+  "runs.time.label": "실행 시각",
+  "runs.duration.label": "소요 시간(초)",
+  "runs.ok.status": "성공",
+  "runs.failed.alert": "실패",
+  "runs.failure.label": "실패 사유",
+  "runs.routing.label": "조사원 라우팅",
+  "runs.settings.label": "실행 당시 설정(라우터 · 라이터 · 모델)",
+  "runs.pairs.label": "선택된 (조사원, 프로시저) 쌍과 근거 자료",
+  "runs.materials.label": "근거 자료",
+  "runs.context.label": "생성된 컨텍스트"
 }

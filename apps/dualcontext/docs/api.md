@@ -20,7 +20,10 @@
 | `GET/POST /api/admin/writers`, `PUT/DELETE /api/admin/writers/:id`, `POST /api/admin/writers/:id/activate` | 라이터 |
 | `GET/PUT /api/admin/ai-server` | AI 서버 설정. 응답에 API 키는 없고 `hasApiKey` 만 있다 |
 | `GET /api/admin/ai-server/models?kind=embedding\|chat` | 저장된 설정으로 서버의 모델 목록을 불러온다(연결 시험 겸용). 실패 시 `502` |
-| `POST /api/admin/augment` | `{ query, writerId? }` → `{ context, researcherRouting, pairs, writer }`. MCP 도구와 같은 경로 |
+| `POST /api/admin/augment` | `{ query, writerId? }` → `{ context, researcherRouting, pairs, writer, runId }`. MCP 도구와 같은 경로. 성공이든 실패든 실행 로그를 남기며, 실행이 실패하면 `502 { error, runId }` |
+| `GET /api/admin/runs` | 시험 실행 로그 목록(최근 200건): `id, createdAt, query(앞 120자), status, durationMs, researcherRouting, pairCount, writerName` |
+| `GET /api/admin/runs/:id` | 로그 상세: 위 필드 + `error, settings(실행 당시 설정 스냅샷), pairs(자료 포함), context` |
+| `DELETE /api/admin/runs/:id` | 로그 한 건 삭제 |
 | `GET /*` | 빌드된 프런트(SPA 폴백) |
 
 요청 본문 검증은 zod 로 하고, 실패하면 `400`.

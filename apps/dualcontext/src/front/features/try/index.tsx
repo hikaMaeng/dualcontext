@@ -13,7 +13,7 @@ export function TryView({ t }: { t: Texts }) {
   const [query, setQuery] = useState("");
   const [writers, setWriters] = useState<WriterConfig[]>([]);
   const [writerId, setWriterId] = useState("");
-  const [result, setResult] = useState<AugmentResult | null>(null);
+  const [result, setResult] = useState<(AugmentResult & { runId: number }) | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -25,7 +25,7 @@ export function TryView({ t }: { t: Texts }) {
     event.preventDefault();
     setBusy(true);
     try {
-      setResult(await api<AugmentResult>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } }));
+      setResult(await api<AugmentResult & { runId: number }>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } }));
       setFailed(false);
     } catch {
       setFailed(true);
@@ -51,6 +51,9 @@ export function TryView({ t }: { t: Texts }) {
       {result && (
         <>
           <p role="status" data-testid="routing-state" className="text-sm text-muted">{t[RSC.TRY_ROUTING_LABEL]}: {result.researcherRouting}</p>
+          <p role="status" data-testid="logged-state" className="text-sm text-muted">
+            <a className="text-accent underline" href="#runs">{t[RSC.TRY_LOGGED_STATUS]} #{result.runId}</a>
+          </p>
           <ul aria-label={t[RSC.TRY_PAIRS_LABEL]} className="grid gap-1 text-sm text-muted">
             {result.pairs.map((pair, index) => (
               <li key={index} data-testid="pair-item">{pair.researcher} / {pair.procedure ?? "-"} ({pair.materialCount}) [{pair.procedureRouting}]</li>

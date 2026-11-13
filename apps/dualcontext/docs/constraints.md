@@ -9,6 +9,7 @@
 | `readEnv` | 프로세스 시작 | 범위 밖 값은 기본값으로 덮지 않고 던진다. |
 | stdio 모드 stdout | MCP 클라이언트 | stdout 은 프로토콜 전용. 로그는 stderr. |
 | `ds_*` 테이블 벡터 | pgvector 조사원 | `embedding`(768) 은 설정된 임베딩 모델의 출력이고, `embedding_mrl`(256) 은 그 앞 256개를 재정규화한 값이다. 모델이나 차원을 바꾸면 전부 다시 임베딩해야 한다. |
+| `augment_runs` 로그 | 관리자 「실행 로그」 화면 | **시험 실행만** 기록한다(MCP 호출은 기록하지 않는다). 키 `id`, 범위 전체, 상한 최근 500건(새 로그를 쓸 때 오래된 것을 지운다), 지우는 쪽 서버 · 관리자(개별 삭제). `settings` 스냅샷에는 API 키를 넣지 않는다. 질의 원문과 수집된 자료가 평문으로 남는다. |
 | 조사원 임베딩 캐시 | 라우터(임베딩) | `embedding_key` = 모델 이름 + 글의 해시. 글이나 모델이 바뀌면 키가 달라져 다시 계산한다. |
 
 ## 컨테이너
@@ -44,6 +45,8 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `role=main`, `role=heading` level 1 (`#page-title`) | 본문, 화면 제목 |
 | `role=status`, `data-testid="service-state"` | 런타임 상태 줄 |
 | `data-testid="researcher-item"`, `"procedure-item"`, `"writer-item"` | 목록 항목 |
-| `data-testid="routing-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과 |
+| `data-testid="routing-state"`, `"logged-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과와 로그 링크 |
+| `data-testid="run-item"` | 실행 로그 목록 항목 |
+| `data-testid="run-detail"`, `"run-routing"`, `"run-settings"`, `"run-pair"`, `"run-context"` | 실행 로그 상세 |
 | `data-testid="researcher-method"`, `"procedure-method"` | 라우터 방법 선택 |
 | `data-testid="embedding-url"`, `"embedding-model"`, `"chat-url"`, `"chat-model"` | AI 서버 입력 |

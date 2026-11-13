@@ -70,11 +70,23 @@ export type Pair = {
   error?: string;
 };
 
+/** 증강 결과에 담기는, 선택된 (조사원, 프로시저) 쌍의 요약. */
+export type AugmentPair = {
+  researcher: string;
+  procedure: string | null;
+  materialCount: number;
+  /** 이 쌍에 실린 수집 자료(실행 로그 상세용). */
+  materials: Material[];
+  /** 수집이 실패했다면 그 이유. */
+  error?: string;
+  procedureRouting: string;
+};
+
 export type AugmentResult = {
   context: string;
   /** 조사원 라우팅이 실제로 쓴 방법. 되돌림이 일어났다면 그 사실이 들어 있다. */
   researcherRouting: string;
-  pairs: { researcher: string; procedure: string | null; materialCount: number; procedureRouting: string }[];
+  pairs: AugmentPair[];
   writer: { mode: WriterMode; calls: number };
 };
 

@@ -77,5 +77,20 @@
   "try.run.button": "Ejecutar aumento",
   "try.routing.label": "Enrutamiento de investigadores",
   "try.pairs.label": "Pares (investigador, procedimiento) elegidos",
-  "try.result.label": "Contexto aumentado"
+  "try.result.label": "Contexto aumentado",
+  "app.nav.runs.button": "Registro de ejecuciones",
+  "try.logged.status": "Guardado en el registro de ejecuciones:",
+  "runs.title.text": "Registro de ejecuciones",
+  "runs.detail.heading.text": "Detalle de la ejecución",
+  "runs.query.label": "Consulta",
+  "runs.time.label": "Hora de ejecución",
+  "runs.duration.label": "Duración (segundos)",
+  "runs.ok.status": "Correcta",
+  "runs.failed.alert": "Fallida",
+  "runs.failure.label": "Motivo del fallo",
+  "runs.routing.label": "Enrutamiento de investigadores",
+  "runs.settings.label": "Configuración al ejecutar (enrutador, redactor, modelos)",
+  "runs.pairs.label": "Pares (investigador, procedimiento) elegidos y sus materiales",
+  "runs.materials.label": "Materiales",
+  "runs.context.label": "Contexto generado"
 }

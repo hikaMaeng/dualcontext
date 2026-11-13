@@ -65,6 +65,8 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
       researcher: pair.researcher.name,
       procedure: pair.procedure?.name ?? null,
       materialCount: pair.materials.length,
+      materials: pair.materials,
+      error: pair.error,
       procedureRouting: procedureRoutings[index]
     })),
     writer: { mode: ports.writer.mode, calls }

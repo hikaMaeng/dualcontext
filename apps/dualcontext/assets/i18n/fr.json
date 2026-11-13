@@ -77,5 +77,20 @@
   "try.run.button": "Lancer l'enrichissement",
   "try.routing.label": "Routage des enquêteurs",
   "try.pairs.label": "Paires (enquêteur, procédure) choisies",
-  "try.result.label": "Contexte enrichi"
+  "try.result.label": "Contexte enrichi",
+  "app.nav.runs.button": "Journal des exécutions",
+  "try.logged.status": "Enregistré dans le journal des exécutions :",
+  "runs.title.text": "Journal des exécutions",
+  "runs.detail.heading.text": "Détail de l'exécution",
+  "runs.query.label": "Requête",
+  "runs.time.label": "Heure d'exécution",
+  "runs.duration.label": "Durée (secondes)",
+  "runs.ok.status": "Réussie",
+  "runs.failed.alert": "Échouée",
+  "runs.failure.label": "Motif de l'échec",
+  "runs.routing.label": "Routage des enquêteurs",
+  "runs.settings.label": "Réglages au moment de l'exécution (routeur, rédacteur, modèles)",
+  "runs.pairs.label": "Paires (enquêteur, procédure) choisies et leurs documents",
+  "runs.materials.label": "Documents",
+  "runs.context.label": "Contexte généré"
 }

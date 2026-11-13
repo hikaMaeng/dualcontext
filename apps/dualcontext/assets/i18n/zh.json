@@ -77,5 +77,20 @@
   "try.run.button": "运行增强",
   "try.routing.label": "调查员路由",
   "try.pairs.label": "已选(调查员,流程)配对",
-  "try.result.label": "增强后的上下文"
+  "try.result.label": "增强后的上下文",
+  "app.nav.runs.button": "运行日志",
+  "try.logged.status": "已保存到运行日志:",
+  "runs.title.text": "运行日志",
+  "runs.detail.heading.text": "运行详情",
+  "runs.query.label": "查询",
+  "runs.time.label": "运行时间",
+  "runs.duration.label": "耗时(秒)",
+  "runs.ok.status": "成功",
+  "runs.failed.alert": "失败",
+  "runs.failure.label": "失败原因",
+  "runs.routing.label": "调查员路由",
+  "runs.settings.label": "运行时的设置(路由器、撰写器、模型)",
+  "runs.pairs.label": "已选(调查员,流程)配对及其资料",
+  "runs.materials.label": "资料",
+  "runs.context.label": "生成的上下文"
 }

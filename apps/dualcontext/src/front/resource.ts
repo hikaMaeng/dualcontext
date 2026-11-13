@@ -18,6 +18,7 @@ export enum RSC {
   APP_NAV_WRITERS_BUTTON = "app.nav.writers.button",
   APP_NAV_AISERVER_BUTTON = "app.nav.aiserver.button",
   APP_NAV_TRY_BUTTON = "app.nav.try.button",
+  APP_NAV_RUNS_BUTTON = "app.nav.runs.button",
   COMMON_SAVE_BUTTON = "common.save.button",
   COMMON_DELETE_BUTTON = "common.delete.button",
   COMMON_NEW_BUTTON = "common.new.button",
