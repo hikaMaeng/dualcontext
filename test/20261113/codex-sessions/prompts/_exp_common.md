@@ -17,7 +17,8 @@
 * 서버: `http://127.0.0.1:18081/api/admin` (로컬, 인증 없음). 사용하는 것은 아래 둘 뿐이다. **설정을 바꾸는 요청(PUT/DELETE, 라우터 · 라이터 · AI 서버 · 조사원 변경)은 절대 하지 마라.** 다른 세션이 동시에 같은 서버를 쓴다.
   * `GET /researchers`, `GET /procedures`, `GET /router`, `GET /writers` (읽기)
   * `POST /augment` 본문 `{"query": "..."}` → `{ context, researcherRouting, pairs:[{researcher, procedure, materialCount, materials, procedureRouting, error}], writer, answers:{before:{text,error,ms}, after:{text,error,ms}}, runId }`
-* **`POST /augment` 는 한 번에 하나씩, 순서대로** 호출한다(LLM 서버를 다른 세션과 나눠 쓴다). 호출 하나에 3~10분 걸릴 수 있으니 타임아웃을 15분으로 잡고 기다려라. 실패(HTTP 5xx · 타임아웃)하면 이유를 기록하고 **같은 질의를 한 번만** 다시 시도한다. 두 번 다 실패하면 실패로 기록하고 넘어간다.
+* **`POST /augment` 는 한 번에 하나씩, 순서대로** 호출한다(LLM 서버를 다른 세션과 나눠 쓴다). 호출 하나에 3~10분 걸릴 수 있으니 타임아웃을 15분으로 잡고 기다려라.
+  * **Node 기본 `fetch` 는 응답 헤더를 300초까지만 기다린다**(undici 기본 `headersTimeout`). 그대로 쓰면 5분이 넘는 호출이 `fetch failed` 로 끊긴다. `curl --max-time 1200` 을 쓰거나, `node:http` 로 요청하거나, `undici` 의 `Agent({headersTimeout:1200000, bodyTimeout:1200000})` 를 `dispatcher` 로 넘겨라. 서버 쪽 제한은 이미 15분이다. 실패(HTTP 5xx · 타임아웃)하면 이유를 기록하고 **같은 질의를 한 번만** 다시 시도한다. 두 번 다 실패하면 실패로 기록하고 넘어간다.
 * 쓸 수 있는 도구는 `node`(내장 `fetch`)와 `curl`. 윈도우 환경이라 한글 출력이 깨지면 디코딩 문제일 수 있다(파일은 UTF-8 로 읽고 쓴다, BOM 없이).
 * 결과를 **지어내거나 고치지 마라.** 서버가 돌려준 응답은 그대로 파일에 저장한다. 점수는 사실대로 매긴다. 시스템이 잘 못하면 못한다고 적는 것이 이 실험의 목적이다.
 

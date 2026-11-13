@@ -1,7 +1,12 @@
 // 배포된 서버(기본 라이터, 임베딩 라우터)에 분야별 질의를 보내 선택된 조사원 · 프로시저 · 근거를 기록한다.
 //   node test/20261113/eval-queries.mjs > test/20261113/eval-queries_result.json
 // 판정(expected 와 일치 여부)은 이 스크립트가 아니라 리포트에서 사람이 근거를 읽고 내린다.
+import { Agent, fetch } from "undici";
+
 const BASE = process.env.BASE ?? "http://127.0.0.1:18081/api/admin";
+// /augment 는 최종 답변(추론 모델)까지 만들어 수 분이 걸린다. Node 기본 fetch 는 응답 헤더를 300초까지만 기다리므로
+// 15분(900초)짜리 Agent 를 쓴다.
+const patient = new Agent({ headersTimeout: 900_000, bodyTimeout: 900_000 });
 
 const cases = [
   { id: "law-term", query: "산지전용허가를 받아야 하는 경우와 그 예외는 무엇인가?", expectResearcher: "법률 용어 사전" },
@@ -22,7 +27,8 @@ for (const entry of cases) {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ query: entry.query }),
-    signal: AbortSignal.timeout(300_000)
+    signal: AbortSignal.timeout(900_000),
+    dispatcher: patient
   });
   const body = await response.json();
   const sources = [...body.context.matchAll(/- \[출처: (.{0,90})/g)].map((match) => match[1]);

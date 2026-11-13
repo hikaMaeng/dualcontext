@@ -14,6 +14,7 @@
 // domain.json 형식은 apps/dualcontext/docs/usage.md 의 「분야 추가」 절을 본다.
 // 같은 테이블을 다시 적재하면 비우고 새로 채운다(truncate).
 import { spawn } from "node:child_process";
+import { Agent, fetch } from "undici";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -174,12 +175,17 @@ async function fetchSource(source, limit) {
 
 // ---------------------------------------------------------------- 임베딩 ----
 
+// 임베딩 서버가 다른 작업과 나눠 쓰이면 한 번에 수 분이 걸릴 수 있다. 기본 fetch 의 헤더 대기(300초)에 걸리지 않게
+// 15분짜리 Agent 를 쓴다.
+const patient = new Agent({ headersTimeout: 900_000, bodyTimeout: 900_000 });
+
 async function embed(texts) {
   const response = await fetch(`${EMBED_URL}/embeddings`, {
     method: "POST",
     headers: { "content-type": "application/json", ...(EMBED_API_KEY ? { authorization: `Bearer ${EMBED_API_KEY}` } : {}) },
     body: JSON.stringify({ model: EMBED_MODEL, input: texts }),
-    signal: AbortSignal.timeout(300_000)
+    signal: AbortSignal.timeout(900_000),
+    dispatcher: patient
   });
   if (!response.ok) throw new Error(`embedding server -> ${response.status} ${(await response.text()).slice(0, 200)}`);
   return (await response.json()).data.sort((a, b) => a.index - b.index).map((entry) => entry.embedding);
