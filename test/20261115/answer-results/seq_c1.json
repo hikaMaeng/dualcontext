@@ -1,0 +1,104 @@
+{
+ "label": "seq_c1",
+ "conc": 1,
+ "startedAt": "2026-11-14T15:08:58.461Z",
+ "elapsedMs": 764790,
+ "out": [
+  {
+   "id": 107,
+   "http": 200,
+   "runId": 93,
+   "error": null,
+   "selected": null,
+   "contextChars": 2547,
+   "before": {
+    "ms": 9709,
+    "error": null
+   },
+   "after": {
+    "ms": 20933,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 22336
+  },
+  {
+   "id": 114,
+   "http": 200,
+   "runId": 94,
+   "error": null,
+   "selected": null,
+   "contextChars": 2312,
+   "before": {
+    "ms": 43029,
+    "error": null
+   },
+   "after": {
+    "ms": 50599,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 51231
+  },
+  {
+   "id": 129,
+   "http": 200,
+   "runId": 95,
+   "error": null,
+   "selected": null,
+   "contextChars": 2963,
+   "before": {
+    "ms": 212179,
+    "error": null
+   },
+   "after": {
+    "ms": 44026,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 213252
+  },
+  {
+   "id": 136,
+   "http": 200,
+   "runId": 96,
+   "error": null,
+   "selected": null,
+   "contextChars": 2214,
+   "before": {
+    "ms": 19365,
+    "error": null
+   },
+   "after": {
+    "ms": 68398,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 70429
+  },
+  {
+   "id": 81,
+   "http": 200,
+   "runId": 97,
+   "error": null,
+   "selected": null,
+   "contextChars": 5099,
+   "before": {
+    "ms": 99636,
+    "error": null
+   },
+   "after": {
+    "ms": 18544,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 101717
+  },
+  {
+   "id": 88,
+   "http": 0,
+   "error": "TypeError: fetch failed",
+   "ms": 305822
+  }
+ ]
+}

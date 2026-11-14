@@ -1,0 +1,116 @@
+{
+ "label": "burst_c4",
+ "conc": 4,
+ "startedAt": "2026-11-14T15:21:43.366Z",
+ "elapsedMs": 587047,
+ "out": [
+  {
+   "id": 107,
+   "http": 200,
+   "runId": 99,
+   "error": null,
+   "selected": null,
+   "contextChars": 2547,
+   "before": {
+    "ms": 16247,
+    "error": null
+   },
+   "after": {
+    "ms": 146654,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 148618
+  },
+  {
+   "id": 114,
+   "http": 200,
+   "runId": 100,
+   "error": null,
+   "selected": null,
+   "contextChars": 2312,
+   "before": {
+    "ms": 16440,
+    "error": null
+   },
+   "after": {
+    "ms": 140390,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 141969
+  },
+  {
+   "id": 129,
+   "http": 0,
+   "error": "TypeError: fetch failed",
+   "ms": 305952
+  },
+  {
+   "id": 136,
+   "http": 200,
+   "runId": 101,
+   "error": null,
+   "selected": null,
+   "contextChars": 2214,
+   "before": {
+    "ms": 278151,
+    "error": null
+   },
+   "after": {
+    "ms": 148873,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 280719
+  },
+  {
+   "id": 81,
+   "http": 200,
+   "runId": 103,
+   "error": null,
+   "selected": null,
+   "contextChars": 5099,
+   "before": {
+    "ms": 36094,
+    "error": null
+   },
+   "after": {
+    "ms": 55905,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 57808
+  },
+  {
+   "id": 88,
+   "http": 0,
+   "error": "TypeError: fetch failed",
+   "ms": 305994
+  },
+  {
+   "id": 95,
+   "http": 200,
+   "runId": 105,
+   "error": null,
+   "selected": null,
+   "contextChars": 4064,
+   "before": {
+    "ms": 112783,
+    "error": null
+   },
+   "after": {
+    "ms": 35957,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 114413
+  },
+  {
+   "id": 102,
+   "http": 0,
+   "error": "TypeError: fetch failed",
+   "ms": 306296
+  }
+ ]
+}
