@@ -1,0 +1,792 @@
+{
+ "researchers": 27,
+ "queries": {
+  "single": 54,
+  "negative": 12,
+  "composite": 8
+ },
+ "top1Single": "51/54",
+ "misses": [
+  {
+   "query": "전자레인지는 어떻게 음식을 데우나요?",
+   "expect": [
+    "과학"
+   ],
+   "top3": [
+    "요리·제빵·식품 생활 Q&A:0.684",
+    "과학 원리 상식 Q&A:0.638",
+    "농업·작물 문제은행:0.636"
+   ]
+  },
+  {
+   "query": "주택법상 하자보수 책임 기간은 어떻게 되나요?",
+   "expect": [
+    "부동산"
+   ],
+   "top3": [
+    "생활·노동 법률 상담 Q&A:0.722",
+    "부동산·공인중개 문제은행:0.683",
+    "요리·제빵·식품 생활 Q&A:0.663"
+   ]
+  },
+  {
+   "query": "보일러 급수 처리에서 가성취화를 막는 방법은?",
+   "expect": [
+    "에너지"
+   ],
+   "top3": [
+    "환경 과학·공학 문제은행:0.664",
+    "요리·제빵·식품 생활 Q&A:0.651",
+    "농업·작물 문제은행:0.634"
+   ]
+  }
+ ],
+ "negativeTop": [
+  {
+   "query": "강아지가 산책 중에 자꾸 멈추는데 어떻게 훈련하면 좋을까요?",
+   "top": "육아·청소년 양육 Q&A:0.681"
+  },
+  {
+   "query": "베란다 화분의 잎이 누렇게 변하는 이유와 관리법이 궁금합니다.",
+   "top": "농업·작물 문제은행:0.704"
+  },
+  {
+   "query": "오래된 청바지에 묻은 커피 얼룩을 지우는 방법이 있을까요?",
+   "top": "PC·스마트폰 사용법 Q&A:0.635"
+  },
+  {
+   "query": "친구와 크게 다퉜는데 먼저 사과해야 할지 고민이에요.",
+   "top": "육아·청소년 양육 Q&A:0.761"
+  },
+  {
+   "query": "초등학교 3학년 아이에게 분수를 어떻게 가르치면 좋을까요?",
+   "top": "육아·청소년 양육 Q&A:0.663"
+  },
+  {
+   "query": "자동차 엔진오일은 몇 km마다 갈아야 하나요?",
+   "top": "여행·여가 Q&A:0.620"
+  },
+  {
+   "query": "축구에서 오프사이드 규칙을 쉽게 설명해 주세요.",
+   "top": "법률 용어 사전:0.608"
+  },
+  {
+   "query": "피아노를 처음 배우려면 어떤 곡부터 시작하는 게 좋을까요?",
+   "top": "여행·여가 Q&A:0.670"
+  },
+  {
+   "query": "고양이 털이 너무 많이 빠지는데 어떻게 관리하나요?",
+   "top": "요리·제빵·식품 생활 Q&A:0.654"
+  },
+  {
+   "query": "이사 갈 집의 인테리어 색상은 어떻게 고르면 좋을까요?",
+   "top": "여행·여가 Q&A:0.666"
+  },
+  {
+   "query": "결혼식 축의금은 보통 얼마를 내나요?",
+   "top": "생활·노동 법률 상담 Q&A:0.712"
+  },
+  {
+   "query": "영어 회화 실력을 빨리 늘리는 공부법을 알려줘",
+   "top": "육아·청소년 양육 Q&A:0.729"
+  }
+ ],
+ "results": [
+  {
+   "rule": {
+    "min": 0.67,
+    "topK": 3,
+    "margin": 1,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.926,
+    "n": 54,
+    "avgSelected": 1.72
+   },
+   "negative": {
+    "none": 6,
+    "n": 12,
+    "avgSelected": 1.08
+   },
+   "composite": {
+    "recall": 0.938,
+    "n": 8,
+    "avgSelected": 2.63,
+    "both": 7
+   }
+  },
+  {
+   "rule": {
+    "min": 0.67,
+    "topK": 3,
+    "margin": 0.08,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.926,
+    "n": 54,
+    "avgSelected": 1.56
+   },
+   "negative": {
+    "none": 6,
+    "n": 12,
+    "avgSelected": 1.08
+   },
+   "composite": {
+    "recall": 0.875,
+    "n": 8,
+    "avgSelected": 2.38,
+    "both": 6
+   }
+  },
+  {
+   "rule": {
+    "min": 0.67,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.926,
+    "n": 54,
+    "avgSelected": 1.33
+   },
+   "negative": {
+    "none": 6,
+    "n": 12,
+    "avgSelected": 1.08
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 2,
+    "both": 5
+   }
+  },
+  {
+   "rule": {
+    "min": 0.67,
+    "topK": 3,
+    "margin": 0.03,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.907,
+    "n": 54,
+    "avgSelected": 1.15
+   },
+   "negative": {
+    "none": 6,
+    "n": 12,
+    "avgSelected": 1.08
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 2,
+    "both": 5
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 1,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.15
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 2.13,
+    "both": 5
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.08,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.11
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 2.13,
+    "both": 5
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.75,
+    "n": 8,
+    "avgSelected": 1.75,
+    "both": 4
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.03,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 0.91
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.75,
+    "n": 8,
+    "avgSelected": 1.75,
+    "both": 4
+   }
+  },
+  {
+   "rule": {
+    "min": 0.72,
+    "topK": 3,
+    "margin": 1,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.611,
+    "n": 54,
+    "avgSelected": 0.72
+   },
+   "negative": {
+    "none": 10,
+    "n": 12,
+    "avgSelected": 0.42
+   },
+   "composite": {
+    "recall": 0.688,
+    "n": 8,
+    "avgSelected": 1.63,
+    "both": 4
+   }
+  },
+  {
+   "rule": {
+    "min": 0.72,
+    "topK": 3,
+    "margin": 0.08,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.611,
+    "n": 54,
+    "avgSelected": 0.72
+   },
+   "negative": {
+    "none": 10,
+    "n": 12,
+    "avgSelected": 0.42
+   },
+   "composite": {
+    "recall": 0.688,
+    "n": 8,
+    "avgSelected": 1.63,
+    "both": 4
+   }
+  },
+  {
+   "rule": {
+    "min": 0.72,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.611,
+    "n": 54,
+    "avgSelected": 0.67
+   },
+   "negative": {
+    "none": 10,
+    "n": 12,
+    "avgSelected": 0.42
+   },
+   "composite": {
+    "recall": 0.625,
+    "n": 8,
+    "avgSelected": 1.38,
+    "both": 3
+   }
+  },
+  {
+   "rule": {
+    "min": 0.72,
+    "topK": 3,
+    "margin": 0.03,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.611,
+    "n": 54,
+    "avgSelected": 0.65
+   },
+   "negative": {
+    "none": 10,
+    "n": 12,
+    "avgSelected": 0.42
+   },
+   "composite": {
+    "recall": 0.625,
+    "n": 8,
+    "avgSelected": 1.38,
+    "both": 3
+   }
+  },
+  {
+   "rule": {
+    "min": 0.74,
+    "topK": 3,
+    "margin": 1,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.407,
+    "n": 54,
+    "avgSelected": 0.43
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.25
+   },
+   "composite": {
+    "recall": 0.438,
+    "n": 8,
+    "avgSelected": 1,
+    "both": 2
+   }
+  },
+  {
+   "rule": {
+    "min": 0.74,
+    "topK": 3,
+    "margin": 0.08,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.407,
+    "n": 54,
+    "avgSelected": 0.43
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.25
+   },
+   "composite": {
+    "recall": 0.438,
+    "n": 8,
+    "avgSelected": 1,
+    "both": 2
+   }
+  },
+  {
+   "rule": {
+    "min": 0.74,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.407,
+    "n": 54,
+    "avgSelected": 0.43
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.25
+   },
+   "composite": {
+    "recall": 0.438,
+    "n": 8,
+    "avgSelected": 1,
+    "both": 2
+   }
+  },
+  {
+   "rule": {
+    "min": 0.74,
+    "topK": 3,
+    "margin": 0.03,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.407,
+    "n": 54,
+    "avgSelected": 0.41
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.25
+   },
+   "composite": {
+    "recall": 0.438,
+    "n": 8,
+    "avgSelected": 1,
+    "both": 2
+   }
+  },
+  {
+   "rule": {
+    "min": 0.76,
+    "topK": 3,
+    "margin": 1,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.259,
+    "n": 54,
+    "avgSelected": 0.28
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.08
+   },
+   "composite": {
+    "recall": 0.375,
+    "n": 8,
+    "avgSelected": 0.75,
+    "both": 1
+   }
+  },
+  {
+   "rule": {
+    "min": 0.76,
+    "topK": 3,
+    "margin": 0.08,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.259,
+    "n": 54,
+    "avgSelected": 0.28
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.08
+   },
+   "composite": {
+    "recall": 0.375,
+    "n": 8,
+    "avgSelected": 0.75,
+    "both": 1
+   }
+  },
+  {
+   "rule": {
+    "min": 0.76,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.259,
+    "n": 54,
+    "avgSelected": 0.28
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.08
+   },
+   "composite": {
+    "recall": 0.375,
+    "n": 8,
+    "avgSelected": 0.75,
+    "both": 1
+   }
+  },
+  {
+   "rule": {
+    "min": 0.76,
+    "topK": 3,
+    "margin": 0.03,
+    "parts": false
+   },
+   "single": {
+    "recall": 0.259,
+    "n": 54,
+    "avgSelected": 0.26
+   },
+   "negative": {
+    "none": 11,
+    "n": 12,
+    "avgSelected": 0.08
+   },
+   "composite": {
+    "recall": 0.375,
+    "n": 8,
+    "avgSelected": 0.75,
+    "both": 1
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.67,
+    "partTop": 1,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.938,
+    "n": 8,
+    "avgSelected": 2.13,
+    "both": 7
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.67,
+    "partTop": 2,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 1,
+    "n": 8,
+    "avgSelected": 2.88,
+    "both": 8
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.7,
+    "partTop": 1,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.875,
+    "n": 8,
+    "avgSelected": 2,
+    "both": 6
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.7,
+    "partTop": 2,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.938,
+    "n": 8,
+    "avgSelected": 2.38,
+    "both": 7
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.72,
+    "partTop": 1,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 1.88,
+    "both": 5
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.72,
+    "partTop": 2,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 2.13,
+    "both": 5
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.74,
+    "partTop": 1,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 1.88,
+    "both": 5
+   }
+  },
+  {
+   "rule": {
+    "min": 0.7,
+    "topK": 3,
+    "margin": 0.05,
+    "parts": true,
+    "partMin": 0.74,
+    "partTop": 2,
+    "partMargin": 0.05
+   },
+   "single": {
+    "recall": 0.796,
+    "n": 54,
+    "avgSelected": 1.02
+   },
+   "negative": {
+    "none": 8,
+    "n": 12,
+    "avgSelected": 0.67
+   },
+   "composite": {
+    "recall": 0.813,
+    "n": 8,
+    "avgSelected": 2.13,
+    "both": 5
+   }
+  }
+ ]
+}

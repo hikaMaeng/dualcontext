@@ -31,6 +31,8 @@ const body = z.discriminatedUnion("type", [
       snippetChars: z.number().int().min(100).max(8000).optional(),
       /** 자료(행) 단위 관련도 기준(코사인 유사도). 기본 0.72, 0 이면 거르지 않는다. */
       minScore: z.number().min(0).max(1).optional(),
+      idColumn: z.string().optional(),
+      identifierSearch: z.boolean().optional(),
       topK: topK.default(3)
     })
   }),

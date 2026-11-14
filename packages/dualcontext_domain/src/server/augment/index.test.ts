@@ -121,3 +121,19 @@ test("자료가 하나도 없는 조사원에는 프로시저 라우팅을 하�
   assert.equal(empty?.procedureRouting, "skipped(no-material)");
   assert.match(result.context, /사내문서: 질의와 관련된 자료를 찾지 못했다/);
 });
+
+test("복합 질의는 하위 질문으로도 라우팅해 합집합을 고르고, 하위 질문이 고른 조사원은 그 하위 질문으로 수집한다", async () => {
+  const first = "사내 환불 규정은 어떻게 되는지, ";
+  const second = "최신 뉴스 동향은 어떤지 알려줘";
+  const asked: string[] = [];
+  const result = await augmentQuery(
+    `${first}${second}`,
+    ports("batch", {
+      // 통째 질의로는 아무도 고르지 못하고, 하위 질문마다 맞는 조사원 하나씩 고른다.
+      selectResearchers: async (query, candidates) => ({ mode: "embedding", selected: query.includes("환불") && !query.includes("뉴스") ? [candidates[0]] : query.includes("뉴스") && !query.includes("환불") ? [candidates[1]] : [] }),
+      collect: async (researcher, query) => { asked.push(`${researcher.name}:${query}`); return [{ title: researcher.name, text: "원문" }]; }
+    })
+  );
+  assert.deepEqual(result.pairs.map((pair) => pair.researcher), ["사내문서", "웹"]);
+  assert.deepEqual(asked, ["사내문서:사내 환불 규정은 어떻게 되는지", "웹:최신 뉴스 동향은 어떤지 알려줘"]);
+});

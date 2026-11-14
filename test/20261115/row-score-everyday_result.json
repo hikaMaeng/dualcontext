@@ -1,0 +1,306 @@
+{
+ "positives": [
+  {
+   "query": "빵 반죽을 치댈 때 글루텐이 어떻게 생기나요?",
+   "table": "ds_life_cooking",
+   "score": 0.7970268842900026
+  },
+  {
+   "query": "김치에 하얀 곰팡이가 피었는데 먹어도 되나요?",
+   "table": "ds_life_cooking",
+   "score": 0.9017544330212152
+  },
+  {
+   "query": "중학생 아이의 사춘기 반항을 어떻게 대해야 하나요?",
+   "table": "ds_parenting_teen",
+   "score": 0.777805636328963
+  },
+  {
+   "query": "아기가 밤에 자주 깨는데 수면 교육은 어떻게 하죠?",
+   "table": "ds_parenting_teen",
+   "score": 0.8450759649276733
+  },
+  {
+   "query": "요즘 두통이 잦은데 병원에 가야 할까요?",
+   "table": "ds_health_life",
+   "score": 0.7957483767196056
+  },
+  {
+   "query": "비타민D 영양제는 언제 먹는 게 좋나요?",
+   "table": "ds_health_life",
+   "score": 0.8145775905503293
+  },
+  {
+   "query": "ETF와 펀드의 차이가 뭐고 어느 쪽이 유리한가요?",
+   "table": "ds_money_basics",
+   "score": 0.797682189872339
+  },
+  {
+   "query": "연말정산에서 월세 세액공제를 받으려면 어떻게 하나요?",
+   "table": "ds_money_basics",
+   "score": 0.8530462042405074
+  },
+  {
+   "query": "퇴직금은 어떻게 계산하고 언제까지 받아야 하나요?",
+   "table": "ds_life_law",
+   "score": 0.8310911655426025
+  },
+  {
+   "query": "전세 보증금을 돌려받지 못할 때 어떤 절차가 있나요?",
+   "table": "ds_life_law",
+   "score": 0.8220424897087366
+  },
+  {
+   "query": "일본 3박 4일 여행 준비물과 항공권 예약 팁은?",
+   "table": "ds_travel_leisure",
+   "score": 0.7808022499084473
+  },
+  {
+   "query": "캠핑이 처음인데 준비해야 할 장비 목록이 궁금해요",
+   "table": "ds_travel_leisure",
+   "score": 0.7827889115591817
+  },
+  {
+   "query": "엑셀에서 중복된 값을 한 번에 지우는 방법은?",
+   "table": "ds_pc_howto",
+   "score": 0.724824845790863
+  },
+  {
+   "query": "포토샵에서 사진 두 장을 하나로 합치는 순서를 알려줘",
+   "table": "ds_pc_howto",
+   "score": 0.7511127442784753
+  },
+  {
+   "query": "하늘이 파랗게 보이는 원리가 뭐예요?",
+   "table": "ds_science_general",
+   "score": 0.8413815403808096
+  },
+  {
+   "query": "전자레인지는 어떻게 음식을 데우나요?",
+   "table": "ds_science_general",
+   "score": 0.7339668273925781
+  },
+  {
+   "query": "한국사",
+   "table": "ds_culture_history",
+   "score": 0.8210968481840596
+  }
+ ],
+ "negatives": [
+  {
+   "query": "강아지가 산책 중에 자꾸 멈추는데 어떻게 훈련하면 좋을까요?",
+   "scores": {
+    "ds_life_cooking": 0.675625641606711,
+    "ds_parenting_teen": 0.7121870093234188,
+    "ds_health_life": 0.7602826189489463,
+    "ds_money_basics": 0.6579185528183441,
+    "ds_life_law": 0.695146221211779,
+    "ds_travel_leisure": 0.7050760984420826,
+    "ds_pc_howto": 0.673998495161496,
+    "ds_culture_history": 0.697940427187657,
+    "ds_science_general": 0.6835243498228711
+   }
+  },
+  {
+   "query": "베란다 화분의 잎이 누렇게 변하는 이유와 관리법이 궁금합니다.",
+   "scores": {
+    "ds_life_cooking": 0.7205821109165033,
+    "ds_parenting_teen": 0.7221720649106554,
+    "ds_health_life": 0.7209203672957653,
+    "ds_money_basics": 0.6693028014482749,
+    "ds_life_law": 0.6920437033202483,
+    "ds_travel_leisure": 0.6825389672839038,
+    "ds_pc_howto": 0.692157548198555,
+    "ds_culture_history": 0.6800341820757606,
+    "ds_science_general": 0.7011399299925506
+   }
+  },
+  {
+   "query": "오래된 청바지에 묻은 커피 얼룩을 지우는 방법이 있을까요?",
+   "scores": {
+    "ds_life_cooking": 0.7948972582817078,
+    "ds_parenting_teen": 0.682103295200868,
+    "ds_health_life": 0.6809333765784915,
+    "ds_money_basics": 0.6328495144844055,
+    "ds_life_law": 0.669579267501831,
+    "ds_travel_leisure": 0.6751521020946429,
+    "ds_pc_howto": 0.7244976923169094,
+    "ds_culture_history": 0.6632430553436279,
+    "ds_science_general": 0.703593453872009
+   }
+  },
+  {
+   "query": "친구와 크게 다퉜는데 먼저 사과해야 할지 고민이에요.",
+   "scores": {
+    "ds_life_cooking": 0.7541578939792359,
+    "ds_parenting_teen": 0.7562304669962032,
+    "ds_health_life": 0.7389342693886566,
+    "ds_money_basics": 0.7565656529833655,
+    "ds_life_law": 0.7565656529833655,
+    "ds_travel_leisure": 0.7172951361292775,
+    "ds_pc_howto": 0.7186609599580097,
+    "ds_culture_history": 0.7201868939566844,
+    "ds_science_general": 0.7169503951981702
+   }
+  },
+  {
+   "query": "초등학교 3학년 아이에게 분수를 어떻게 가르치면 좋을까요?",
+   "scores": {
+    "ds_life_cooking": 0.6798926401074327,
+    "ds_parenting_teen": 0.6992843567898499,
+    "ds_health_life": 0.6641044016071096,
+    "ds_money_basics": 0.6738979226855569,
+    "ds_life_law": 0.6541512402386224,
+    "ds_travel_leisure": 0.6418057253129155,
+    "ds_pc_howto": 0.6578512583882379,
+    "ds_culture_history": 0.6324931760128256,
+    "ds_science_general": 0.6416350985547971
+   }
+  },
+  {
+   "query": "자동차 엔진오일은 몇 km마다 갈아야 하나요?",
+   "scores": {
+    "ds_life_cooking": 0.6839936767818455,
+    "ds_parenting_teen": 0.6404173565035274,
+    "ds_health_life": 0.6408834839393786,
+    "ds_money_basics": 0.701470038338603,
+    "ds_life_law": 0.6863764729015971,
+    "ds_travel_leisure": 0.702908656087776,
+    "ds_pc_howto": 0.6669299205458081,
+    "ds_culture_history": 0.6301766821794716,
+    "ds_science_general": 0.6817479336782677
+   }
+  },
+  {
+   "query": "축구에서 오프사이드 규칙을 쉽게 설명해 주세요.",
+   "scores": {
+    "ds_life_cooking": 0.6437821600567019,
+    "ds_parenting_teen": 0.6786489880487652,
+    "ds_health_life": 0.6583863104351586,
+    "ds_money_basics": 0.7076938326541298,
+    "ds_life_law": 0.6944865352527457,
+    "ds_travel_leisure": 0.7133558563377955,
+    "ds_pc_howto": 0.6759772695309765,
+    "ds_culture_history": 0.6803583896053345,
+    "ds_science_general": 0.668164352531306
+   }
+  },
+  {
+   "query": "피아노를 처음 배우려면 어떤 곡부터 시작하는 게 좋을까요?",
+   "scores": {
+    "ds_life_cooking": 0.6650322276392302,
+    "ds_parenting_teen": 0.7030419111251831,
+    "ds_health_life": 0.6876841373631885,
+    "ds_money_basics": 0.6861997246742249,
+    "ds_life_law": 0.6627902388572693,
+    "ds_travel_leisure": 0.6830686708606922,
+    "ds_pc_howto": 0.6991706102839297,
+    "ds_culture_history": 0.6759993039369379,
+    "ds_science_general": 0.6660096645355225
+   }
+  },
+  {
+   "query": "고양이 털이 너무 많이 빠지는데 어떻게 관리하나요?",
+   "scores": {
+    "ds_life_cooking": 0.6804061138750948,
+    "ds_parenting_teen": 0.7453272342681885,
+    "ds_health_life": 0.7590085720425006,
+    "ds_money_basics": 0.6615473027420639,
+    "ds_life_law": 0.6631700202024006,
+    "ds_travel_leisure": 0.6951780526393074,
+    "ds_pc_howto": 0.6999325156211853,
+    "ds_culture_history": 0.6953622102737427,
+    "ds_science_general": 0.6894553509192276
+   }
+  },
+  {
+   "query": "이사 갈 집의 인테리어 색상은 어떻게 고르면 좋을까요?",
+   "scores": {
+    "ds_life_cooking": 0.6892393231391956,
+    "ds_parenting_teen": 0.6709490818350972,
+    "ds_health_life": 0.7168177411095271,
+    "ds_money_basics": 0.7054018974304249,
+    "ds_life_law": 0.7142802902627177,
+    "ds_travel_leisure": 0.7001125246387,
+    "ds_pc_howto": 0.6938623189926196,
+    "ds_culture_history": 0.6909445340004298,
+    "ds_science_general": 0.6815029788913131
+   }
+  },
+  {
+   "query": "결혼식 축의금은 보통 얼마를 내나요?",
+   "scores": {
+    "ds_life_cooking": 0.6818654740412677,
+    "ds_parenting_teen": 0.7569920050201421,
+    "ds_health_life": 0.6984924882201105,
+    "ds_money_basics": 0.7437044382095337,
+    "ds_life_law": 0.7346465587615967,
+    "ds_travel_leisure": 0.6952436748001781,
+    "ds_pc_howto": 0.7007228344894303,
+    "ds_culture_history": 0.719220898128179,
+    "ds_science_general": 0.6472485871762891
+   }
+  },
+  {
+   "query": "영어 회화 실력을 빨리 늘리는 공부법을 알려줘",
+   "scores": {
+    "ds_life_cooking": 0.7295880478866085,
+    "ds_parenting_teen": 0.7558177709579468,
+    "ds_health_life": 0.7435500316083522,
+    "ds_money_basics": 0.745300829410553,
+    "ds_life_law": 0.7324811220169067,
+    "ds_travel_leisure": 0.7324811220169067,
+    "ds_pc_howto": 0.7639266339474918,
+    "ds_culture_history": 0.7084136431463757,
+    "ds_science_general": 0.7336593866348267
+   }
+  }
+ ],
+ "negMax": [
+  0.7603,
+  0.7222,
+  0.7949,
+  0.7566,
+  0.6993,
+  0.7029,
+  0.7134,
+  0.703,
+  0.759,
+  0.7168,
+  0.757,
+  0.7639
+ ],
+ "posMin": 0.724824845790863,
+ "sweep": [
+  {
+   "threshold": 0.72,
+   "positivesKept": "17/17",
+   "negativesEmpty": "5/12"
+  },
+  {
+   "threshold": 0.74,
+   "positivesKept": "15/17",
+   "negativesEmpty": "6/12"
+  },
+  {
+   "threshold": 0.76,
+   "positivesKept": "14/17",
+   "negativesEmpty": "9/12"
+  },
+  {
+   "threshold": 0.78,
+   "positivesKept": "13/17",
+   "negativesEmpty": "11/12"
+  },
+  {
+   "threshold": 0.8,
+   "positivesKept": "8/17",
+   "negativesEmpty": "12/12"
+  },
+  {
+   "threshold": 0.82,
+   "positivesKept": "7/17",
+   "negativesEmpty": "12/12"
+  }
+ ]
+}

@@ -23,12 +23,21 @@ function fill(template: string, values: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => values[key] ?? "");
 }
 
+/**
+ * 조사원 라우팅의 상대 마진: 최고 점수에서 이만큼 안에 든 후보만 고른다. 임계값만으로는 조사원이 27개가 되자 무관한 것이
+ * 같이 딸려 왔다. 측정(test/20261115/routing-calibration27_result.json, 단일 질의 54개): 0.05 로 두면 재현율 0.926 은 그대로이고
+ * 평균 선택 수가 1.72 → 1.33 으로 준다. 프로시저는 측정하지 않아 마진을 두지 않는다.
+ */
+const researcherMargin = 0.05;
+
 type Target<T> = {
   table: "researchers" | "procedures";
   method: RoutingMethod;
   topK: number;
   /** 임베딩 방식의 최소 유사도. 이보다 낮은 후보는 상위 topK 안이어도 제외한다. */
   minScore: number;
+  /** 최고 점수에서 이만큼 안의 후보만 고른다(임베딩 방식). 1 이면 상대 기준을 쓰지 않는다. */
+  margin: number;
   prompt: string;
   query: string;
   candidates: T[];
@@ -67,7 +76,8 @@ export function createSelectors(pool: pg.Pool, model: ModelClient) {
         const [queryVector] = await model.embed([target.query]);
         const vectors = await embeddingsFor(target.table, target.candidates, target.embeddingText);
         const ranked = rankByEmbedding(queryVector, target.candidates.map((item, index) => ({ item, vector: vectors[index] })));
-        const selected = ranked.filter((entry) => entry.score >= target.minScore).slice(0, target.topK).map((entry) => entry.item);
+        const best = ranked[0]?.score ?? 0;
+        const selected = ranked.filter((entry) => entry.score >= target.minScore && entry.score >= best - target.margin).slice(0, target.topK).map((entry) => entry.item);
         // 모든 후보의 점수와 선택 여부를 돌려준다: 왜 골랐는지(또는 왜 아무것도 고르지 않았는지) 로그에 남기기 위해서다.
         return { mode: "embedding", selected, scores: ranked.map((entry) => ({ id: entry.item.id, score: entry.score, selected: selected.includes(entry.item) })) };
       }
@@ -93,14 +103,16 @@ export function createSelectors(pool: pg.Pool, model: ModelClient) {
   }
 
   return {
-    async selectResearchers(query: string, researchers: Researcher[]): Promise<Selection<Researcher>> {
+    async selectResearchers(query: string, researchers: Researcher[], options: { part?: boolean } = {}): Promise<Selection<Researcher>> {
       const config = await readRouterConfig(pool);
       const candidates = researchers.filter((researcher) => researcher.enabled);
       return pick({
         table: "researchers",
         method: config.researcherMethod,
-        topK: config.researcherTopK,
+        // 하위 질문은 한 분야를 묻는 것이라 상위 1개만 고른다(측정: 복합 질의 재현율 0.938, 평균 2.13개).
+        topK: options.part === true ? 1 : config.researcherTopK,
         minScore: config.researcherMinScore,
+        margin: researcherMargin,
         prompt: config.researcherPrompt,
         query,
         candidates,
@@ -118,6 +130,7 @@ export function createSelectors(pool: pg.Pool, model: ModelClient) {
         method: config.procedureMethod,
         topK: config.procedureTopK,
         minScore: config.procedureMinScore,
+        margin: 1,
         prompt: config.procedurePrompt,
         query,
         candidates,

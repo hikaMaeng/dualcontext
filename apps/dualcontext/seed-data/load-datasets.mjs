@@ -15,7 +15,8 @@
 // 같은 테이블을 다시 적재하면 비우고 새로 채운다(truncate).
 import { spawn } from "node:child_process";
 import { Agent, fetch } from "undici";
-import { readdir, readFile } from "node:fs/promises";
+import { readdir, readFile, writeFile, mkdir } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -135,33 +136,83 @@ async function loadDomains() {
 // ---------------------------------------------------------------- 가져오기 ----
 
 // 행 API 는 간헐적으로 502/429 를 낸다. 점점 늘려 가며 최대 6번 시도한다.
-async function fetchJson(url) {
+async function fetchJson(url, tries = 6) {
   for (let attempt = 1; ; attempt += 1) {
     const response = await fetch(url, { signal: AbortSignal.timeout(60_000) }).catch(() => null);
     if (response?.ok) return response.json();
-    if (attempt === 6) throw new Error(`${url} -> ${response ? response.status : "network error"}`);
-    await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+    if (attempt === tries) throw new Error(`${url} -> ${response ? response.status : "network error"}`);
+    await new Promise((resolve) => setTimeout(resolve, attempt * (tries > 6 ? 6000 : 2000)));
   }
 }
 
 /** 데이터셋 전체에서 고르게 limit 행을 뽑는다(앞쪽만 읽으면 정렬된 데이터가 한 곳으로 쏠린다). */
 async function fetchRows(source, limit) {
+  if (source.filter) return scanAll(source);
   const base = "https://datasets-server.huggingface.co";
   const config = source.config ?? "default";
   const split = source.split ?? "train";
   // 행 수는 데이터셋 전체가 아니라 쓰는 구성(config)의 것이어야 한다. 구성이 여럿인 데이터셋에서
   // 전체 행 수로 오프셋을 잡으면 마지막 쪽이 범위를 벗어난다.
   const size = (await fetchJson(`${base}/size?dataset=${source.dataset}`)).size;
-  const total = size.configs?.find((entry) => entry.config === config)?.num_rows ?? size.dataset.num_rows;
+  const total = size.splits?.find((entry) => entry.config === config && entry.split === split)?.num_rows ?? size.configs?.find((entry) => entry.config === config)?.num_rows ?? size.dataset.num_rows;
   const pages = Math.max(1, Math.ceil(Math.min(limit, total) / PAGE));
   const rows = [];
   for (let page = 0; page < pages; page += 1) {
-    const offset = pages === 1 ? 0 : Math.floor((page * (total - PAGE)) / (pages - 1));
-    const length = Math.min(PAGE, limit);
+    // 전체가 계획한 행 수 이하이면 처음부터 이어서 읽는다(고르게 흩어 읽으면 쪽이 겹쳐 같은 행이 두 번 들어온다).
+    const sequential = total <= limit;
+    const offset = sequential || pages === 1 ? (sequential ? page * PAGE : 0) : Math.floor((page * (total - PAGE)) / (pages - 1));
+    const length = sequential ? Math.min(PAGE, total - offset) : Math.min(PAGE, limit);
     const json = await fetchJson(`${base}/rows?dataset=${source.dataset}&config=${config}&split=${split}&offset=${offset}&length=${length}`);
     rows.push(...json.rows.map((entry) => entry.row));
   }
   return { rows: rows.slice(0, limit), total };
+}
+
+
+/**
+ * filter 가 있는 분야는 데이터셋 전체를 훑어야 한다(분야에 맞는 행이 어디에 있는지 모른다). 한 번 받은 전체는 임시 폴더에 두고
+ * 같은 데이터셋을 쓰는 다른 분야가 다시 받지 않게 한다.
+ */
+async function scanAll(source) {
+  const config = source.config ?? "default";
+  const split = source.split ?? "train";
+  const cache = path.join(os.tmpdir(), "dualcontext-hf-cache", `${source.dataset.replace(/\//g, "__")}__${config}__${split}.json`);
+  const cached = await readFile(cache, "utf8").then(JSON.parse, () => null);
+  if (cached) return cached;
+  const base = "https://datasets-server.huggingface.co";
+  const size = (await fetchJson(`${base}/size?dataset=${source.dataset}`)).size;
+  const total = size.splits?.find((entry) => entry.config === config && entry.split === split)?.num_rows ?? size.configs?.find((entry) => entry.config === config)?.num_rows ?? size.dataset.num_rows;
+  const rows = [];
+  for (let offset = 0; offset < total; offset += PAGE) {
+    const json = await fetchJson(`${base}/rows?dataset=${source.dataset}&config=${config}&split=${split}&offset=${offset}&length=${PAGE}`, 12);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    rows.push(...json.rows.map((entry) => entry.row));
+    if (offset % 2000 === 0) process.stdout.write(`  scanning ${rows.length}/${total}`);
+  }
+  process.stdout.write("done\n");
+  const result = { rows, total };
+  await mkdir(path.dirname(cache), { recursive: true });
+  await writeFile(cache, JSON.stringify(result));
+  return result;
+}
+
+/** 객관식(A~D + 번호 answer)에는 정답 선택지 글을 answerText 로 덧붙인다. 정답을 모르면 자료로 쓸 수 없다. */
+const withAnswerText = (row) =>
+  typeof row.answer === "number" && row[["A", "B", "C", "D"][row.answer - 1]] !== undefined ? { ...row, answerText: row[["A", "B", "C", "D"][row.answer - 1]] } : row;
+
+/**
+ * 행을 매핑하고, filter(정규식)가 있으면 제목+본문에 그 키워드가 가장 많이 나오는 행 순으로 limit 개를 뽑는다.
+ * 한 번 걸린 행까지 고르게 뽑으면 곁다리로 단어만 스친 행이 섞여 분야가 흐려진다.
+ */
+function pick(source, rows, limit) {
+  const mapped = rows.map(withAnswerText).map(source.map).filter((item) => item.title.trim() !== "" && item.body.trim() !== "");
+  if (!source.filter) return mapped.slice(0, limit);
+  const pattern = new RegExp(source.filter, "g");
+  const hits = mapped
+    .map((item, order) => ({ item, order, count: [...`${item.title} ${item.body}`.matchAll(pattern)].length }))
+    .filter((entry) => entry.count > 0)
+    .sort((a, b) => b.count - a.count || a.order - b.order);
+  return hits.slice(0, limit).map((entry) => entry.item);
 }
 
 async function fetchSource(source, limit) {
@@ -245,7 +296,7 @@ async function registerDomain(spec) {
     if (!ids.has(name)) throw new Error(`link 의 프로시저가 없다: ${name}`);
     return ids.get(name);
   });
-  const config = { table: spec.table, vectorColumn: "embedding", reducedColumn: "embedding_mrl", reducedDim: MRL_DIM, textColumn: "body", titleColumn: "title", topK: spec.researcher.topK ?? 3 };
+  const config = { table: spec.table, vectorColumn: "embedding", reducedColumn: "embedding_mrl", reducedDim: MRL_DIM, textColumn: "body", titleColumn: "title", idColumn: "source_id", topK: spec.researcher.topK ?? 3, ...(spec.researcher.minScore === undefined ? {} : { minScore: spec.researcher.minScore }) };
   const body = {
     name: spec.researcher.name, description: spec.researcher.description, keywords: spec.researcher.keywords,
     enabled: true, type: "pgvector", config, procedureIds: [...own, ...linked]
@@ -262,18 +313,20 @@ async function dryRunOne(source) {
   const limit = source.limit ?? BUILTIN_LIMIT;
   const { rows, total } = await fetchSource(source, limit);
   console.log(`  total rows: ${total}; fetched ${rows.length} (planned ${limit}); columns: ${Object.keys(rows[0] ?? {}).join(", ")}`);
-  if (rows.length < Math.min(limit, total)) {
+  if (!source.filter && rows.length < Math.min(limit, total)) {
     console.log(`  <-- 계획한 ${Math.min(limit, total)}행보다 적게 가져왔다`);
     process.exitCode = 2;
   }
   if (source.templates) {
-    const unknown = [...new Set(Object.values(source.templates).flatMap(placeholders))].filter((key) => rows.every((row) => lookup(row, key) === undefined));
+    const unknown = [...new Set(Object.values(source.templates).flatMap(placeholders))].filter((key) => key !== "answerText" && rows.every((row) => lookup(row, key) === undefined));
     if (unknown.length > 0) {
       console.log(`  <-- 템플릿이 가리키는데 행에 없는 열: ${unknown.join(", ")}`);
       process.exitCode = 2;
     }
   }
-  const mapped = rows.map(source.map);
+  const mapped = pick(source, rows, limit);
+  console.log(`  selected ${mapped.length} rows${source.filter ? ` by filter /${source.filter}/` : ""}`);
+  if (source.filter && mapped.length < Math.min(limit, 100)) { console.log("  <-- 필터에 맞는 행이 너무 적다"); process.exitCode = 2; }
   mapped.slice(0, 3).forEach((item, index) => {
     console.log(`  [${index}] id=${JSON.stringify(item.id)} title=${JSON.stringify(item.title.slice(0, 80))}`);
     console.log(`      body(${item.body.length})=${JSON.stringify(item.body.slice(0, 120))}`);
@@ -292,7 +345,7 @@ async function loadOne(source) {
   }
   const limit = source.limit ?? BUILTIN_LIMIT;
   const { rows } = await fetchSource(source, limit);
-  const items = rows.map(source.map).filter((item) => item.title.trim() !== "" && item.body.trim() !== "");
+  const items = pick(source, rows, limit);
   console.log(`  ${items.length} usable rows of ${rows.length}`);
 
   const lines = [];

@@ -1,0 +1,64 @@
+{
+  "name": "kmmlu-real-estate",
+  "table": "ds_kmmlu_real_estate",
+  "dataset": "HAERAE-HUB/KMMLU",
+  "config": "Real-Estate",
+  "split": "test",
+  "license": "cc-by-nd-4.0 (KMMLU, 해설 없는 시험 문제)",
+  "limit": 200,
+  "map": {
+    "title": "{question}",
+    "body": "{question}\n정답: {answerText}",
+    "embed": "{question}\n{answerText}"
+  },
+  "researcher": {
+    "name": "부동산·공인중개 문제은행",
+    "description": "부동산 거래와 공인중개, 등기와 임대차, 부동산 공법과 감정평가를 묻는 시험 문제와 정답. 부동산 제도와 절차를 묻는 질의를 맡는다. 해설이 없다.",
+    "keywords": [
+      "부동산",
+      "공인중개",
+      "등기",
+      "임대차",
+      "감정평가",
+      "공법"
+    ]
+  },
+  "procedures": [
+    {
+      "name": "[부동산] 제도와 절차 확인",
+      "appliesWhen": [
+        "절차",
+        "요건",
+        "등기"
+      ],
+      "steps": [
+        "묻는 제도를 확정한다",
+        "정답 선택지에서 요건을 뽑는다"
+      ],
+      "impacts": [
+        "요건",
+        "절차"
+      ],
+      "outputFormat": "요건 → 절차"
+    },
+    {
+      "name": "[부동산] 문제 풀이 근거",
+      "appliesWhen": [
+        "옳은",
+        "설명"
+      ],
+      "steps": [
+        "문제의 단서를 뽑는다",
+        "정답 선택지와 대조한다"
+      ],
+      "impacts": [
+        "단서",
+        "정답 근거"
+      ],
+      "outputFormat": "단서 → 정답"
+    }
+  ],
+  "link": [
+    "근거 신뢰도 점검"
+  ]
+}

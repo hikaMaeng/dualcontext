@@ -12,7 +12,7 @@ function describeProcedure(procedure: Procedure): string {
 }
 
 function describeMaterial(researcher: Researcher, material: Material, index: number): string {
-  const relevance = material.score === undefined ? "" : ` (질의와의 유사도 ${material.score.toFixed(2)})`;
+  const relevance = material.match === "identifier" ? " (질의에 적힌 표기와 일치)" : material.score === undefined ? "" : ` (질의와의 유사도 ${material.score.toFixed(2)})`;
   return `[${sourceLabel(researcher, index)}] ${material.title}${relevance}\n${material.text}`;
 }
 

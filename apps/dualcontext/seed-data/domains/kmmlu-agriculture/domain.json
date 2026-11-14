@@ -1,0 +1,64 @@
+{
+  "name": "kmmlu-agriculture",
+  "table": "ds_kmmlu_agriculture",
+  "dataset": "HAERAE-HUB/KMMLU",
+  "config": "Agricultural-Sciences",
+  "split": "test",
+  "license": "cc-by-nd-4.0 (KMMLU, 해설 없는 시험 문제)",
+  "limit": 300,
+  "map": {
+    "title": "{question}",
+    "body": "{question}\n정답: {answerText}",
+    "embed": "{question}\n{answerText}"
+  },
+  "researcher": {
+    "name": "농업·작물 문제은행",
+    "description": "작물 재배, 토양과 비료, 병해충 방제, 농업 기술을 묻는 농학 시험 문제와 정답. 작물을 어떻게 기르고 관리하는지 묻는 질의를 맡는다. 해설이 없다.",
+    "keywords": [
+      "농업",
+      "작물",
+      "재배",
+      "비료",
+      "병해충",
+      "토양"
+    ]
+  },
+  "procedures": [
+    {
+      "name": "[농업] 재배 관리 정리",
+      "appliesWhen": [
+        "재배",
+        "비료",
+        "방제"
+      ],
+      "steps": [
+        "작물과 시기를 확정한다",
+        "정답 선택지에서 관리 사실을 뽑는다"
+      ],
+      "impacts": [
+        "관리 방법",
+        "주의점"
+      ],
+      "outputFormat": "작물별 관리"
+    },
+    {
+      "name": "[농업] 문제 풀이 근거",
+      "appliesWhen": [
+        "옳은",
+        "설명"
+      ],
+      "steps": [
+        "문제의 단서를 뽑는다",
+        "정답 선택지와 대조한다"
+      ],
+      "impacts": [
+        "단서",
+        "정답 근거"
+      ],
+      "outputFormat": "단서 → 정답"
+    }
+  ],
+  "link": [
+    "근거 신뢰도 점검"
+  ]
+}

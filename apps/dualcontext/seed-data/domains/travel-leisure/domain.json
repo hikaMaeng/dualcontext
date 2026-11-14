@@ -1,0 +1,70 @@
+{
+  "name": "travel-leisure",
+  "table": "ds_travel_leisure",
+  "dataset": "beomi/KoAlpaca-v1.1a",
+  "config": "default",
+  "split": "train",
+  "license": "라이선스 미표기(허깅페이스 카드에 없음). 네이버 지식iN 질문과 모델 생성 답변이라 사실 확인이 필요하다",
+  "limit": 300,
+  "filter": "여행|관광|항공|호텔|캠핑|등산|비행기|비자|해외여행",
+  "map": {
+    "id": "{url}",
+    "title": "{instruction}",
+    "body": "{output}",
+    "embed": "{instruction}\n{output}"
+  },
+  "researcher": {
+    "name": "여행·여가 Q&A",
+    "description": "국내외 여행 일정, 항공과 숙소, 비자와 입국 준비, 캠핑과 등산 같은 여가 활동 질문에 사람이 답한 기록. 어디를 어떻게 다녀오면 좋은지, 무엇을 준비해야 하는지 묻는 질의를 맡는다.",
+    "keywords": [
+      "여행",
+      "항공",
+      "숙소",
+      "비자",
+      "캠핑",
+      "등산"
+    ],
+    "minScore": 0.76
+  },
+  "procedures": [
+    {
+      "name": "[여행] 준비 체크리스트",
+      "appliesWhen": [
+        "준비",
+        "필요",
+        "일정"
+      ],
+      "steps": [
+        "여행 목적지와 기간을 확인한다",
+        "자료에서 준비물과 절차를 모은다"
+      ],
+      "impacts": [
+        "준비물",
+        "예약·서류",
+        "주의점"
+      ],
+      "outputFormat": "체크리스트"
+    },
+    {
+      "name": "[여행] 선택지 비교",
+      "appliesWhen": [
+        "비교",
+        "추천",
+        "어디"
+      ],
+      "steps": [
+        "후보를 모은다",
+        "비용·이동·계절을 같은 기준으로 놓는다"
+      ],
+      "impacts": [
+        "비용",
+        "이동",
+        "계절"
+      ],
+      "outputFormat": "비교표"
+    }
+  ],
+  "link": [
+    "근거 신뢰도 점검"
+  ]
+}

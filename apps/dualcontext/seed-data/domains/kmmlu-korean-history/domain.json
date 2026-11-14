@@ -1,0 +1,64 @@
+{
+  "name": "kmmlu-korean-history",
+  "table": "ds_kmmlu_korean_history",
+  "dataset": "HAERAE-HUB/KMMLU",
+  "config": "Korean-History",
+  "split": "test",
+  "license": "cc-by-nd-4.0 (KMMLU, 해설 없는 시험 문제)",
+  "limit": 100,
+  "map": {
+    "title": "{question}",
+    "body": "{question}\n정답: {answerText}",
+    "embed": "{question}\n{answerText}"
+  },
+  "researcher": {
+    "name": "한국사 시험 문제은행",
+    "description": "고려와 조선, 근현대사 사료를 보고 사건과 제도를 고르는 한국사 시험 문제와 정답. 어떤 제도나 사건이 무엇이었는지 묻는 한국사 질의를 맡는다. 해설이 없어 정답 선택지만 근거가 된다.",
+    "keywords": [
+      "한국사",
+      "고려",
+      "조선",
+      "사료",
+      "제도",
+      "근현대사"
+    ]
+  },
+  "procedures": [
+    {
+      "name": "[한국사] 사건·제도 확인",
+      "appliesWhen": [
+        "사건",
+        "제도",
+        "시기"
+      ],
+      "steps": [
+        "사료의 시대와 제도를 확인한다",
+        "정답 선택지에서 사실을 뽑는다"
+      ],
+      "impacts": [
+        "시대",
+        "제도·사건 내용"
+      ],
+      "outputFormat": "시대 + 내용 한 줄"
+    },
+    {
+      "name": "[한국사] 문제 풀이 근거",
+      "appliesWhen": [
+        "옳은",
+        "설명"
+      ],
+      "steps": [
+        "문제의 단서를 뽑는다",
+        "정답 선택지와 대조한다"
+      ],
+      "impacts": [
+        "단서",
+        "정답 근거"
+      ],
+      "outputFormat": "단서 → 정답"
+    }
+  ],
+  "link": [
+    "근거 신뢰도 점검"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "name": "kmmlu-environment",
+  "table": "ds_kmmlu_environment",
+  "dataset": "HAERAE-HUB/KMMLU",
+  "config": "Environmental-Science",
+  "split": "test",
+  "license": "cc-by-nd-4.0 (KMMLU, 해설 없는 시험 문제)",
+  "limit": 300,
+  "map": {
+    "title": "{question}",
+    "body": "{question}\n정답: {answerText}",
+    "embed": "{question}\n{answerText}"
+  },
+  "researcher": {
+    "name": "환경 과학·공학 문제은행",
+    "description": "대기와 수질, 폐기물, 환경 규제와 측정, 오염 물질 처리를 묻는 환경 분야 시험 문제와 정답. 환경 오염과 처리 기술이 무엇인지 묻는 질의를 맡는다. 해설이 없다.",
+    "keywords": [
+      "환경",
+      "대기",
+      "수질",
+      "폐기물",
+      "오염",
+      "규제"
+    ]
+  },
+  "procedures": [
+    {
+      "name": "[환경] 오염과 처리 개념 정리",
+      "appliesWhen": [
+        "오염",
+        "처리",
+        "기준"
+      ],
+      "steps": [
+        "묻는 오염 물질과 매체를 확정한다",
+        "정답 선택지에서 처리 원리를 뽑는다"
+      ],
+      "impacts": [
+        "원리",
+        "기준값"
+      ],
+      "outputFormat": "원리 + 기준"
+    },
+    {
+      "name": "[환경] 문제 풀이 근거",
+      "appliesWhen": [
+        "옳은",
+        "설명"
+      ],
+      "steps": [
+        "문제의 단서를 뽑는다",
+        "정답 선택지와 대조한다"
+      ],
+      "impacts": [
+        "단서",
+        "정답 근거"
+      ],
+      "outputFormat": "단서 → 정답"
+    }
+  ],
+  "link": [
+    "근거 신뢰도 점검"
+  ]
+}

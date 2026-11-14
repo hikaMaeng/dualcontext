@@ -1,0 +1,64 @@
+{
+  "name": "kmmlu-economics",
+  "table": "ds_kmmlu_economics",
+  "dataset": "HAERAE-HUB/KMMLU",
+  "config": "Economics",
+  "split": "test",
+  "license": "cc-by-nd-4.0 (KMMLU, 해설 없는 시험 문제)",
+  "limit": 130,
+  "map": {
+    "title": "{question}",
+    "body": "{question}\n정답: {answerText}",
+    "embed": "{question}\n{answerText}"
+  },
+  "researcher": {
+    "name": "경제·회계·금융 제도 문제은행",
+    "description": "회계의 정의와 원칙, 금융 거래 제도, 경제 개념을 묻는 시험 문제와 정답. 회계와 금융 제도가 무엇인지 묻는 질의를 맡는다. 해설이 없다.",
+    "keywords": [
+      "회계",
+      "금융",
+      "경제",
+      "제도",
+      "실명거래",
+      "원칙"
+    ]
+  },
+  "procedures": [
+    {
+      "name": "[경제] 개념·제도 정의",
+      "appliesWhen": [
+        "정의",
+        "원칙",
+        "제도"
+      ],
+      "steps": [
+        "묻는 개념을 확정한다",
+        "정답 선택지에서 정의를 뽑는다"
+      ],
+      "impacts": [
+        "정의",
+        "적용 조건"
+      ],
+      "outputFormat": "정의 + 조건"
+    },
+    {
+      "name": "[경제] 문제 풀이 근거",
+      "appliesWhen": [
+        "옳은",
+        "설명"
+      ],
+      "steps": [
+        "문제의 단서를 뽑는다",
+        "정답 선택지와 대조한다"
+      ],
+      "impacts": [
+        "단서",
+        "정답 근거"
+      ],
+      "outputFormat": "단서 → 정답"
+    }
+  ],
+  "link": [
+    "근거 신뢰도 점검"
+  ]
+}

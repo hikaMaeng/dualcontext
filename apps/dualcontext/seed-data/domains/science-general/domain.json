@@ -1,0 +1,68 @@
+{
+  "name": "science-general",
+  "table": "ds_science_general",
+  "dataset": "beomi/KoAlpaca-v1.1a",
+  "config": "default",
+  "split": "train",
+  "license": "라이선스 미표기(허깅페이스 카드에 없음). 네이버 지식iN 질문과 모델 생성 답변이라 사실 확인이 필요하다",
+  "limit": 300,
+  "filter": "원리|화학|물리|생물|지구|우주|전기|에너지|분자|세포|기후",
+  "map": {
+    "id": "{url}",
+    "title": "{instruction}",
+    "body": "{output}",
+    "embed": "{instruction}\n{output}"
+  },
+  "researcher": {
+    "name": "과학 원리 상식 Q&A",
+    "description": "화학, 물리, 생물, 지구와 우주, 전기와 에너지, 기후 같은 과학 현상이 왜 일어나는지 사람이 풀어 쓴 질문과 답. 일상 속 현상의 원리를 묻는 질의를 맡는다.",
+    "keywords": [
+      "원리",
+      "화학",
+      "물리",
+      "생물",
+      "에너지",
+      "기후"
+    ],
+    "minScore": 0.76
+  },
+  "procedures": [
+    {
+      "name": "[과학] 원리 설명",
+      "appliesWhen": [
+        "원리",
+        "왜",
+        "어떻게"
+      ],
+      "steps": [
+        "현상을 정확히 정의한다",
+        "자료에서 원리와 인과를 찾는다"
+      ],
+      "impacts": [
+        "원리",
+        "인과 단계"
+      ],
+      "outputFormat": "인과 사슬"
+    },
+    {
+      "name": "[과학] 오개념 점검",
+      "appliesWhen": [
+        "사실",
+        "맞나",
+        "진짜"
+      ],
+      "steps": [
+        "흔한 오해를 확인한다",
+        "자료의 설명과 대조한다"
+      ],
+      "impacts": [
+        "오해",
+        "정정"
+      ],
+      "outputFormat": "오해 → 정정"
+    }
+  ],
+  "link": [
+    "근거 신뢰도 점검"
+  ]
+}

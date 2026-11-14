@@ -54,6 +54,15 @@ LIMIT=600 node apps/dualcontext/seed-data/load-datasets.mjs ds_legal_terms   # �
 | `ds_industry_news` | podongchip/korean-synthetic-industry-news (합성) | CC-BY-4.0 |
 | `ds_finance_reports` | nmixx-fin/synthetic_financial_report_korean (합성) | Apache-2.0 |
 
+### 분야 조사원(domain.json)으로 늘린 데이터
+
+위 5개 외에 `seed-data/domains/` 의 분야가 조사원을 더한다. 처음 5개(AI 논문 · GPU · IT 보안 · 소프트웨어 개발 · 미국 기업 동향)에 더해 질의 로그에서 드러난 빈 분야 16개를 넣었다.
+
+| 묶음 | 분야(테이블) | 데이터셋 | 라이선스 |
+| --- | --- | --- | --- |
+| 일상 Q&A 9개 | 요리·제빵 `ds_life_cooking` · 육아 `ds_parenting_teen` · 생활 건강 `ds_health_life` · 재테크 `ds_money_basics` · 생활·노동법 `ds_life_law` · 여행 `ds_travel_leisure` · PC 사용법 `ds_pc_howto` · 역사·문화 `ds_culture_history` · 과학 `ds_science_general` | beomi/KoAlpaca-v1.1a 를 키워드로 나눔(분야당 300행) | 카드에 라이선스 표기 없음. 네이버 지식iN 질문과 모델 생성 답변이라 사실 확인이 필요하다 |
+| 시험 문제은행 7개 | 한국사 · 심리 · 경제·회계 · 부동산 · 환경 · 농업 · 에너지(`ds_kmmlu_*`) | HAERAE-HUB/KMMLU 분과(test 분할, 100~300행) | CC-BY-ND-4.0. 해설이 없어 문제와 정답 선택지만 자료가 된다 |
+
 다시 실행하면 테이블을 비우고 새로 채운다. 허깅페이스 행 API 는 간헐적으로 502 를 내서 재시도한다.
 
 ### 분야 추가(`seed-data/domains/<이름>/domain.json`)
@@ -92,6 +101,10 @@ LIMIT=600 node apps/dualcontext/seed-data/load-datasets.mjs ds_legal_terms   # �
 * `map` 의 템플릿은 `{열}` · `{열.하위}` 자리표시자를 행 값으로 바꾼다(객체는 JSON, 없는 값은 빈 문자열). 길이는 제목 300 · 본문 1500 · 임베딩 1200 자로 잘린다. 제목과 본문이 빈 행은 버린다.
 * 규칙: `name` 은 폴더 이름과 같고 소문자·숫자·하이픈, `table` 은 `ds_` 로 시작하는 소문자·숫자·밑줄, `limit` 은 1~1000(임베딩이 텍스트당 약 0.5초라 300 권장), 프로시저 2개 이상(각각 steps 2개 이상 · impacts 1개 이상), 조사원 키워드 3개 이상, 조사원 설명 40자 이상.
 * 프로시저 이름은 DB 전체에서 유일하다. 다른 분야와 겹치지 않게 분야 표식(`[GPU]` 등)을 붙인다. `link` 는 이미 있는 공용 프로시저(「근거 신뢰도 점검」, 「수치·사실 추출」, 「비교 분석」 등)를 이름으로 연결한다.
+* `filter`(정규식 문자열, 선택)를 주면 데이터셋 **전체**를 훑어(첫 실행에 수 분, 행 API 제한을 피해 천천히 읽고 임시 폴더에 캐시) 제목+본문에 그 키워드가 **가장 많이 나오는 행 순서로** `limit` 개를 고른다. 한 데이터셋을 여러 분야로 가르는 용도다(KoAlpaca 를 요리 · 양육 · 재테크 … 로 나눔). 단어만 스친 행이 섞이므로 키워드는 분야에 특이한 말로 쓴다.
+* 객관식 데이터(`A`~`D` 열과 숫자 `answer`)에는 정답 선택지 글이 `{answerText}` 로 파생된다. 해설이 없는 시험 문제는 문제와 정답 문장만 자료가 된다.
+* 등록되는 조사원 설정에는 `idColumn: "source_id"` 가 들어가 식별자 정확 검색의 번호 참조가 동작한다.
+* 이 저장소의 새 분야 16개는 `test/20261115/make-domains.mjs` 가 만든다(질의 로그에서 드러난 빈 분야: 요리·제빵, 육아, 생활 건강, 재테크, 생활법, 여행, PC 사용법, 역사·문화, 과학 + KMMLU 한국사·심리·경제·부동산·환경·농업·에너지).
 * 먼저 `--dry-run` 으로 검증한다(데이터를 몇 행만 받아 매핑 결과와 오류를 보여 주고 임베딩 · DB 는 건드리지 않는다).
 
 ```sh
