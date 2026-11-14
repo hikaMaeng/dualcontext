@@ -16,6 +16,7 @@ export async function augment(deps: Deps, query: string, writerId?: number) {
   const ports: AugmentPorts = {
     listResearchers: () => listResearchers(deps.pool),
     listProceduresOf: (researcher) => listProceduresOf(deps.pool, researcher.id),
+    split: selectors.split,
     selectResearchers: selectors.selectResearchers,
     selectProcedures: selectors.selectProcedures,
     collect: (researcher, text) => collect(deps.pool, deps.model, deps.dataDir, researcher, text),

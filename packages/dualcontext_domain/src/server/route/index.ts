@@ -1,10 +1,10 @@
-import type { Procedure, Researcher } from "../../common/index.js";
+import type { Procedure, Researcher, StepTrace } from "../../common/index.js";
 
 /** 후보 하나의 점수(임베딩 방식에서만). */
 export type ScoredId = { id: number; score: number; selected: boolean };
 
-/** 라우팅 결과. mode 는 실제로 쓰인 방법(되돌림 포함), scores 는 임베딩 방식일 때 모든 후보의 점수다. */
-export type Selection<T> = { mode: string; selected: T[]; scores?: ScoredId[] };
+/** 라우팅 결과. mode 는 실제로 쓰인 단계들(건너뜀·실패 포함), scores 는 임베딩 단계가 있었을 때 그 단계 입력 후보의 점수, steps 는 단계별 기록이다. */
+export type Selection<T> = { mode: string; selected: T[]; scores?: ScoredId[]; steps?: StepTrace[] };
 
 function keywordScore(query: string, keywords: string[]): number {
   const lowered = query.toLowerCase();
@@ -72,4 +72,24 @@ export function parseIdSelection(text: string, validIds: number[], topK: number)
   const seen = new Set<number>();
   for (const value of numbers) if (validIds.includes(value)) seen.add(value);
   return [...seen].slice(0, topK);
+}
+
+/**
+ * 임베딩 단계의 선택 규칙. ranked 는 점수 내림차순이다.
+ * minScore 이상이고 최고 점수에서 margin 안이며, 그중 위에서 topK 개. margin 1 이면 상대 기준을, minScore 0 이면 절대 기준을 쓰지 않는다.
+ */
+export function selectByEmbedding<T>(ranked: { item: T; score: number }[], rule: { topK: number; minScore: number; margin: number }): { item: T; score: number }[] {
+  const best = ranked[0]?.score ?? 0;
+  return ranked.filter((entry) => entry.score >= rule.minScore && entry.score >= best - rule.margin).slice(0, rule.topK);
+}
+
+/**
+ * LLM 이 답한 글에서 id 배열을 읽는다. 글 안의 마지막 `[...]` 를 배열로 본다(앞의 것은 예시나 생각 과정일 수 있다).
+ * 배열이 없으면 null(해석 실패), 빈 배열이면 [](「없음」). 후보에 없는 id 와 중복은 버리고 topK 개까지 돌려준다.
+ */
+export function parseIdArray(text: string, validIds: number[], topK: number): number[] | null {
+  const arrays = text.replace(/<think>[\s\S]*?<\/think>/g, "").match(/\[[^\[\]]*\]/g);
+  if (arrays === null) return null;
+  const numbers = (arrays[arrays.length - 1].match(/\d+/g) ?? []).map(Number);
+  return [...new Set(numbers.filter((value) => validIds.includes(value)))].slice(0, topK);
 }

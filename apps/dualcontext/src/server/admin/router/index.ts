@@ -1,39 +1,68 @@
 import express from "express";
-import type pg from "pg";
 import { z } from "zod";
-import { readRouterConfig } from "../../routing/index.js";
+import type { RouterConfig } from "dualcontext_domain/common";
+import { selectForQuery } from "dualcontext_domain/server";
+import type { Deps } from "../../augment/index.js";
+import { defaultRouterConfig, readRouterConfig, routerConfigSchema, writeRouterConfig } from "../../routing/config/index.js";
+import { procedurePrompt, researcherPrompt, splitPrompt } from "../../routing/config/prompts.js";
+import { createSelectors } from "../../routing/index.js";
+import { listProceduresOf } from "../procedures/index.js";
+import { listResearchers } from "../researchers/index.js";
 
-const method = z.enum(["keyword", "embedding", "llm"]);
-const body = z.object({
-  researcherMethod: method,
-  researcherTopK: z.number().int().min(1).max(20),
-  researcherMinScore: z.number().min(0).max(1),
-  researcherPrompt: z.string(),
-  procedureMethod: method,
-  procedureTopK: z.number().int().min(1).max(20),
-  procedureMinScore: z.number().min(0).max(1),
-  procedurePrompt: z.string()
-});
-
-/** 라우터 설정: 1단계 조사원 선택과 2단계 프로시저 선택의 방법·상위 개수·LLM 프롬프트. */
-export function routerRouter(pool: pg.Pool) {
+/**
+ * 라우터 설정: 질의 분해 방법과, 1단계(조사원) · 2단계(프로시저)의 라우팅 단계 파이프라인.
+ * POST /router/preview 는 질의 하나의 라우팅만 돌려 본다(자료 수집과 라이터는 부르지 않는다).
+ * 저장하지 않은 설정(config)을 함께 보내면 그 설정으로 돌린다: 저장 전에 효과를 보거나 설정을 비교 측정할 때 쓴다.
+ * procedures 를 false 로 보내면 2단계(프로시저 선택)는 돌리지 않는다.
+ */
+export function routerRouter(deps: Deps) {
+  const { pool } = deps;
   const router = express.Router();
 
   router.get("/router", async (_request, response) => {
     response.json(await readRouterConfig(pool));
   });
 
+  // 새 LLM 단계를 만들 때 채울 기본 프롬프트와, 처음 상태(기본 설정).
+  router.get("/router/defaults", (_request, response) => {
+    response.json({ config: defaultRouterConfig(), prompts: { researcher: researcherPrompt, procedure: procedurePrompt, split: splitPrompt } });
+  });
+
   router.put("/router", async (request, response) => {
-    const parsed = body.safeParse(request.body);
+    const parsed = routerConfigSchema.safeParse(request.body);
     if (!parsed.success) return void response.status(400).json({ error: parsed.error.message });
-    const d = parsed.data;
-    await pool.query(
-      `update router_config set researcher_method = $1, researcher_top_k = $2, researcher_prompt = $3,
-         procedure_method = $4, procedure_top_k = $5, procedure_prompt = $6,
-         researcher_min_score = $7, procedure_min_score = $8 where id = 1`,
-      [d.researcherMethod, d.researcherTopK, d.researcherPrompt, d.procedureMethod, d.procedureTopK, d.procedurePrompt, d.researcherMinScore, d.procedureMinScore]
-    );
+    await writeRouterConfig(pool, parsed.data as RouterConfig);
     response.json(await readRouterConfig(pool));
+  });
+
+  router.post("/router/preview", async (request, response) => {
+    const parsed = z.object({ query: z.string().trim().min(1), config: routerConfigSchema.optional(), procedures: z.boolean().default(true) }).safeParse(request.body);
+    if (!parsed.success) return void response.status(400).json({ error: parsed.error.message });
+    const config = (parsed.data.config as RouterConfig | undefined) ?? (await readRouterConfig(pool));
+    const selectors = createSelectors(deps.pool, deps.model, { config: async () => config });
+    const started = Date.now();
+    try {
+      const researchers = await listResearchers(pool);
+      const picked = await selectForQuery(parsed.data.query, researchers, selectors);
+      const researcherMs = Date.now() - started;
+      const procedures = [];
+      for (const researcher of parsed.data.procedures ? picked.merged.selected : []) {
+        const selection = await selectors.selectProcedures(parsed.data.query, researcher, await listProceduresOf(pool, researcher.id));
+        procedures.push({ researcher: researcher.name, mode: selection.mode, selected: selection.selected.map((procedure) => procedure.name), steps: selection.steps ?? [] });
+      }
+      response.json({
+        parts: picked.parts,
+        mode: picked.merged.mode,
+        selected: picked.merged.selected.map((researcher) => researcher.name),
+        asked: picked.asked.map((entry) => ({ asked: entry.asked, mode: entry.selection.mode, selected: entry.selection.selected.map((researcher) => researcher.name), steps: entry.selection.steps ?? [] })),
+        scores: (picked.merged.scores ?? []).map((entry) => ({ name: researchers.find((researcher) => researcher.id === entry.id)?.name ?? String(entry.id), score: Number(entry.score.toFixed(4)), selected: entry.selected })),
+        procedures,
+        researcherMs,
+        ms: Date.now() - started
+      });
+    } catch (error) {
+      response.status(502).json({ error: error instanceof Error ? error.message : String(error) });
+    }
   });
 
   return router;

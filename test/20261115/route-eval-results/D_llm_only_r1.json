@@ -1,0 +1,3779 @@
+{
+ "name": "D_llm_only",
+ "run": 1,
+ "concurrency": 3,
+ "startedAt": "2026-11-14T04:23:05.270Z",
+ "elapsedMs": 751732,
+ "config": {
+  "split": {
+   "method": "none",
+   "maxParts": 4,
+   "minChars": 12,
+   "partTopK": 1,
+   "prompt": "다음 질의가 서로 다른 주제를 함께 묻고 있으면 주제별 하위 질문으로 나눠라. 주제가 하나이면 질의 전체를 한 개짜리 배열로 답하라.\n\n규칙:\n- 하위 질문은 최대 {{maxParts}}개, 각각 그 자체로 이해되는 완결된 질문으로 쓴다(앞 문장을 가리키는 말은 풀어 쓴다).\n- 같은 주제를 말만 바꿔 나누지 않는다. 질의에 없는 내용을 덧붙이지 않는다.\n\n질의: {{query}}\n\n하위 질문의 JSON 문자열 배열만 답하라. 예: [\"첫째 질문\", \"둘째 질문\"]"
+  },
+  "researcher": {
+   "steps": [
+    {
+     "type": "llm",
+     "topK": 4,
+     "prompt": "너는 질의에 답할 자료를 어느 조사원(자료 출처)에서 찾을지 고르는 라우터다.\n\n질의: {{query}}\n\n후보 조사원:\n{{candidates}}\n\n규칙:\n- 질의에 답하는 데 실제로 쓸 자료가 있을 것 같은 조사원만 최대 {{topK}}개 고른다.\n- 질의가 여러 분야를 함께 물으면 각 분야의 조사원을 고른다.\n- 이름이 비슷해도 질의의 주제와 무관하면 고르지 않는다. 어느 조사원의 자료로도 답할 수 없는 질의(일상 잡담, 후보 분야 밖의 주제)에는 [] 로 답한다.\n\n후보의 id 만 JSON 배열로 답하라. 예: [3, 1] 또는 [].",
+     "showScores": false,
+     "allowNone": true,
+     "parts": false,
+     "onError": "skip"
+    }
+   ]
+  },
+  "procedure": {
+   "steps": [
+    {
+     "type": "embedding",
+     "topK": 1,
+     "minScore": 0,
+     "margin": 1,
+     "parts": true,
+     "onError": "keyword"
+    }
+   ]
+  }
+ },
+ "results": [
+  {
+   "id": 1,
+   "selected": [
+    "법률 용어 사전"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "법인의 합병과 소멸, 승계가 법률적으로 무슨 뜻인가요?",
+     "selected": [
+      "법률 용어 사전"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 53422
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 53431
+  },
+  {
+   "id": 2,
+   "selected": [
+    "법률 용어 사전"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "'선의'와 '악의'라는 법률 용어는 일상 용어와 어떻게 다른가요?",
+     "selected": [
+      "법률 용어 사전"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4566
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4574
+  },
+  {
+   "id": 3,
+   "selected": [
+    "판례·법령 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "대법원은 근로기준법의 휴업수당 조문을 어떻게 해석했나요?",
+     "selected": [
+      "판례·법령 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 107552
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 107565
+  },
+  {
+   "id": 4,
+   "selected": [
+    "판례·법령 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "민법 제750조 불법행위에 관한 대법원 판결의 쟁점은 무엇인가요?",
+     "selected": [
+      "판례·법령 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5139
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5145
+  },
+  {
+   "id": 5,
+   "selected": [
+    "의학 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "밤에 기침이 악화되는 23세 여성 환자의 진단과 치료는?",
+     "selected": [
+      "의학 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4670
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4677
+  },
+  {
+   "id": 6,
+   "selected": [
+    "의학 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "혈중 호산구가 증가한 천식 환자에서 다음에 할 검사로 적절한 것은?",
+     "selected": [
+      "의학 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4136
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4142
+  },
+  {
+   "id": 7,
+   "selected": [
+    "산업 뉴스(합성)",
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "반도체 공급망 차질이 국내 기업의 생산에 미친 영향을 알려줘",
+     "selected": [
+      "산업 뉴스(합성)",
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 7835
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7842
+  },
+  {
+   "id": 8,
+   "selected": [
+    "산업 뉴스(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "클라우드 업계의 규제와 투자 동향이 산업에 어떤 영향을 주나요?",
+     "selected": [
+      "산업 뉴스(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 10533
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10542
+  },
+  {
+   "id": 9,
+   "selected": [
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "미국 구인 건수 발표 후 코스피와 환율이 어떻게 움직였나요?",
+     "selected": [
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6482
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6497
+  },
+  {
+   "id": 10,
+   "selected": [
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "증권사 리포트가 본 이번 주 금리 전망과 증시 방향은?",
+     "selected": [
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5968
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5974
+  },
+  {
+   "id": 11,
+   "selected": [
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "오늘 서울 날씨와 이번 주 예보가 어때요?",
+     "selected": [
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4208
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4215
+  },
+  {
+   "id": 12,
+   "selected": [
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "지금 원달러 환율과 최신 뉴스 헤드라인을 알려줘",
+     "selected": [
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 27921
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 27929
+  },
+  {
+   "id": 13,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "활성값 희소화로 LLM 추론 효율을 높인 논문이 있나요?",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5220
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5228
+  },
+  {
+   "id": 14,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "양자화 모델의 정확도 손실을 줄이는 최근 연구 방법은?",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6327
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6335
+  },
+  {
+   "id": 15,
+   "selected": [
+    "GPU Ark 그래픽카드 사양"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "RTX 5090의 VRAM과 소비전력은 얼마인가요?",
+     "selected": [
+      "GPU Ark 그래픽카드 사양"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4482
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4489
+  },
+  {
+   "id": 16,
+   "selected": [
+    "GPU Ark 그래픽카드 사양"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "Radeon HD 6670과 GeForce 8600 GTS의 메모리 대역폭을 비교해줘",
+     "selected": [
+      "GPU Ark 그래픽카드 사양"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3497
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3504
+  },
+  {
+   "id": 17,
+   "selected": [
+    "미국 기업 산업 동향 기사",
+    "산업 뉴스(합성)",
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "미국 대형 에너지 기업의 최근 분기 실적과 산업 동향은?",
+     "selected": [
+      "미국 기업 산업 동향 기사",
+      "산업 뉴스(합성)",
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 7672
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7679
+  },
+  {
+   "id": 18,
+   "selected": [
+    "미국 기업 산업 동향 기사"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "S&P 500 기업 뉴스에서 제약 업종 흐름이 어떻게 보도됐나요?",
+     "selected": [
+      "미국 기업 산업 동향 기사"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6297
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6304
+  },
+  {
+   "id": 19,
+   "selected": [
+    "CVE 취약점과 영향 정보"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "CVE-2024-21709 의 영향받는 제품과 공격 조건은?",
+     "selected": [
+      "CVE 취약점과 영향 정보"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 50812
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 50835
+  },
+  {
+   "id": 20,
+   "selected": [
+    "CVE 취약점과 영향 정보"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "PHP 웹 애플리케이션의 SQL 인젝션 취약점 최근 CVE 현황은?",
+     "selected": [
+      "CVE 취약점과 영향 정보"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5742
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5751
+  },
+  {
+   "id": 21,
+   "selected": [
+    "소프트웨어 개발 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "C#에서 Decimal을 Double로 변환할 때 오류가 나는 이유는?",
+     "selected": [
+      "소프트웨어 개발 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3985
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3991
+  },
+  {
+   "id": 22,
+   "selected": [
+    "소프트웨어 개발 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "LINQ로 페이징을 구현하는 방법을 알려줘",
+     "selected": [
+      "소프트웨어 개발 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3455
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3463
+  },
+  {
+   "id": 23,
+   "selected": [
+    "요리·제빵·식품 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "빵 반죽을 치댈 때 글루텐이 어떻게 생기나요?",
+     "selected": [
+      "요리·제빵·식품 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4870
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4876
+  },
+  {
+   "id": 24,
+   "selected": [
+    "요리·제빵·식품 생활 Q&A",
+    "생활 건강 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "김치에 하얀 곰팡이가 피었는데 먹어도 되나요?",
+     "selected": [
+      "요리·제빵·식품 생활 Q&A",
+      "생활 건강 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 9078
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 9084
+  },
+  {
+   "id": 25,
+   "selected": [
+    "육아·청소년 양육 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "중학생 아이의 사춘기 반항을 어떻게 대해야 하나요?",
+     "selected": [
+      "육아·청소년 양육 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 52812
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 52833
+  },
+  {
+   "id": 26,
+   "selected": [
+    "생활 건강 상담 Q&A",
+    "육아·청소년 양육 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "아기가 밤에 자주 깨는데 수면 교육은 어떻게 하죠?",
+     "selected": [
+      "생활 건강 상담 Q&A",
+      "육아·청소년 양육 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 3760
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3766
+  },
+  {
+   "id": 27,
+   "selected": [
+    "생활 건강 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "요즘 두통이 잦은데 병원에 가야 할까요?",
+     "selected": [
+      "생활 건강 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5075
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5085
+  },
+  {
+   "id": 28,
+   "selected": [
+    "생활 건강 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "비타민D 영양제는 언제 먹는 게 좋나요?",
+     "selected": [
+      "생활 건강 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4953
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4960
+  },
+  {
+   "id": 29,
+   "selected": [
+    "재테크·세금 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "ETF와 펀드의 차이가 뭐고 어느 쪽이 유리한가요?",
+     "selected": [
+      "재테크·세금 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6141
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6149
+  },
+  {
+   "id": 30,
+   "selected": [
+    "재테크·세금 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "연말정산에서 월세 세액공제를 받으려면 어떻게 하나요?",
+     "selected": [
+      "재테크·세금 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 60066
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 60075
+  },
+  {
+   "id": 31,
+   "selected": [
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "퇴직금은 어떻게 계산하고 언제까지 받아야 하나요?",
+     "selected": [
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4388
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4404
+  },
+  {
+   "id": 32,
+   "selected": [
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "전세 보증금을 돌려받지 못할 때 어떤 절차가 있나요?",
+     "selected": [
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5217
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5223
+  },
+  {
+   "id": 33,
+   "selected": [
+    "여행·여가 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "일본 3박 4일 여행 준비물과 항공권 예약 팁은?",
+     "selected": [
+      "여행·여가 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3676
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3683
+  },
+  {
+   "id": 34,
+   "selected": [
+    "여행·여가 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "캠핑이 처음인데 준비해야 할 장비 목록이 궁금해요",
+     "selected": [
+      "여행·여가 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3532
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3541
+  },
+  {
+   "id": 35,
+   "selected": [
+    "PC·스마트폰 사용법 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "엑셀에서 중복된 값을 한 번에 지우는 방법은?",
+     "selected": [
+      "PC·스마트폰 사용법 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4964
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4972
+  },
+  {
+   "id": 36,
+   "selected": [
+    "PC·스마트폰 사용법 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "포토샵에서 사진 두 장을 하나로 합치는 순서를 알려줘",
+     "selected": [
+      "PC·스마트폰 사용법 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4089
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4097
+  },
+  {
+   "id": 37,
+   "selected": [
+    "역사·문화·언어 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "'울며 겨자 먹기'라는 속담의 유래가 뭐예요?",
+     "selected": [
+      "역사·문화·언어 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5284
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5290
+  },
+  {
+   "id": 38,
+   "selected": [
+    "한국사 시험 문제은행",
+    "역사·문화·언어 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "조선시대 과거제도는 어떻게 운영되었나요?",
+     "selected": [
+      "한국사 시험 문제은행",
+      "역사·문화·언어 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 56245
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 56255
+  },
+  {
+   "id": 39,
+   "selected": [
+    "과학 원리 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "하늘이 파랗게 보이는 원리가 뭐예요?",
+     "selected": [
+      "과학 원리 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3431
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3439
+  },
+  {
+   "id": 40,
+   "selected": [
+    "과학 원리 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "전자레인지는 어떻게 음식을 데우나요?",
+     "selected": [
+      "과학 원리 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6188
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6196
+  },
+  {
+   "id": 41,
+   "selected": [
+    "역사·문화·언어 상식 Q&A",
+    "한국사 시험 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "신돈이 설치한 전민변정도감은 어떤 기관이었나요?",
+     "selected": [
+      "역사·문화·언어 상식 Q&A",
+      "한국사 시험 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 6817
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6825
+  },
+  {
+   "id": 42,
+   "selected": [
+    "역사·문화·언어 상식 Q&A",
+    "한국사 시험 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "대한제국 시기 광무개혁의 내용은 무엇이었나요?",
+     "selected": [
+      "역사·문화·언어 상식 Q&A",
+      "한국사 시험 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5856
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5863
+  },
+  {
+   "id": 43,
+   "selected": [
+    "심리·상담 이론 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "로저스 인간중심상담의 핵심 개념은 무엇인가요?",
+     "selected": [
+      "심리·상담 이론 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4794
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4801
+  },
+  {
+   "id": 44,
+   "selected": [
+    "심리·상담 이론 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "수퍼의 진로발달 이론에서 단계는 어떻게 나뉘나요?",
+     "selected": [
+      "심리·상담 이론 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 50374
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 50381
+  },
+  {
+   "id": 45,
+   "selected": [
+    "경제·회계·금융 제도 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "회계에서 발생주의와 현금주의는 어떻게 다른가요?",
+     "selected": [
+      "경제·회계·금융 제도 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5647
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5660
+  },
+  {
+   "id": 46,
+   "selected": [
+    "경제·회계·금융 제도 문제은행",
+    "판례·법령 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "금융실명제에서 대리인이 계좌를 개설할 때 필요한 서류는?",
+     "selected": [
+      "경제·회계·금융 제도 문제은행",
+      "판례·법령 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 8745
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 8752
+  },
+  {
+   "id": 47,
+   "selected": [
+    "부동산·공인중개 문제은행",
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "공인중개사가 임대차 계약에서 설명해야 할 사항은?",
+     "selected": [
+      "부동산·공인중개 문제은행",
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 7016
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7024
+  },
+  {
+   "id": 48,
+   "selected": [
+    "법률 용어 사전",
+    "판례·법령 질의응답",
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "주택법상 하자보수 책임 기간은 어떻게 되나요?",
+     "selected": [
+      "법률 용어 사전",
+      "판례·법령 질의응답",
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 5325
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5332
+  },
+  {
+   "id": 49,
+   "selected": [
+    "환경 과학·공학 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "수질오염 공정시험법에서 질산성 질소는 어떻게 측정하나요?",
+     "selected": [
+      "환경 과학·공학 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 57602
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 57622
+  },
+  {
+   "id": 50,
+   "selected": [
+    "환경 과학·공학 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "대기오염물질 처리에 쓰는 집진 장치의 종류는?",
+     "selected": [
+      "환경 과학·공학 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 8202
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 8209
+  },
+  {
+   "id": 51,
+   "selected": [
+    "농업·작물 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "벼 재배에서 질소 비료를 과하게 주면 어떤 문제가 생기나요?",
+     "selected": [
+      "농업·작물 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4256
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4261
+  },
+  {
+   "id": 52,
+   "selected": [
+    "농업·작물 문제은행",
+    "환경 과학·공학 문제은행",
+    "과학 원리 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "토양 중금속 오염을 식물로 정화하는 방법은?",
+     "selected": [
+      "농업·작물 문제은행",
+      "환경 과학·공학 문제은행",
+      "과학 원리 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 4936
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4944
+  },
+  {
+   "id": 53,
+   "selected": [
+    "에너지 관리·발전 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "보일러 급수 처리에서 가성취화를 막는 방법은?",
+     "selected": [
+      "에너지 관리·발전 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 9050
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 9058
+  },
+  {
+   "id": 54,
+   "selected": [
+    "에너지 관리·발전 문제은행",
+    "과학 원리 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "신재생에너지 중 태양열과 태양광의 효율 차이는?",
+     "selected": [
+      "에너지 관리·발전 문제은행",
+      "과학 원리 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 70931
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 70938
+  },
+  {
+   "id": 55,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "강아지가 산책 중에 자꾸 멈추는데 어떻게 훈련하면 좋을까요?",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 10370
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10377
+  },
+  {
+   "id": 56,
+   "selected": [
+    "농업·작물 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "베란다 화분의 잎이 누렇게 변하는 이유와 관리법이 궁금합니다.",
+     "selected": [
+      "농업·작물 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 7226
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7233
+  },
+  {
+   "id": 57,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "오래된 청바지에 묻은 커피 얼룩을 지우는 방법이 있을까요?",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 10858
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10867
+  },
+  {
+   "id": 58,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "친구와 크게 다퉜는데 먼저 사과해야 할지 고민이에요.",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 99650
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 99662
+  },
+  {
+   "id": 59,
+   "selected": [
+    "육아·청소년 양육 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "초등학교 3학년 아이에게 분수를 어떻게 가르치면 좋을까요?",
+     "selected": [
+      "육아·청소년 양육 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6075
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6089
+  },
+  {
+   "id": 60,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "자동차 엔진오일은 몇 km마다 갈아야 하나요?",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 10972
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10979
+  },
+  {
+   "id": 61,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "축구에서 오프사이드 규칙을 쉽게 설명해 주세요.",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 12974
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 12982
+  },
+  {
+   "id": 62,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "피아노를 처음 배우려면 어떤 곡부터 시작하는 게 좋을까요?",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 8134
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 8147
+  },
+  {
+   "id": 63,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "고양이 털이 너무 많이 빠지는데 어떻게 관리하나요?",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 7460
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7468
+  },
+  {
+   "id": 64,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "이사 갈 집의 인테리어 색상은 어떻게 고르면 좋을까요?",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 93100
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 93109
+  },
+  {
+   "id": 65,
+   "selected": [
+    "역사·문화·언어 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "결혼식 축의금은 보통 얼마를 내나요?",
+     "selected": [
+      "역사·문화·언어 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6358
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6364
+  },
+  {
+   "id": 66,
+   "selected": [
+    "역사·문화·언어 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "영어 회화 실력을 빨리 늘리는 공부법을 알려줘",
+     "selected": [
+      "역사·문화·언어 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 17000
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 17007
+  },
+  {
+   "id": 67,
+   "selected": [
+    "법률 용어 사전",
+    "산업 뉴스(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "법인 합병이 무슨 뜻인지 설명해 주세요. 그리고 반도체 공급 차질이 기업 생산에 준 영향도 알려주세요.",
+     "selected": [
+      "법률 용어 사전",
+      "산업 뉴스(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 4124
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4137
+  },
+  {
+   "id": 68,
+   "selected": [
+    "육아·청소년 양육 Q&A",
+    "재테크·세금 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "사춘기 아이를 어떻게 대해야 하는지 조언해 주세요. 별도로 연말정산 월세 세액공제 방법도 알려주세요.",
+     "selected": [
+      "육아·청소년 양육 Q&A",
+      "재테크·세금 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 3625
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3631
+  },
+  {
+   "id": 69,
+   "selected": [
+    "GPU Ark 그래픽카드 사양",
+    "CVE 취약점과 영향 정보"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "RTX 5090의 소비전력은 얼마인지, 그리고 CVE-2024-21709 의 공격 조건은 무엇인지 알려줘",
+     "selected": [
+      "GPU Ark 그래픽카드 사양",
+      "CVE 취약점과 영향 정보"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5652
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5659
+  },
+  {
+   "id": 70,
+   "selected": [
+    "요리·제빵·식품 생활 Q&A",
+    "과학 원리 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "빵 반죽 글루텐이 어떻게 생기는지 설명해 주세요. 그리고 하늘이 파란 이유도 알려주세요.",
+     "selected": [
+      "요리·제빵·식품 생활 Q&A",
+      "과학 원리 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 4125
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4133
+  },
+  {
+   "id": 71,
+   "selected": [
+    "판례·법령 질의응답",
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "휴업수당 판례는 어떤 판단을 했는지, 퇴직금 계산 방법은 무엇인지 알려주세요",
+     "selected": [
+      "판례·법령 질의응답",
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 4226
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4233
+  },
+  {
+   "id": 72,
+   "selected": [
+    "금융 시황 리포트(합성)",
+    "여행·여가 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "코스피와 환율 움직임은 어땠는지, 일본 여행 준비물은 뭐가 필요한지 알려주세요",
+     "selected": [
+      "금융 시황 리포트(합성)",
+      "여행·여가 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 4803
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4809
+  },
+  {
+   "id": 73,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록",
+    "소프트웨어 개발 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "LINQ 페이징 구현 방법을 알려줘, 그리고 활성값 희소화로 추론 효율을 높인 논문의 요지도 알려줘",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록",
+      "소프트웨어 개발 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 3805
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3810
+  },
+  {
+   "id": 74,
+   "selected": [
+    "한국사 시험 문제은행",
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "조선 과거제도가 어떻게 운영됐는지, 전세 보증금 반환 절차는 어떻게 되는지 알려주세요",
+     "selected": [
+      "한국사 시험 문제은행",
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5305
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5311
+  },
+  {
+   "id": 75,
+   "selected": [
+    "웹 검색(덕덕고)",
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "2분기 GDP 성장률 전망과 수출·내수 상황은 어때?",
+     "selected": [
+      "웹 검색(덕덕고)",
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 62171
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 62187
+  },
+  {
+   "id": 76,
+   "selected": [
+    "산업 뉴스(합성)",
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "원자재 투자 성과",
+     "selected": [
+      "산업 뉴스(합성)",
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 7883
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7891
+  },
+  {
+   "id": 77,
+   "selected": [
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "2분기 GDP 성장률 전망은?",
+     "selected": [
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 7155
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7163
+  },
+  {
+   "id": 78,
+   "selected": [
+    "판례·법령 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "형사소송법 제8조 사건의 직권이송에 대해 대법원은 어떻게 판단했나?",
+     "selected": [
+      "판례·법령 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6246
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6253
+  },
+  {
+   "id": 79,
+   "selected": [
+    "산업 뉴스(합성)",
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "국내 대형 전력기업이 사우디 아라비아 풍력 프로젝트에 투자한 내용을 알려줘. 투자 규모와 회사 이름이 뭐야?",
+     "selected": [
+      "산업 뉴스(합성)",
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5414
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5421
+  },
+  {
+   "id": 80,
+   "selected": [
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "합성 금융 시황 자료에서 미국의 12월 금리 인하 가능성과 10월 구인 건수를 어떻게 설명하나요? 관련 보고서들의 수치와 방향이 엇갈리는지 비교하고, 기준 시점이 같다고 볼 수 있는지도 알려주세요.",
+     "selected": [
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5355
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5363
+  },
+  {
+   "id": 81,
+   "selected": [
+    "산업 뉴스(합성)",
+    "생활·노동 법률 상담 Q&A",
+    "의학 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "의료기기 부품 수입 지연으로 공장 가동이 멈춘 상황을 검토 중입니다. 해당 산업 자료에서 생산에 무슨 일이 생겼는지, 사용자 귀책 휴업의 수당 기준은 무엇인지, 도색 작업자의 만성 기침 문제에서 제시된 치료는 무엇인지 함께 알려주세요.",
+     "selected": [
+      "산업 뉴스(합성)",
+      "생활·노동 법률 상담 Q&A",
+      "의학 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 57847
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 57855
+  },
+  {
+   "id": 82,
+   "selected": [
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "합성 시황 자료에서 미국 고용 지표와 금리 전망을 다룬 보고서들을 살펴봐 주세요. 구인 건수와 예상치, 금리 인하 확률 및 미국 주요 지수의 방향을 비교하고 자료 사이의 차이와 확인이 필요한 부분을 알려주세요.",
+     "selected": [
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 9264
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 9272
+  },
+  {
+   "id": 83,
+   "selected": [
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "합성 금융 자료에서 2024년 개별주식 레버리지·인버스 ETF와 암호화폐 관련 상품의 순유입 규모는 각각 얼마였나요? 또 코스피 변동을 설명하면서 부산 거주 투자자만의 순매수 금액도 확인해 주세요.",
+     "selected": [
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 10648
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10653
+  },
+  {
+   "id": 84,
+   "selected": [
+    "산업 뉴스(합성)",
+    "금융 시황 리포트(합성)",
+    "미국 기업 산업 동향 기사"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "반도체 공급망 위험을 검토합니다. 서버 칩이 늦어진 미국 소프트웨어 업체의 계약 성사율과 매출은 어떻게 됐고, 별도의 시황 자료에서 대중 수출 통제에 추가된 품목과 당시 코스피 움직임은 어떠했나요? 두 사례가 같은 기업에 관한 것인지도 구분해 주세요.",
+     "selected": [
+      "산업 뉴스(합성)",
+      "금융 시황 리포트(합성)",
+      "미국 기업 산업 동향 기사"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 8805
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 8818
+  },
+  {
+   "id": 85,
+   "selected": [
+    "산업 뉴스(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "합성 산업 뉴스에서 반도체 공급 차질이 기업에 미친 영향을 비교해 주세요. 서버 칩, 국내 공정 소재, 전자제품 부품 사례별로 지연과 수치, 고객이나 제조사의 영향을 나누고 실제 사실로 확인된 내용인지도 짚어 주세요.",
+     "selected": [
+      "산업 뉴스(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 184212
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 184219
+  },
+  {
+   "id": 86,
+   "selected": [
+    "금융 시황 리포트(합성)",
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "합성 금융 시황에 실린 미국 구인 건수와 코스피 수치를 정리해 주고, 이 과거 자료와 별도로 웹에서 확인되는 가장 최근 미국 연방준비제도의 기준금리 결정 날짜와 금리 범위도 출처와 함께 알려주세요.",
+     "selected": [
+      "금융 시황 리포트(합성)",
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 3536
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3543
+  },
+  {
+   "id": 87,
+   "selected": [
+    "산업 뉴스(합성)",
+    "금융 시황 리포트(합성)",
+    "웹 검색(덕덕고)",
+    "경제·회계·금융 제도 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "국내 화장품 업종을 살펴보는데 일본 원료 공급 차질과 시장 분위기가 엇갈리는지 궁금합니다. 산업 자료에 나온 원가 부담 원인과 대응, 별도 시황에 나온 누적 수출액과 이전 최고치를 비교하고 두 자료만으로 특정 회사의 수익성을 확정할 수 있는지도 알려주세요.",
+     "selected": [
+      "산업 뉴스(합성)",
+      "금융 시황 리포트(합성)",
+      "웹 검색(덕덕고)",
+      "경제·회계·금융 제도 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 4,
+       "ms": 7863
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7871
+  },
+  {
+   "id": 88,
+   "selected": [
+    "법률 용어 사전",
+    "판례·법령 질의응답",
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "법률 용어 자료에서 공무원 휴직과 근로자의 휴업수당 및 재해에 따른 휴업보상을 구별해 주세요. 각각 어떤 조건에서 적용되는지와 자료에 적힌 지급 비율을 비교하고, 현재 법에도 그대로 적용할 수 있는지 근거의 한계를 알려주세요.",
+     "selected": [
+      "법률 용어 사전",
+      "판례·법령 질의응답",
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 4884
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4891
+  },
+  {
+   "id": 89,
+   "selected": [
+    "PC·스마트폰 사용법 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "집에서 사진 파일 여러 장을 한 장으로 합병하고 싶은데, 무료 이미지 편집기에서 캔버스를 만들고 사진을 나란히 배치한 뒤 PNG로 저장하는 방법을 순서대로 설명해 주세요.",
+     "selected": [
+      "PC·스마트폰 사용법 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3456
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3462
+  },
+  {
+   "id": 90,
+   "selected": [
+    "산업 뉴스(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "기업 인수합병을 검토하는 투자자입니다. 중국 타이어 업체의 해외 제휴가 어떤 투자자 반응과 생산 계획 문제를 겪었는지, 국내 기업 재편 시황의 두산밥캣 처리 계획은 무엇인지, 흡수합병에서 소멸 법인의 권리와 의무는 어떻게 되는지 자료별로 설명해 주세요.",
+     "selected": [
+      "산업 뉴스(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 13977
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 13983
+  },
+  {
+   "id": 91,
+   "selected": [
+    "의학 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "의학 문제은행에서 기침 환자 세 사례를 비교해 주세요. 밤에 악화되는 23세 여성, 도색 작업을 하는 35세 남성, 저산소혈증과 호산구 증가가 있는 28세 여성에서 핵심 소견과 문제에 제시된 다음 검사 또는 치료를 구분하고 해설의 부족한 점도 알려주세요.",
+     "selected": [
+      "의학 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 40095
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 40101
+  },
+  {
+   "id": 92,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록",
+    "GPU Ark 그래픽카드 사양",
+    "미국 기업 산업 동향 기사"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "사내 LLM 추론 도입을 검토 중입니다. Q-Sparse 논문이 제안한 방법과 적용 범위, 보유한 MSI GT 330의 메모리 대역폭과 권장 전원, 2024년 3월 20일 Nvidia GTC 발표 뒤 애널리스트 동향을 함께 정리해 주세요. 이 자료만으로 해당 GPU에서 실행 가능성도 판단할 수 있나요?",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록",
+      "GPU Ark 그래픽카드 사양",
+      "미국 기업 산업 동향 기사"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 6173
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6181
+  },
+  {
+   "id": 93,
+   "selected": [
+    "GPU Ark 그래픽카드 사양"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "MSI GT 330, AMD Radeon HD 6670, NVIDIA GeForce 8600 GTS 세 그래픽카드의 메모리 대역폭과 TDP를 비교하고, PCIe 장착과 권장 파워 및 보조 전원 조건을 점검해 주세요. VRAM 단위와 실사용 전성비도 확인 가능한가요?",
+     "selected": [
+      "GPU Ark 그래픽카드 사양"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5432
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5439
+  },
+  {
+   "id": 94,
+   "selected": [
+    "GPU Ark 그래픽카드 사양"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "GeForce RTX 5090의 VRAM과 소비전력은 얼마인가요? 자료에 있는 MSI GT 330과 AMD Radeon HD 6670의 출시일 및 소비전력도 함께 비교하고, 최신 제품은 근거가 없으면 확인이 필요하다고 알려주세요.",
+     "selected": [
+      "GPU Ark 그래픽카드 사양"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6811
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6819
+  },
+  {
+   "id": 95,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록",
+    "GPU Ark 그래픽카드 사양"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "양자화 LLM 추론을 검토하며 FLUTE 논문과 NVIDIA GeForce 8600 GTS 사양을 함께 보고 싶습니다. 논문이 겨냥한 병목과 LUT 처리 방식, 이 카드의 대역폭과 전원 커넥터를 알려주고, 이 정보만으로 FLUTE 실행 가능 여부를 확정할 수 있는지도 설명해 주세요.",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록",
+      "GPU Ark 그래픽카드 사양"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 4055
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4060
+  },
+  {
+   "id": 96,
+   "selected": [
+    "GPU Ark 그래픽카드 사양"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "Sapphire HD 6570 Platinum 1 GB와 HIS HD 6570 Silence 2 GB의 자료를 비교해 주세요. 각 제품명과 VRAM 원시 숫자, 메모리 대역폭은 어떻게 적혀 있고, 숫자를 같은 단위로 바로 비교해도 되나요?",
+     "selected": [
+      "GPU Ark 그래픽카드 사양"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3905
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3912
+  },
+  {
+   "id": 97,
+   "selected": [
+    "CVE 취약점과 영향 정보",
+    "소프트웨어 개발 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "오래된 PHP 업무 시스템을 점검합니다. MantisBT의 CVE-2010-3763에서 공격 입력 위치와 영향 버전을 확인하고, Stack Overflow 질문 17의 MySQL binary_data 예제에서 바이너리 열 타입과 입력 처리 함수를 알려주세요. 두 기록만으로 이 예제가 그 CVE의 수정책인지 판단할 수 있나요?",
+     "selected": [
+      "CVE 취약점과 영향 정보",
+      "소프트웨어 개발 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5077
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5083
+  },
+  {
+   "id": 98,
+   "selected": [
+    "CVE 취약점과 영향 정보"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "CVE-2010-3763, CVE-2022-46505, CVE-2024-21709 세 건을 상태와 영향 제품·공격 조건으로 비교해 대응 우선순위를 살펴봐 주세요. 각 수정 버전과 CVSS 점수가 자료에서 확인되는지도 알려 주세요.",
+     "selected": [
+      "CVE 취약점과 영향 정보"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 32317
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 32326
+  },
+  {
+   "id": 99,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "대형 언어 모델의 활성값에서 상위 일부만 남겨 추론 효율을 높이는 연구와, 사전학습된 시각 모델을 다시 훈련하지 않고 자기지도 기울기를 기존 표현에 붙이는 연구는 각각 어떤 방법과 평가 결과를 제시하나요?",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5488
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5496
+  },
+  {
+   "id": 100,
+   "selected": [
+    "요리·제빵·식품 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "빵 반죽을 손으로 치댈 때 글루텐이 생기는 과정을 쉽게 설명해 주세요. 반죽을 너무 오래 치대면 가정용 제빵에서 어떤 상태 변화를 살펴봐야 하나요?",
+     "selected": [
+      "요리·제빵·식품 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 8074
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 8083
+  },
+  {
+   "id": 101,
+   "selected": [
+    "CVE 취약점과 영향 정보",
+    "소프트웨어 개발 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "업로드 기능을 검토 중입니다. CVE-2024-21709 기록의 상태와 설명 유무를 확인하고, Stack Overflow 질문 61의 Office 2007 업로드 예시에서 docx와 docm의 MIME 타입을 알려주세요. 이 정보만으로 해당 CVE가 업로드에서 악용된다고 판단할 수 있나요?",
+     "selected": [
+      "CVE 취약점과 영향 정보",
+      "소프트웨어 개발 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 7693
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7699
+  },
+  {
+   "id": 102,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "Q-Sparse, FUNGI, FLUTE 논문 초록에서 각각 어떤 기법으로 효율이나 표현을 개선한다고 주장하는지 비교해 주세요. 평가 조건과 보고된 성능 근거를 대조하고 세 방법의 수치를 직접 순위화할 수 있는지도 알려 주세요.",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3803
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3808
+  },
+  {
+   "id": 103,
+   "selected": [
+    "소프트웨어 개발 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "Stack Overflow 질문 4번의 C# Opacity decimal 변환 오류, 14번의 Math.Floor와 Truncate, 66번의 LINQ 페이징을 함께 검토해 주세요. 각 답변의 해결 방법과 음수·정수 나눗셈 같은 경계 조건을 비교하고 확인이 필요한 부분도 알려 주세요.",
+     "selected": [
+      "소프트웨어 개발 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4228
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4235
+  },
+  {
+   "id": 104,
+   "selected": [
+    "금융 시황 리포트(합성)",
+    "재테크·세금 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "원자재 투자가 주식과 채권보다 성과가 좋았던 시기는 언제인가?",
+     "selected": [
+      "금융 시황 리포트(합성)",
+      "재테크·세금 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 7927
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7936
+  },
+  {
+   "id": 105,
+   "selected": [
+    "산업 뉴스(합성)",
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "사우디 풍력 프로젝트에 투자한 국내 대형 전력기업과 투자 규모를 알려줘",
+     "selected": [
+      "산업 뉴스(합성)",
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 121043
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 121056
+  },
+  {
+   "id": 106,
+   "selected": [
+    "육아·청소년 양육 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "중학생 아이의 사춘기 반항을 어떻게 대해야 할지 조언해 주세요.",
+     "selected": [
+      "육아·청소년 양육 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4687
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4694
+  },
+  {
+   "id": 107,
+   "selected": [
+    "의학 문제은행",
+    "생활 건강 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "허리 디스크 초기 증상이 뭐고 병원은 몇 과로 가야 하죠?",
+     "selected": [
+      "의학 문제은행",
+      "생활 건강 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 3894
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3902
+  },
+  {
+   "id": 108,
+   "selected": [
+    "재테크·세금 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "ISA 계좌랑 연금저축 중에 먼저 채워야 하는 게 뭔가요",
+     "selected": [
+      "재테크·세금 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 6214
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6221
+  },
+  {
+   "id": 109,
+   "selected": [
+    "생활·노동 법률 상담 Q&A",
+    "부동산·공인중개 문제은행",
+    "판례·법령 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "월세 계약 만료 전에 집주인이 나가라고 하면 어떻게 되나요",
+     "selected": [
+      "생활·노동 법률 상담 Q&A",
+      "부동산·공인중개 문제은행",
+      "판례·법령 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 6126
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6134
+  },
+  {
+   "id": 110,
+   "selected": [
+    "농업·작물 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "시금치 재배할 때 잎마름병 방제 방법",
+     "selected": [
+      "농업·작물 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3939
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3945
+  },
+  {
+   "id": 111,
+   "selected": [
+    "에너지 관리·발전 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "열병합발전의 장점과 효율은 어느 정도인가요",
+     "selected": [
+      "에너지 관리·발전 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5449
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5456
+  },
+  {
+   "id": 112,
+   "selected": [
+    "역사·문화·언어 상식 Q&A",
+    "한국사 시험 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "고려시대 무신정변이 일어난 배경을 설명해 줘",
+     "selected": [
+      "역사·문화·언어 상식 Q&A",
+      "한국사 시험 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5174
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5181
+  },
+  {
+   "id": 113,
+   "selected": [
+    "심리·상담 이론 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "자기효능감이란 개념을 제안한 학자와 핵심 내용",
+     "selected": [
+      "심리·상담 이론 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 5308
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5314
+  },
+  {
+   "id": 114,
+   "selected": [
+    "소프트웨어 개발 질의응답"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "Python에서 KeyError가 나는 경우와 안전하게 접근하는 방법",
+     "selected": [
+      "소프트웨어 개발 질의응답"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3390
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3396
+  },
+  {
+   "id": 115,
+   "selected": [
+    "CVE 취약점과 영향 정보"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "Spectre 취약점 CVE-2017-5754의 영향 범위",
+     "selected": [
+      "CVE 취약점과 영향 정보"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4154
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4160
+  },
+  {
+   "id": 116,
+   "selected": [
+    "GPU Ark 그래픽카드 사양"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "RTX 4060과 RX 7600의 TDP 비교",
+     "selected": [
+      "GPU Ark 그래픽카드 사양"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3423
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3431
+  },
+  {
+   "id": 117,
+   "selected": [
+    "금융 시황 리포트(합성)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "어제 코스피 마감 시황과 원달러 환율",
+     "selected": [
+      "금융 시황 리포트(합성)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 9128
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 9136
+  },
+  {
+   "id": 118,
+   "selected": [
+    "AI 머신러닝 연구 논문 초록"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "트랜스포머 어텐션 연산량을 줄이는 최신 논문 동향",
+     "selected": [
+      "AI 머신러닝 연구 논문 초록"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4148
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4154
+  },
+  {
+   "id": 119,
+   "selected": [
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "오늘 부산 날씨랑 미세먼지 상태",
+     "selected": [
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 3260
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3268
+  },
+  {
+   "id": 120,
+   "selected": [
+    "육아·청소년 양육 Q&A",
+    "생활 건강 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "아기 이유식은 몇 개월부터 시작해야 하나요",
+     "selected": [
+      "육아·청소년 양육 Q&A",
+      "생활 건강 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 6648
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 6655
+  },
+  {
+   "id": 121,
+   "selected": [
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "손흥민 최근 경기 성적이 어때?",
+     "selected": [
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 8514
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 8520
+  },
+  {
+   "id": 122,
+   "selected": [
+    "심리·상담 이론 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "연애할 때 카톡 답장이 늦으면 서운해도 되나요",
+     "selected": [
+      "심리·상담 이론 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 131373
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 131383
+  },
+  {
+   "id": 123,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "비 오는 날 어울리는 노래 추천해 줘",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 3829
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3838
+  },
+  {
+   "id": 124,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "우리 집 강아지에게 먹이면 안 되는 음식이 뭐야?",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 10407
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10413
+  },
+  {
+   "id": 125,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "자전거 타이어 펑크 났을 때 직접 때우는 법",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 10013
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10026
+  },
+  {
+   "id": 126,
+   "selected": [
+    "역사·문화·언어 상식 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "프랑스어로 안녕하세요는 어떻게 말해?",
+     "selected": [
+      "역사·문화·언어 상식 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4708
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4716
+  },
+  {
+   "id": 127,
+   "selected": [],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "골프 드라이버 거리를 늘리는 스윙 요령",
+     "selected": [],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 0,
+       "ms": 7711
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 7720
+  },
+  {
+   "id": 128,
+   "selected": [
+    "요리·제빵·식품 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "와인과 어울리는 치즈를 추천해 주세요",
+     "selected": [
+      "요리·제빵·식품 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 26684
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 26690
+  },
+  {
+   "id": 129,
+   "selected": [
+    "생활 건강 상담 Q&A",
+    "재테크·세금 생활 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "고혈압 약을 먹을 때 피해야 할 음식이 뭔지, 그리고 연말정산에서 의료비 공제는 어떻게 받는지 알려줘",
+     "selected": [
+      "생활 건강 상담 Q&A",
+      "재테크·세금 생활 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5990
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5998
+  },
+  {
+   "id": 130,
+   "selected": [
+    "소프트웨어 개발 질의응답",
+    "PC·스마트폰 사용법 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "파이썬 가상환경을 만드는 방법과, 엑셀에서 VLOOKUP이 안 먹힐 때 점검할 것을 알려주세요",
+     "selected": [
+      "소프트웨어 개발 질의응답",
+      "PC·스마트폰 사용법 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 4768
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4774
+  },
+  {
+   "id": 131,
+   "selected": [
+    "GPU Ark 그래픽카드 사양",
+    "CVE 취약점과 영향 정보"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "RTX 5070의 전력 요구량이 궁금하고, 아울러 CVE-2023-4863의 영향받는 제품도 알고 싶어요",
+     "selected": [
+      "GPU Ark 그래픽카드 사양",
+      "CVE 취약점과 영향 정보"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 3639
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 3646
+  },
+  {
+   "id": 132,
+   "selected": [
+    "역사·문화·언어 상식 Q&A",
+    "한국사 시험 문제은행",
+    "심리·상담 이론 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "조선 후기 실학자들의 개혁론을 설명하고, 심리학에서 말하는 학습된 무기력도 설명해 줘",
+     "selected": [
+      "역사·문화·언어 상식 Q&A",
+      "한국사 시험 문제은행",
+      "심리·상담 이론 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 3,
+       "ms": 10741
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 10747
+  },
+  {
+   "id": 133,
+   "selected": [
+    "부동산·공인중개 문제은행",
+    "생활·노동 법률 상담 Q&A"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "전세 사기를 당했을 때 구제 절차와 부동산 중개사의 설명 의무 범위를 알려주세요",
+     "selected": [
+      "부동산·공인중개 문제은행",
+      "생활·노동 법률 상담 Q&A"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 35608
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 35616
+  },
+  {
+   "id": 134,
+   "selected": [
+    "농업·작물 문제은행",
+    "에너지 관리·발전 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "벼 도열병 방제법과 태양광 발전의 효율을 높이는 방법을 각각 알려주세요",
+     "selected": [
+      "농업·작물 문제은행",
+      "에너지 관리·발전 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 5475
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 5483
+  },
+  {
+   "id": 135,
+   "selected": [
+    "환경 과학·공학 문제은행"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "수질오염 측정 항목 중 BOD가 뭔지, 그리고 폐기물 소각의 대기오염 방지 장치도 알려주세요",
+     "selected": [
+      "환경 과학·공학 문제은행"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 1,
+       "ms": 4094
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4101
+  },
+  {
+   "id": 136,
+   "selected": [
+    "여행·여가 Q&A",
+    "웹 검색(덕덕고)"
+   ],
+   "parts": [],
+   "mode": "llm",
+   "asked": [
+    {
+     "asked": "일본 오사카 3박 4일 비용 팁과 현재 엔화 환율은 얼마인지 알려줘",
+     "selected": [
+      "여행·여가 Q&A",
+      "웹 검색(덕덕고)"
+     ],
+     "mode": "llm",
+     "steps": [
+      {
+       "type": "llm",
+       "input": 27,
+       "output": 2,
+       "ms": 4302
+      }
+     ]
+    }
+   ],
+   "scores": [],
+   "ms": 4309
+  }
+ ]
+}

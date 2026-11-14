@@ -1,16 +1,13 @@
-import type { AugmentResult, Material, Pair, Procedure, Researcher, RoutingScore, RoutingTrace, WriterMode } from "../../common/index.js";
-import type { ScoredId, Selection } from "../route/index.js";
-import { splitQuery } from "../split/index.js";
+import type { AugmentResult, Material, Pair, Procedure, Researcher, RoutingTrace, WriterMode } from "../../common/index.js";
+import type { Selection } from "../route/index.js";
 import { mergeContexts } from "../write/index.js";
+import { selectForQuery, trace, type SelectPorts } from "./select.js";
 
 /** 바깥 세계와의 경계. 저장소, 출처, 모델 호출은 앱이 채운다. */
-export type AugmentPorts = {
+export type AugmentPorts = SelectPorts & {
   listResearchers: () => Promise<Researcher[]>;
   /** 조사원에 연결된 프로시저(연결 순서). */
   listProceduresOf: (researcher: Researcher) => Promise<Procedure[]>;
-  /** 1단계 라우팅: 질의로 조사원을 고른다. */
-  /** part 가 true 면 복합 질의의 하위 질문이라 한 분야만 고르면 된다. */
-  selectResearchers: (query: string, candidates: Researcher[], options?: { part?: boolean }) => Promise<Selection<Researcher>>;
   /** 2단계 라우팅: (질의, 조사원)으로 연결된 프로시저를 고른다. */
   selectProcedures: (query: string, researcher: Researcher, candidates: Procedure[]) => Promise<Selection<Procedure>>;
   collect: (researcher: Researcher, query: string) => Promise<Material[]>;
@@ -19,24 +16,6 @@ export type AugmentPorts = {
 
 /** 조사원 한 곳에서 모으는 자료의 상한(여러 질의로 모은 것을 합쳐도 컨텍스트가 길어지지 않게 한다). */
 const maxMaterials = 6;
-
-/** 여러 라우팅 결과의 합집합: 선택은 하나라도 고른 것, 점수는 후보별 최댓값. mode 는 첫 결과(통째 질의)를 따른다. */
-function mergeSelections<T extends { id: number }>(selections: Selection<T>[]): Selection<T> {
-  const selected: T[] = [];
-  for (const selection of selections) for (const item of selection.selected) if (!selected.some((existing) => existing.id === item.id)) selected.push(item);
-  const best = new Map<number, ScoredId>();
-  for (const entry of selections.flatMap((selection) => selection.scores ?? [])) {
-    const current = best.get(entry.id);
-    if (!current || entry.score > current.score) best.set(entry.id, { ...entry });
-  }
-  for (const entry of best.values()) entry.selected = selected.some((item) => item.id === entry.id);
-  return { mode: selections[0].mode, selected, scores: best.size > 0 ? [...best.values()] : undefined };
-}
-
-/** 후보 이름과 라우팅 점수를 합쳐 사람이 읽을 수 있는 점수표로 만든다. */
-function trace(candidates: { id: number; name: string }[], scores: ScoredId[] | undefined): RoutingScore[] {
-  return (scores ?? []).map((entry) => ({ name: candidates.find((candidate) => candidate.id === entry.id)?.name ?? String(entry.id), score: Number(entry.score.toFixed(4)), selected: entry.selected }));
-}
 
 /**
  * 질의를 증강한다: 조사원 라우팅 → 조사원별 수집 → (질의, 조사원)별 프로시저 라우팅 → 라이터.
@@ -49,11 +28,13 @@ function trace(candidates: { id: number; name: string }[], scores: ScoredId[] | 
 export async function augmentQuery(query: string, ports: AugmentPorts): Promise<AugmentResult> {
   const allResearchers = await ports.listResearchers();
   // 복합 질의는 하위 질문으로도 라우팅한다: 통째로는 한 분야에 밀려 다른 분야의 조사원이 빠진다. 선택은 합집합이다.
-  const parts = splitQuery(query);
-  const selections = [{ asked: query, selection: await ports.selectResearchers(query, allResearchers) }];
-  if (parts.length > 1) for (const part of parts) selections.push({ asked: part, selection: await ports.selectResearchers(part, allResearchers, { part: true }) });
-  const researcherSelection = mergeSelections(selections.map((entry) => entry.selection));
-  const routing: RoutingTrace = { researchers: trace(allResearchers, researcherSelection.scores), procedures: [] };
+  const { parts, asked: selections, merged: researcherSelection } = await selectForQuery(query, allResearchers, ports);
+  const routing: RoutingTrace = {
+    parts: parts.length > 0 ? parts : undefined,
+    researcherSteps: selections.map((entry) => ({ asked: entry.asked, steps: entry.selection.steps ?? [] })),
+    researchers: trace(allResearchers, researcherSelection.scores),
+    procedures: []
+  };
   const pairs: Pair[] = [];
   const procedureRoutings: string[] = [];
 

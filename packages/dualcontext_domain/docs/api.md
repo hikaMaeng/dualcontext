@@ -15,12 +15,17 @@
 | `routeProceduresByKeyword(query, procedures, topK)` | 적용 조건이 맞은 프로시저, 없으면 조건이 빈 프로시저만, 상위 K. | `src/server/route` |
 | `topKByEmbedding(queryVector, items, topK)` | 코사인 유사도 상위 K. 차원이 다른 항목은 건너뛴다. | `src/server/route` |
 | `parseIdSelection(text, validIds, topK)` | LLM 답에서 후보 id 를 순서대로. 후보 밖 · 중복은 버린다. | `src/server/route` |
+| `parseIdArray(text, validIds, topK)` | LLM 답의 **마지막** `[...]` 를 id 배열로 읽는다(앞의 것은 예시나 생각 과정). 배열이 없으면 `null`(해석 실패), `[]` 면 「없음」. | `src/server/route` |
+| `selectByEmbedding(ranked, { topK, minScore, margin })` | 임베딩 단계 규칙: 최소 점수 · 최고 점수 대비 마진 · 상위 개수를 차례로 적용. | `src/server/route` |
+| `selectForQuery(query, researchers, ports)` | 질의를 나누고(`ports.split`, 없으면 `splitQuery`) 통째 질의와 하위 질문을 각각 라우팅해 합집합을 돌려준다. 증강과 관리자 라우팅 미리보기가 같이 쓴다. | `src/server/augment` |
 | `writeContext(query, pairs)` | 쌍을 **조사원 기준으로** 묶어 자료(출처 번호 `R<조사원id>-<순번>` · 유사도)를 한 번만 싣고, 그 조사원의 프로시저를 「분석 관점(제안)」으로 나열한다. 「찾지 못한 것」은 실제로 자료가 없거나 수집이 실패한 조사원이 있을 때만 쓴다(거짓 「없음」을 쓰지 않는다)(수집 실패)을 적는다. | `src/server/write` |
 | `mergeContexts(query, parts)` | 쌍별로 만든 조각을 이어 붙인다. 조각 사이 모순은 풀지 않는다. | `src/server/write` |
 | `augmentQuery(query, ports)` | 조사원 선택 → 수집 → 프로시저 선택 → 라이터. `writer.mode` 가 `batch` 면 1회, `per_pair` 면 쌍 수만큼 호출. 결과에 라우팅 방법과 호출 수가 들어 있다. | `src/server/augment` |
 
 ## splitQuery
 
-`splitQuery(query): string[]` — 복합 질의를 하위 질문으로 나눈다(문장 끝, 요청·의문 어미 뒤 쉼표). 12자 미만 조각은 이웃에 붙고 최대 4개이며, 나눌 곳이 없으면 질의 하나만 돌려준다. `augmentQuery` 는 통째 질의와 하위 질문마다 `selectResearchers(query, candidates, { part: true })` 를 불러 합집합을 고른다(하위 질문 호출의 `part` 는 한 분야만 고르라는 뜻).
+`splitQuery(query, { minChars?, maxParts? }): string[]` — 복합 질의를 하위 질문으로 나눈다(문장 끝, 요청·의문 어미 뒤 쉼표). 12자 미만 조각은 이웃에 붙고 최대 4개이며, 나눌 곳이 없으면 질의 하나만 돌려준다. `augmentQuery` 는 통째 질의와 하위 질문마다 `selectResearchers(query, candidates, { part: true })` 를 불러 합집합을 고른다(하위 질문 호출의 `part` 는 한 분야만 고르라는 뜻).
+
+`parseSplitAnswer(text, maxParts): string[] | null` — LLM 이 답한 하위 질문 JSON 배열(마지막 `[...]`)을 읽는다. 읽을 수 없으면 `null`, 상한을 넘으면 뒤쪽을 합친다.
 
 `Material.match: "identifier"` 는 질의 속 표기와 문자열로 일치해 가져온 자료를 뜻하며, 라이터는 유사도 대신 「질의에 적힌 표기와 일치」를 적는다.

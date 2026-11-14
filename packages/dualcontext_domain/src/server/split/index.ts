@@ -1,7 +1,7 @@
-/** 부분 질의의 최소 길이. 이보다 짧은 조각은 이웃에 붙인다(너무 짧으면 임베딩이 의미를 못 잡는다). */
-const minPartChars = 12;
-/** 부분 질의 최대 개수. 넘으면 뒤쪽을 마지막 조각에 합친다(라우팅과 수집 호출 수의 상한). */
-const maxParts = 4;
+/** 하위 질문의 최소 길이 기본값. 이보다 짧은 조각은 이웃에 붙인다(너무 짧으면 임베딩이 의미를 못 잡는다). */
+export const defaultMinPartChars = 12;
+/** 하위 질문 최대 개수 기본값. 넘으면 뒤쪽을 마지막 조각에 합친다(라우팅과 수집 호출 수의 상한). */
+export const defaultMaxParts = 4;
 
 // 문장 끝(. ? ! 뒤 공백)과, 요청·의문 어미 뒤의 쉼표에서 나눈다. 목록의 쉼표(「A, B, C」)는 어미가 아니라 명사 뒤라 나뉘지 않는다.
 const sentenceEnd = /(?<=[.?!。？！])\s+/;
@@ -12,7 +12,9 @@ const clauseEnd = /(?<=인지|는지|은지|할지|을지|나요|가요|까요|�
  * 한쪽 분야(예: 법령)가 라우팅에서 밀린다(실행 로그 #8: 산업 자료와 휴업수당 기준을 함께 물음).
  * 나눌 곳이 없으면 질의 하나만 담아 돌려준다.
  */
-export function splitQuery(query: string): string[] {
+export function splitQuery(query: string, options: { minChars?: number; maxParts?: number } = {}): string[] {
+  const minPartChars = options.minChars ?? defaultMinPartChars;
+  const maxParts = options.maxParts ?? defaultMaxParts;
   const text = query.replace(/\s+/g, " ").trim();
   const raw = text.split(sentenceEnd).flatMap((sentence) => sentence.split(clauseEnd)).map((part) => part.trim()).filter((part) => part !== "");
   const parts: string[] = [];
@@ -23,4 +25,24 @@ export function splitQuery(query: string): string[] {
   }
   while (parts.length > maxParts) parts.splice(parts.length - 2, 2, `${parts[parts.length - 2]} ${parts[parts.length - 1]}`);
   return parts.length > 1 ? parts : [text];
+}
+
+/**
+ * LLM 이 답한 글에서 하위 질문 목록을 읽는다(글 안의 마지막 JSON 문자열 배열). 읽을 수 없으면 null.
+ * 비어 있지 않은 문자열만 남기고, 개수가 maxParts 를 넘으면 뒤쪽을 마지막 조각에 합친다. 질의가 나뉘지 않았으면(1개 이하) null 이 아니라 그 1개를 돌려준다.
+ */
+export function parseSplitAnswer(text: string, maxParts: number): string[] | null {
+  const arrays = text.replace(/<think>[\s\S]*?<\/think>/g, "").match(/\[[^\[\]]*\]/g);
+  if (arrays === null) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(arrays[arrays.length - 1]);
+  } catch {
+    return null;
+  }
+  if (!Array.isArray(parsed)) return null;
+  const parts = parsed.filter((part): part is string => typeof part === "string").map((part) => part.trim()).filter((part) => part !== "");
+  if (parts.length === 0) return null;
+  while (parts.length > maxParts) parts.splice(parts.length - 2, 2, `${parts[parts.length - 2]} ${parts[parts.length - 1]}`);
+  return parts;
 }

@@ -16,7 +16,9 @@
 | `GET /api/admin/status` | PostgreSQL · pgvector · textsearch_ko 버전, 한국어 설정 유무, 분석 예시 |
 | `GET/POST /api/admin/researchers`, `PUT/DELETE /api/admin/researchers/:id` | 조사원. 본문 `{ name, description, keywords, enabled, type, config, procedureIds }` |
 | `GET/POST /api/admin/procedures`, `PUT/DELETE /api/admin/procedures/:id` | 프로시저 |
-| `GET/PUT /api/admin/router` | 라우터 설정 |
+| `GET/PUT /api/admin/router` | 라우터 설정(질의 분해 + 단계별 라우팅 단계 파이프라인). `PUT` 본문은 아래 형태 그대로이며 zod 로 검증한다 |
+| `GET /api/admin/router/defaults` | 기본 설정과 기본 프롬프트(`{ config, prompts: { researcher, procedure, split } }`). 화면이 새 LLM 단계를 채울 때 쓴다 |
+| `POST /api/admin/router/preview` | `{ query, config?, procedures? }`. 질의 하나의 라우팅만 돌린다(수집 · 라이터 없음). `config` 를 주면 **저장하지 않은 그 설정으로** 돌린다(저장된 설정은 그대로). `procedures: false` 면 2단계를 돌리지 않는다. 응답: `parts`(하위 질문), `selected`, `asked[]`(통째 질의와 하위 질문별 `selected · mode · steps[]`), `scores`, `procedures[]`, `ms` |
 | `GET/POST /api/admin/writers`, `PUT/DELETE /api/admin/writers/:id`, `POST /api/admin/writers/:id/activate` | 라이터 |
 | `GET/PUT /api/admin/ai-server` | AI 서버 설정. 응답에 API 키는 없고 `hasApiKey` 만 있다 |
 | `GET /api/admin/ai-server/models?kind=embedding\|chat` | 저장된 설정으로 서버의 모델 목록을 불러온다(연결 시험 겸용). 실패 시 `502` |
@@ -35,13 +37,34 @@
 
 ## 라우터 설정(`/router`)
 
+설정 하나는 문서(`router_config.pipeline` jsonb)다: **질의 분해 → 1단계(`researcher`) → 2단계(`procedure`)**. 각 단계(stage)는 라우팅 단계(step)의 **파이프라인**이다. 후보 전체에서 시작해 단계가 위에서 아래로 후보를 더 좁히며, 마지막 단계가 남긴 것이 선택이다. 단계가 후보를 비우면 남은 단계는 돌지 않는다(선택 없음).
+
+```json
+{
+  "split": { "method": "heuristic", "maxParts": 4, "minChars": 12, "partTopK": 1, "prompt": "…" },
+  "researcher": { "steps": [ { "type": "embedding", "topK": 3, "minScore": 0.67, "margin": 0.05, "parts": true, "onError": "keyword" } ] },
+  "procedure":  { "steps": [ { "type": "embedding", "topK": 1, "minScore": 0, "margin": 1, "parts": true, "onError": "keyword" } ] }
+}
+```
+
 | 필드 | 뜻 |
 | --- | --- |
-| `researcherMethod` · `procedureMethod` | `keyword` · `embedding` · `llm` |
-| `researcherTopK` · `procedureTopK` | 단계별 상위 선택 개수 |
-| `researcherMinScore` · `procedureMinScore` | 임베딩 방식의 최소 유사도(코사인 0~1). 미만은 상위 N 안이어도 제외한다. 기본 0.67 · 0(프로시저는 거르지 않음) |
+| `split.method` | `none`(나누지 않음) · `heuristic`(문장 끝 · 의문 어미 뒤 쉼표) · `llm`(LLM 이 나눔, 실패하면 heuristic 으로 대신) |
+| `split.maxParts` · `minChars` · `partTopK` | 하위 질문 최대 개수(2~8) · 최소 글자(규칙 방식) · 하위 질문 하나에서 고르는 조사원 상한(1~5) |
+| `split.prompt` | llm 방식 프롬프트. `{{query}}`, `{{maxParts}}` |
+| `steps[]` (stage 당 1~6개) | 아래 단계 종류 |
+| 공통 `parts` | 복합 질의의 **하위 질문에도** 이 단계를 적용한다. 끄면 통째 질의에만 쓴다(비싼 LLM 단계용). 하위 질문은 켜진 단계만 거치고 결과를 `partTopK` 개로 자른다 |
+| 공통 `onError` | 단계가 실패했을 때(모델 서버 오류, 답 해석 실패): `skip`(이 단계를 건너뛰고 이어감) · `keyword`(이 단계 입력 후보로 키워드 라우팅) · `none`(아무것도 고르지 않음). 실패 사실은 단계 기록과 `mode` 에 남는다 |
 
-키워드 방식은 맞는 키워드가 없으면 **선택하지 않는다**(`keyword-none`). 임의의 조사원을 붙이지 않는다.
+| 단계 `type` | 필드 | 동작 |
+| --- | --- | --- |
+| `embedding` | `topK`, `minScore`(0~1), `margin`(0~1) | 질의와 후보 글의 코사인. `minScore` 미만, 최고 점수에서 `margin` 넘게 뒤처진 후보, 상위 `topK` 밖을 제외한다. `minScore` 0 · `margin` 1 이면 각 기준을 쓰지 않는다 |
+| `keyword` | `topK` | 후보 키워드(프로시저는 적용 조건)가 질의에 들어 있는 정도의 상위 `topK`. 맞는 것이 없으면 **비운다**(`keyword-none`). 임의의 후보를 붙이지 않는다 |
+| `llm` | `topK`, `prompt`, `showScores`, `allowNone` | 입력 후보 목록을 LLM 에 주고 id 배열로 고르게 한다. 프롬프트 변수 `{{query}}` `{{topK}}` `{{candidates}}`. `showScores` 면 앞 임베딩 단계의 유사도를 목록에 곁들인다. `allowNone` 이면 빈 배열(「없음」)을 존중하고, 아니면 빈 답은 무시하고 입력을 `topK` 개로 줄여 유지한다. 답에 id 배열이 없으면 실패다 |
+
+`mode`(실행 로그의 「조사원 라우팅」)는 실제로 돈 단계들을 `>` 로 잇는다(예: `embedding>llm`). 실패한 단계는 `llm-failed(사유)->skip` 처럼 남는다. 각 단계의 입력 · 출력 후보 수와 걸린 시간(ms)은 `steps[]` 와 실행 로그 `routing.researcherSteps` 에 있다.
+
+단계 설정이 생기기 전의 단일 방법 설정(`researcherMethod` 등)은 시작할 때 같은 동작의 한 단계로 **자동 변환**된다(이미 `pipeline` 이 있으면 건드리지 않는다).
 
 ## 조사원 `config`
 

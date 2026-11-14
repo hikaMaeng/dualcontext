@@ -15,7 +15,7 @@ export function adminRouter(deps: Deps) {
   router.use(express.json());
   router.use(researchersRouter(deps.pool));
   router.use(proceduresRouter(deps.pool));
-  router.use(routerRouter(deps.pool));
+  router.use(routerRouter(deps));
   router.use(writersRouter(deps.pool));
   router.use(aiServerRouter(deps.pool, deps.model));
   router.use(runsRouter(deps));

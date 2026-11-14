@@ -74,6 +74,17 @@ CREATE TABLE IF NOT EXISTS router_config (
 ALTER TABLE router_config ADD COLUMN IF NOT EXISTS researcher_min_score double precision NOT NULL DEFAULT 0.67;
 ALTER TABLE router_config ADD COLUMN IF NOT EXISTS procedure_min_score  double precision NOT NULL DEFAULT 0;
 
+-- Stepwise routing: the whole router setting is one document (split + a pipeline of steps per stage), see
+-- RouterConfig in the domain package. The single-method columns above are kept only so an older database can be
+-- converted at start (see src/server/routing/config); they are no longer read or written afterwards.
+ALTER TABLE router_config ADD COLUMN IF NOT EXISTS pipeline jsonb;
+ALTER TABLE router_config ALTER COLUMN researcher_method DROP NOT NULL;
+ALTER TABLE router_config ALTER COLUMN researcher_top_k DROP NOT NULL;
+ALTER TABLE router_config ALTER COLUMN researcher_prompt DROP NOT NULL;
+ALTER TABLE router_config ALTER COLUMN procedure_method DROP NOT NULL;
+ALTER TABLE router_config ALTER COLUMN procedure_top_k DROP NOT NULL;
+ALTER TABLE router_config ALTER COLUMN procedure_prompt DROP NOT NULL;
+
 -- Writer: how the final context is made. At most one is active.
 CREATE TABLE IF NOT EXISTS writers (
   id         serial PRIMARY KEY,

@@ -32,18 +32,51 @@ export type Procedure = {
 
 export type RoutingMethod = "keyword" | "embedding" | "llm";
 
-/** 라우터 설정. 1단계는 조사원, 2단계는 선택된 조사원에 연결된 프로시저를 고른다. */
-export type RouterConfig = {
-  researcherMethod: RoutingMethod;
-  researcherTopK: number;
-  /** 임베딩 방식에서 이 유사도(코사인, 0~1)보다 낮은 후보는 상위 N 안이어도 제외한다. 0 이면 거르지 않는다. */
-  researcherMinScore: number;
-  researcherPrompt: string;
-  procedureMethod: RoutingMethod;
-  procedureTopK: number;
-  procedureMinScore: number;
-  procedurePrompt: string;
+/** 단계가 실패했을 때(모델 서버 오류, 답 해석 실패): skip 은 이 단계를 건너뛰고 이어간다, keyword 는 이 단계의 입력 후보로 키워드 라우팅을 하고 이어간다, none 은 아무것도 고르지 않고 끝낸다. */
+export type StepOnError = "skip" | "keyword" | "none";
+
+type StepBase = {
+  /** 복합 질의의 하위 질문에도 이 단계를 적용한다. 비싼 단계(LLM)는 통째 질의에만 쓰도록 끌 수 있다. */
+  parts: boolean;
+  onError: StepOnError;
 };
+
+/**
+ * 라우팅 단계 하나. 단계는 앞 단계가 남긴 후보를 받아 더 좁힌다(필터). 후보 전체에서 시작해 마지막 단계가 남긴 것이 선택이다.
+ * - embedding: 질의와 후보 글의 코사인 유사도. minScore 미만, 최고 점수에서 margin 넘게 뒤처진 후보, 상위 topK 밖은 제외한다.
+ * - keyword: 후보의 키워드가 질의에 들어 있는 정도로 상위 topK 를 고른다(맞는 것이 없으면 비운다).
+ * - llm: 후보 목록을 LLM 에 주고 고르게 한다. allowNone 이면 「없음」을 답할 수 있다(없으면 빈 답은 무시하고 입력을 유지한다).
+ */
+export type RouterStep =
+  | (StepBase & { type: "embedding"; topK: number; minScore: number; margin: number })
+  | (StepBase & { type: "keyword"; topK: number })
+  | (StepBase & { type: "llm"; topK: number; prompt: string; showScores: boolean; allowNone: boolean });
+
+export type StageConfig = { steps: RouterStep[] };
+
+/** 복합 질의(여러 분야를 한 번에 묻는 질의)를 하위 질문으로 나누는 방법. */
+export type SplitMethod = "none" | "heuristic" | "llm";
+
+export type SplitConfig = {
+  method: SplitMethod;
+  /** 하위 질문의 최대 개수와 최소 길이(heuristic, llm 공통 상한). */
+  maxParts: number;
+  minChars: number;
+  /** 하위 질문 하나에서 고르는 조사원 수의 상한. */
+  partTopK: number;
+  /** llm 방식에서 쓰는 프롬프트. {{query}}, {{maxParts}} 를 채운다. */
+  prompt: string;
+};
+
+/** 라우터 설정. 질의 분해 → 1단계(조사원) → 2단계(선택된 조사원에 연결된 프로시저). 단계마다 라우팅 단계들의 파이프라인이다. */
+export type RouterConfig = {
+  split: SplitConfig;
+  researcher: StageConfig;
+  procedure: StageConfig;
+};
+
+/** 라우팅 단계 하나가 실제로 한 일: 입력·출력 후보 수, 걸린 시간, 건너뜀·실패 사유. */
+export type StepTrace = { type: RouterStep["type"]; input: number; output: number; ms: number; note?: string };
 
 export type WriterEngine = "template" | "llm";
 /** batch: 라이터 한 번에 모든 쌍을 준다. per_pair: 쌍마다 한 번씩 호출하고 결과를 이어 붙인다. */
@@ -106,6 +139,10 @@ export type AugmentPair = {
 
 /** 라우팅 판단의 근거. 조사원 후보 점수와, 선택된 조사원마다의 프로시저 후보 점수. */
 export type RoutingTrace = {
+  /** 질의 분해 결과(통째 질의 하나이면 하위 질문 없음). */
+  parts?: string[];
+  /** 통째 질의와 하위 질문별로 라우팅 단계가 한 일. */
+  researcherSteps?: { asked: string; steps: StepTrace[] }[];
   researchers: RoutingScore[];
   procedures: { researcher: string; candidates: RoutingScore[] }[];
 };

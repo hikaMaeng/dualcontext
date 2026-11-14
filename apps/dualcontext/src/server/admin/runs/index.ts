@@ -4,7 +4,7 @@ import type pg from "pg";
 import type { Answers, AugmentResult } from "dualcontext_domain/common";
 import { answerPrompts, generateAnswers } from "../../answer/index.js";
 import { augment, type Deps } from "../../augment/index.js";
-import { readRouterConfig } from "../../routing/index.js";
+import { readRouterConfig } from "../../routing/config/index.js";
 import { loadWriter } from "../../writer/index.js";
 
 /** 보관 상한. 이보다 오래된 로그는 새 로그를 쓸 때 지운다. */

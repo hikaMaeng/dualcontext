@@ -1,0 +1,17 @@
+[
+  { "action": "goto", "url": "/" },
+  { "action": "click", "role": "button", "name": "라우터" },
+  { "action": "assertRole", "role": "heading", "name": "라우터" },
+  { "action": "assertRole", "role": "group", "name": "질의 분해" },
+  { "action": "assertRole", "role": "group", "name": "1단계: 조사원 선택" },
+  { "action": "assertRole", "role": "group", "name": "2단계: 조사원에 연결된 프로시저 선택" },
+  { "action": "assertRole", "role": "group", "name": "라우팅 미리보기" },
+  { "action": "assertRole", "role": "group", "name": "단계 1 · 임베딩 유사도" },
+  { "action": "click", "testId": "researcher-addstep" },
+  { "action": "assertRole", "role": "group", "name": "단계 2 · LLM 선택" },
+  { "action": "screenshot", "name": "router-two-steps" },
+  { "action": "fill", "testId": "preview-query", "value": "김치에 하얀 곰팡이가 피었는데 먹어도 되나요?" },
+  { "action": "click", "role": "button", "name": "라우팅 실행" },
+  { "action": "assertText", "text": "선택된 조사원:", "timeout": 120000 },
+  { "action": "screenshot", "name": "router-preview-result" }
+]

@@ -6,7 +6,7 @@
 | `src/server/app.ts` | Express 앱. `/health`, `/api/admin`, 정적 서빙. | `createApp` |
 | `src/server/mcp` | MCP 서버. 도구 `augment_context` 하나. | `mcp/tools/augment` |
 | `src/server/augment` | 도메인 `augmentQuery` 에 포트(저장소 · 라우팅 · 수집 · 라이터)를 채우는 한 곳. MCP 와 시험 실행이 공유. | `augment/index.ts` |
-| `src/server/routing` | 라우터 설정대로 조사원/프로시저를 고른다(키워드 · 임베딩 · LLM). 임베딩 캐시. | `routing/index.ts` |
+| `src/server/routing` | 라우터 설정대로 질의를 나누고 조사원/프로시저를 고른다. 하위 폴더: `config`(설정 스키마 · 기본값 · 옛 설정 변환 · 프롬프트), `pipeline`(단계 파이프라인 실행), `steps/{embedding,keyword,llm}`(단계 종류별 구현), `split`(질의 분해). 임베딩 캐시. | `routing/index.ts` |
 | `src/server/collect` | 조사원 타입별 수집기 폴더: `duckduckgo`, `pgvector`, `folder`. | `collect/index.ts` |
 | `src/server/writer` | 라이터 설정을 `{mode, write}` 로 바꾼다(LLM 실패 시 기본 조립으로 대체). | `writer/index.ts` |
 | `src/server/model` | AI 서버 클라이언트(임베딩 · LLM, OpenAI 호환). | `model/index.ts` |
@@ -30,7 +30,7 @@
 | `researchers` | 조사원. `type` + `config(jsonb)`, 키워드, 라우팅 임베딩 캐시 |
 | `procedures` | 프로시저(독립). 이름 유일 |
 | `researcher_procedures` | 조사원이 소유하는 프로시저 연결(순서 포함) |
-| `router_config` | 1행. 1단계(조사원) · 2단계(프로시저)의 방법 · 상위 개수 · 프롬프트 |
+| `router_config` | 1행. `pipeline` jsonb 에 질의 분해와 1단계(조사원) · 2단계(프로시저)의 라우팅 단계 목록 전체(옛 단일 방법 열은 변환용으로만 남음) |
 | `writers` | 라이터. 엔진 · 호출 방식 · 프롬프트, 활성은 최대 1개 |
 | `ai_server` | 1행. 임베딩/LLM 서버 주소 · 모델 · (쓰기 전용) API 키 |
 | `augment_runs` | 시험 실행 로그. 질의 · 상태 · 소요 시간 · 라우팅 방법 · 설정 스냅샷(jsonb) · 쌍과 자료(jsonb) · 컨텍스트. 최근 500건만 보관 |
