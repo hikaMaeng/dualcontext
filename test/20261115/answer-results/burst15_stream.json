@@ -1,0 +1,278 @@
+{
+ "label": "burst15_stream",
+ "conc": 15,
+ "startedAt": "2026-11-14T17:41:39.085Z",
+ "elapsedMs": 3726139,
+ "out": [
+  {
+   "id": 107,
+   "http": 202,
+   "runId": 108,
+   "error": null,
+   "status": "ok",
+   "contextChars": 2547,
+   "before": {
+    "ms": 57437,
+    "error": null
+   },
+   "after": {
+    "ms": 86405,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 95652
+  },
+  {
+   "id": 114,
+   "http": 202,
+   "runId": 109,
+   "error": null,
+   "status": "ok",
+   "contextChars": 2312,
+   "before": {
+    "ms": 42120,
+    "error": null
+   },
+   "after": {
+    "ms": 55975,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 60490
+  },
+  {
+   "id": 129,
+   "http": 202,
+   "runId": 107,
+   "error": null,
+   "status": "ok",
+   "contextChars": 2963,
+   "before": {
+    "ms": 3483782,
+    "error": "chat model returned empty content"
+   },
+   "after": {
+    "ms": 186870,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 3496641
+  },
+  {
+   "id": 136,
+   "http": 202,
+   "runId": 110,
+   "error": null,
+   "status": "ok",
+   "contextChars": 2214,
+   "before": {
+    "ms": 119170,
+    "error": null
+   },
+   "after": {
+    "ms": 72825,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 130745
+  },
+  {
+   "id": 81,
+   "http": 202,
+   "runId": 111,
+   "error": null,
+   "status": "ok",
+   "contextChars": 5099,
+   "before": {
+    "ms": 2639091,
+    "error": null
+   },
+   "after": {
+    "ms": 2537816,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 2653095
+  },
+  {
+   "id": 88,
+   "http": 202,
+   "runId": 113,
+   "error": null,
+   "status": "ok",
+   "contextChars": 2029,
+   "before": {
+    "ms": 806482,
+    "error": null
+   },
+   "after": {
+    "ms": 1470384,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 1481569
+  },
+  {
+   "id": 95,
+   "http": 202,
+   "runId": 112,
+   "error": null,
+   "status": "ok",
+   "contextChars": 4064,
+   "before": {
+    "ms": 1960315,
+    "error": null
+   },
+   "after": {
+    "ms": 1754150,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 1973811
+  },
+  {
+   "id": 102,
+   "http": 202,
+   "runId": 114,
+   "error": null,
+   "status": "ok",
+   "contextChars": 6963,
+   "before": {
+    "ms": 3716857,
+    "error": "chat exceeded total time limit of 3600s"
+   },
+   "after": {
+    "ms": 271418,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 3726108
+  },
+  {
+   "id": 109,
+   "http": 202,
+   "runId": 115,
+   "error": null,
+   "status": "ok",
+   "contextChars": 1847,
+   "before": {
+    "ms": 29363,
+    "error": null
+   },
+   "after": {
+    "ms": 52420,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 60492
+  },
+  {
+   "id": 116,
+   "http": 202,
+   "runId": 116,
+   "error": null,
+   "status": "ok",
+   "contextChars": 0,
+   "before": {
+    "ms": 3364,
+    "error": null
+   },
+   "after": {
+    "ms": 0,
+    "error": null,
+    "skipped": true
+   },
+   "ms": 10298
+  },
+  {
+   "id": 131,
+   "http": 202,
+   "runId": 117,
+   "error": null,
+   "status": "ok",
+   "contextChars": 6855,
+   "before": {
+    "ms": 413289,
+    "error": null
+   },
+   "after": {
+    "ms": 540045,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 552132
+  },
+  {
+   "id": 76,
+   "http": 202,
+   "runId": 118,
+   "error": null,
+   "status": "ok",
+   "contextChars": 4391,
+   "before": {
+    "ms": 80881,
+    "error": null
+   },
+   "after": {
+    "ms": 99459,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 110681
+  },
+  {
+   "id": 83,
+   "http": 202,
+   "runId": 119,
+   "error": null,
+   "status": "ok",
+   "contextChars": 2548,
+   "before": {
+    "ms": 1586266,
+    "error": null
+   },
+   "after": {
+    "ms": 1628380,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 1642027
+  },
+  {
+   "id": 90,
+   "http": 202,
+   "runId": 120,
+   "error": null,
+   "status": "ok",
+   "contextChars": 2787,
+   "before": {
+    "ms": 2320023,
+    "error": null
+   },
+   "after": {
+    "ms": 2439053,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 2450943
+  },
+  {
+   "id": 97,
+   "http": 202,
+   "runId": 121,
+   "error": null,
+   "status": "ok",
+   "contextChars": 9136,
+   "before": {
+    "ms": 2118774,
+    "error": null
+   },
+   "after": {
+    "ms": 2034244,
+    "error": null,
+    "skipped": false
+   },
+   "ms": 2130079
+  }
+ ]
+}
