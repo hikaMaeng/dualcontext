@@ -15,6 +15,7 @@
 | `GET /health`, `GET /api/health` | DB 왕복이 되면 `200 { status:"ok", service, database:"ok" }`, 안 되면 `503` |
 | `GET /api/admin/status` | PostgreSQL · pgvector · textsearch_ko 버전, 한국어 설정 유무, 분석 예시 |
 | `GET/POST /api/admin/researchers`, `PUT/DELETE /api/admin/researchers/:id` | 조사원. 본문 `{ name, description, keywords, enabled, type, config, procedureIds, router? }`. `router` 는 **개별 라우터**(`{ steps[] }`, 전역 라우터의 조사원 단계와 같은 모양, 1~6단계)이고 `null`(기본)이면 전역 라우터가 고른다. 응답에도 `router` 가 담긴다 |
+| `GET/POST/DELETE /api/admin/researchers/:id/crawl` | 크롤러 조사원 전용(다른 타입이면 `404`). `GET`: 캐시 상태 `{ status(idle/running/ok/error), running, pages, chunks, finishedAt, error }`. `POST`: 지금 백그라운드로 크롤을 시작하고 `202`(이미 돌고 있으면 그 크롤에 합류). `DELETE`: 크롤한 페이지·조각과 상태를 지운다(크롤 중이면 `409`) |
 | `GET/POST /api/admin/procedures`, `PUT/DELETE /api/admin/procedures/:id` | 프로시저 |
 | `GET/PUT /api/admin/router` | 라우터 설정(질의 분해 + 단계별 라우팅 단계 파이프라인). `PUT` 본문은 아래 형태 그대로이며 zod 로 검증한다 |
 | `GET /api/admin/router/defaults` | 기본 설정과 기본 프롬프트(`{ config, prompts: { researcher, procedure, split, individual } }`). 화면이 새 LLM 단계를 채울 때 쓴다 |
@@ -74,6 +75,28 @@
 | `pgvector` | `{ table, vectorColumn, textColumn, titleColumn?, reducedColumn?, reducedDim?, snippetChars?, minScore?, idColumn?, identifierSearch?, topK }` — `reducedColumn` 이 있으면 축소 차원으로 후보 topK×8 을 뽑고 전체 차원으로 재순위화한다. `snippetChars`(100~8000, 기본 1200)는 컨텍스트에 싣는 자료 글자 수이며 문장 경계에서 자른다. `minScore`(0~1, 기본 0.72)는 자료(행) 단위 관련도 기준으로, 질의와의 코사인 유사도가 이보다 낮은 행은 버린다(0 이면 거르지 않는다). 자료마다 `score` 가 붙는다. `identifierSearch`(기본 true)가 켜져 있으면 질의 속 식별자(CVE ID · 영문 모델명 · 영문 약어 · 「질문 61」 같은 번호)를 제목/본문에서 문자열로 정확히 찾아 벡터 결과 앞에 붙이고(`match: "identifier"`, `minScore` 면제), 5행을 넘게 걸리는 흔한 표기는 버린다. 번호 참조는 `idColumn`(원본 번호 열)이 있을 때만 쓴다. 순차 검색이라 행이 수천 개 이하인 테이블용이다 |
 | `folder` | `{ path, topK }` — `path` 는 볼륨 기준 상대 경로 |
 | `codebase` | `{ source: "git" \| "directory", url?, ref?, subPath?, path?, tokenEnv?, refreshHours?, maxFiles?, maxRepoMB?, maxIndexSeconds?, topK }` — `git` 이면 `url`(https 공개 레포, 계정 정보 · 포트 · 쿼리 금지)을 서버 안에서 얕게(깊이 1) 클론한다. `ref` 는 브랜치 · 태그 이름, `subPath` 는 레포 안 상대 하위 경로. `directory` 이면 `path`(볼륨 기준 상대 경로, `pgdata` · `codebase` 거부)에 미리 받아 둔 코드를 읽는다. `tokenEnv` 는 토큰을 담은 **서버 환경 변수의 이름**(`DUALCONTEXT_GIT_TOKEN…` 꼴만)이며 토큰 값은 설정에 넣을 수 없다. `refreshHours`(0~720, 기본 24, 0 이면 처음 한 번)는 인덱스 갱신 주기, `maxFiles`(10~5000, 기본 2000) · `maxRepoMB`(1~500, 기본 100) · `maxIndexSeconds`(10~600, 기본 120)는 만들기 상한, `topK`(1~20, 기본 5). 설정이 틀리면 `400`. 자료 제목은 `경로:시작줄-끝줄 종류 이름`, 본문은 소스 조각 뒤에 `calls:` · `called by:` · `file imports:` 구조 줄이 붙는다 |
+| `crawler` | 아래 「크롤러 `config`」 |
+
+## 크롤러 `config`
+
+zod 스키마가 저장 때와 실행 때 모두 검증한다(`collect/crawler/config`). 한도를 넘으면 저장이 `400`.
+
+| 필드 | 기본 | 범위 | 뜻 |
+| --- | --- | --- | --- |
+| `startUrls` | (필수) | 1~10개 | 시작 URL. http/https 만 |
+| `allowedDomains` | `[]` | 0~10개 | 허용 도메인(하위 도메인 포함). 비면 시작 URL 의 호스트로 한정 |
+| `depth` | 1 | 0~3 | 시작 URL 에서 링크를 따라가는 깊이 |
+| `maxPages` | 30 | 1~200 | 한 번의 크롤에서 저장하는 페이지 수 상한 |
+| `includePatterns` · `excludePatterns` | `[]` | 각 0~10개 | 경로+쿼리에 대한 정규식. 제외가 먼저 |
+| `delayMs` | 1000 | 500~60000 | 같은 호스트 요청 간격. robots.txt 의 `Crawl-delay` 가 더 크면 그 값 |
+| `refreshHours` | 24 | 1~720 | 이 시간이 지난 캐시는 질의 때 백그라운드로 재크롤 |
+| `maxCrawlSeconds` | 120 | 10~600 | 크롤 한 번의 총 시간 상한(넘으면 거기까지로 색인) |
+| `chunkChars` | 1000 | 300~4000 | 청크 길이 |
+| `minScore` | 0.5 | 0~1 | 이 코사인 유사도 미만 조각은 버림 |
+| `perPage` | 2 | 1~5 | 한 페이지에서 가져오는 조각 수 상한 |
+| `topK` | 3 | 1~20 | 돌려주는 조각 수 |
+
+자료의 `title` 은 `페이지 제목 (URL)`, `text` 는 조각, `score` 는 코사인 유사도다.
 
 ## 모듈 표면
 

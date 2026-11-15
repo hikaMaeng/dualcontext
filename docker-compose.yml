@@ -31,6 +31,28 @@ services:
     networks:
       - dualcontext_internal
 
+  # Headless-browser crawler for the "crawler" researcher type. Stateless: no volume (the crawl
+  # cache lives in dualcontext's database). Reached by dualcontext as http://crawler:11235 on the
+  # project network; the host port is loopback only and exists for the deploy health check.
+  crawler:
+    build:
+      context: .
+      dockerfile: apps/crawler/docker/Dockerfile
+    image: dualcontext-root-crawler:latest
+    container_name: crawler
+    init: true
+    restart: unless-stopped
+    env_file:
+      - path: apps/crawler/docker/.env
+        required: false
+    ports:
+      - "127.0.0.1:${CRAWLER_HOST_PORT:-18082}:11235"
+    # Chromium needs more shared memory than Docker's 64 MB default.
+    shm_size: "1gb"
+    mem_limit: 3g
+    networks:
+      - dualcontext_internal
+
 volumes:
   dualcontext_data:
 

@@ -1,4 +1,4 @@
-export type ResearcherType = "duckduckgo" | "pgvector" | "folder" | "codebase";
+export type ResearcherType = "duckduckgo" | "pgvector" | "folder" | "codebase" | "crawler";
 
 /**
  * 조사원: 출처마다 하나. 원재료를 모을 뿐 해석하지 않는다.
@@ -12,7 +12,7 @@ export type Researcher = {
   keywords: string[];
   enabled: boolean;
   type: ResearcherType;
-  /** 타입별 설정. duckduckgo {topK}, pgvector {table,vectorColumn,textColumn,titleColumn,topK}, folder {path,topK}, codebase {source,url,ref,subPath,path,...}. */
+  /** 타입별 설정. duckduckgo {topK}, pgvector {table,vectorColumn,textColumn,titleColumn,topK}, folder {path,topK}, codebase {source,url,ref,subPath,path,...}, crawler {startUrls,allowedDomains,depth,maxPages,delayMs,refreshHours,topK 등(server/collect/crawler/config)}. */
   config: Record<string, unknown>;
   /** 이 조사원에 연결된 프로시저 id(연결 순서). 연결은 조사원이 소유한다. */
   procedureIds: number[];

@@ -132,6 +132,19 @@ docker cp ./manuals/. dualcontext:/var/lib/postgresql/data/manuals/
 
 `pgdata` 와 볼륨 밖은 거부된다. 질의 때마다 파일을 읽고 한국어 전문 검색으로 순위를 매긴다.
 
+## 크롤러 조사원
+
+타입 「사이트 크롤러」를 고르고 시작 URL(한 줄에 하나)을 적는다. 크롤러는 별도 컨테이너이므로 먼저 띄운다.
+
+```sh
+npm run deploy crawler
+```
+
+* 처음 질의가 오면(또는 「지금 크롤」) 사이트를 크롤해 조각으로 나누고 임베딩해 둔다. 이후에는 캐시에서 바로 답하고, 갱신 주기(기본 24시간)가 지나면 백그라운드로 다시 크롤한다.
+* 임베딩 모델은 AI 서버 설정의 것을 쓴다. 비어 있으면 크롤러 조사원은 실패로 표시된다.
+* robots.txt 가 막는 경로, 내부망 주소, 허용 도메인 밖은 가져오지 않는다(상세는 `constraints.md`).
+* 크롤러 컨테이너 주소는 `DUALCONTEXT_CRAWLER_URL`(기본 `http://crawler:11235`), 토큰은 `DUALCONTEXT_CRAWLER_TOKEN`(기본값은 `apps/crawler/docker/env.defaults` 와 같다).
+
 ## 설정
 
 | 변수 | 필수 | 계약 |

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { type Deps } from "../augment/index.js";
 import { readDatabaseStatus } from "../db/index.js";
 import { aiServerRouter } from "./ai-server/index.js";
+import { crawlRouter } from "./crawl/index.js";
 import { proceduresRouter } from "./procedures/index.js";
 import { researchersRouter } from "./researchers/index.js";
 import { routerRouter } from "./router/index.js";
@@ -14,6 +15,7 @@ export function adminRouter(deps: Deps) {
   const router = express.Router();
   router.use(express.json());
   router.use(researchersRouter(deps.pool));
+  router.use(crawlRouter(deps));
   router.use(proceduresRouter(deps.pool));
   router.use(routerRouter(deps));
   router.use(writersRouter(deps.pool));

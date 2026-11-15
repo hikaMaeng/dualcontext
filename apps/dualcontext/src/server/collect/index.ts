@@ -2,6 +2,7 @@ import type pg from "pg";
 import type { Material, Researcher } from "dualcontext_domain/common";
 import type { ModelClient } from "../model/index.js";
 import { collectCodebase } from "./codebase/index.js";
+import { collectCrawler } from "./crawler/index.js";
 import { collectDuckDuckGo } from "./duckduckgo/index.js";
 import { collectFolder } from "./folder/index.js";
 import { collectPgvector } from "./pgvector/index.js";
@@ -17,5 +18,7 @@ export function collect(pool: pg.Pool, model: ModelClient, dataDir: string, rese
       return collectFolder(pool, dataDir, researcher.config, query);
     case "codebase":
       return collectCodebase(dataDir, researcher.config, query);
+    case "crawler":
+      return collectCrawler(pool, model, researcher.id, researcher.config, query);
   }
 }
