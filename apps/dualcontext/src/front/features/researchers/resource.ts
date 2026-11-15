@@ -4,6 +4,7 @@ export enum RSC {
   RESEARCHERS_TYPE_DUCKDUCKGO_TEXT = "researchers.type.duckduckgo.text",
   RESEARCHERS_TYPE_PGVECTOR_TEXT = "researchers.type.pgvector.text",
   RESEARCHERS_TYPE_FOLDER_TEXT = "researchers.type.folder.text",
+  RESEARCHERS_TYPE_CRAWLER_TEXT = "researchers.type.crawler.text",
   RESEARCHERS_KEYWORDS_LABEL = "researchers.keywords.label",
   RESEARCHERS_PROCEDURES_LABEL = "researchers.procedures.label",
   RESEARCHERS_PG_TABLE_LABEL = "researchers.pg.table.label",

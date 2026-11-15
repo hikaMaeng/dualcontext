@@ -7,6 +7,7 @@ import { api, splitList } from "../../lib/api";
 import type { Texts } from "../../i18n";
 import { RSC as SHARED } from "../../resource";
 import { StageEditor } from "../router/stage/index";
+import { blankCrawler, CrawlerFields, toCrawlerConfig, toCrawlerForm, type CrawlerForm } from "./crawler/index";
 import { RSC } from "./resource";
 
 type Form = {
@@ -25,13 +26,14 @@ type Form = {
   textColumn: string;
   titleColumn: string;
   path: string;
+  crawler: CrawlerForm;
   /** 개별 라우터. null 이면 전역 라우터가 고른다. */
   router: StageConfig | null;
 };
 
 const blank: Form = {
   id: null, name: "", description: "", keywords: "", enabled: true, type: "pgvector", procedureIds: [], topK: "3",
-  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", router: null
+  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", crawler: blankCrawler, router: null
 };
 
 function toForm(item: Researcher): Form {
@@ -40,7 +42,7 @@ function toForm(item: Researcher): Form {
     id: item.id, name: item.name, description: item.description, keywords: item.keywords.join(", "), enabled: item.enabled,
     type: item.type, procedureIds: item.procedureIds, topK: String(c.topK ?? 3),
     table: String(c.table ?? ""), vectorColumn: String(c.vectorColumn ?? ""), reducedColumn: String(c.reducedColumn ?? ""),
-    reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? ""), router: item.router ?? null
+    reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? ""), crawler: toCrawlerForm(item.config), router: item.router ?? null
   };
 }
 
@@ -50,6 +52,8 @@ function toBody(form: Form) {
       ? { topK: Number(form.topK) }
       : form.type === "folder"
         ? { path: form.path, topK: Number(form.topK) }
+        : form.type === "crawler"
+        ? toCrawlerConfig(form.crawler, Number(form.topK))
         : {
             table: form.table, vectorColumn: form.vectorColumn, textColumn: form.textColumn, topK: Number(form.topK),
             ...(form.titleColumn ? { titleColumn: form.titleColumn } : {}),
@@ -138,6 +142,7 @@ export function ResearchersView({ t }: { t: Texts }) {
                 <option value="pgvector">{t[RSC.RESEARCHERS_TYPE_PGVECTOR_TEXT]}</option>
                 <option value="duckduckgo">{t[RSC.RESEARCHERS_TYPE_DUCKDUCKGO_TEXT]}</option>
                 <option value="folder">{t[RSC.RESEARCHERS_TYPE_FOLDER_TEXT]}</option>
+                <option value="crawler">{t[RSC.RESEARCHERS_TYPE_CRAWLER_TEXT]}</option>
               </Select>
             </Field>
             {form.type === "pgvector" && (
@@ -151,6 +156,7 @@ export function ResearchersView({ t }: { t: Texts }) {
               </div>
             )}
             {form.type === "folder" && <Field label={t[RSC.RESEARCHERS_FOLDER_PATH_LABEL]}><Input value={form.path} onChange={(e) => set("path", e.target.value)} /></Field>}
+            {form.type === "crawler" && <CrawlerFields value={form.crawler} onChange={(next) => set("crawler", next)} id={form.id} t={t} />}
             <Field label={t[SHARED.COMMON_TOPK_LABEL]}><Input type="number" min={1} max={20} value={form.topK} onChange={(e) => set("topK", e.target.value)} /></Field>
             <fieldset className="grid gap-2 rounded-md border border-line p-3">
               <legend className="px-1 text-sm text-muted">{t[RSC.RESEARCHERS_PROCEDURES_LABEL]}</legend>

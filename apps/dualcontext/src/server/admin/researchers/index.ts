@@ -2,6 +2,7 @@ import express from "express";
 import type pg from "pg";
 import { z } from "zod";
 import type { Researcher } from "dualcontext_domain/common";
+import { crawlerConfigSchema } from "../../collect/crawler/config/index.js";
 import { stageSchema } from "../../routing/config/schema.js";
 
 const identifier = z.string().regex(/^[a-z_][a-z0-9_]*$/);
@@ -39,7 +40,8 @@ const body = z.discriminatedUnion("type", [
       topK: topK.default(3)
     })
   }),
-  z.object({ ...common, type: z.literal("folder"), config: z.object({ path: z.string().trim().min(1), topK: topK.default(3) }) })
+  z.object({ ...common, type: z.literal("folder"), config: z.object({ path: z.string().trim().min(1), topK: topK.default(3) }) }),
+  z.object({ ...common, type: z.literal("crawler"), config: crawlerConfigSchema })
 ]);
 
 const select = `select r.id, r.name, r.description, r.keywords, r.enabled, r.type, r.config, r.router,
