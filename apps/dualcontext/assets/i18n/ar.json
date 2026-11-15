@@ -157,5 +157,8 @@
   "researchers.router.hint.message": "عند التفعيل يُستبعد هذا الباحث من قائمة مرشحي الموجّه العام، وتقرّر الخطوات أدناه بشكل منفصل هل يُستخدم هذا الباحث وحده (إن بقي فهو مشمول، وإن فرغ فهو مستبعد). وبعد شموله يتبع المسار نفسه الذي يتبعه الآخرون: جمع المواد ثم اختيار الإجراءات.",
   "router.preview.individual.label": "أحكام الموجّه الفردي",
   "router.preview.individual.included.text": "مشمول",
-  "router.preview.individual.excluded.text": "مستبعد"
+  "router.preview.individual.excluded.text": "مستبعد",
+  "common.routing.steps.label": "سجل خطوات التوجيه",
+  "common.routing.parts.label": "الأسئلة الفرعية",
+  "common.routing.individual.label": "أحكام الموجّه الفردي"
 }

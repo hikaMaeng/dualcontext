@@ -157,5 +157,8 @@
   "researchers.router.hint.message": "Si se activa, este investigador sale de la lista de candidatos del enrutador global y los pasos de abajo deciden por separado si se usa solo a este investigador (si se conserva, se incluye; si se vacía, se excluye). Una vez incluido sigue el mismo camino que los demás: recopilación de material y selección de procedimientos.",
   "router.preview.individual.label": "Veredictos del enrutador individual",
   "router.preview.individual.included.text": "incluido",
-  "router.preview.individual.excluded.text": "excluido"
+  "router.preview.individual.excluded.text": "excluido",
+  "common.routing.steps.label": "Registro de pasos de enrutamiento",
+  "common.routing.parts.label": "Subpreguntas",
+  "common.routing.individual.label": "Veredictos del enrutador individual"
 }

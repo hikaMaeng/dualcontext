@@ -58,6 +58,7 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `role=main`, `role=heading` level 1 (`#page-title`) | 본문, 화면 제목 |
 | `role=status`, `data-testid="service-state"` | 런타임 상태 줄 |
 | `data-testid="researcher-item"`, `"procedure-item"`, `"writer-item"` | 목록 항목 |
+| `data-testid="routing-steps"`, `"routing-step"`, `"routing-individual"` | 시험 실행 · 실행 로그의 라우팅 단계별 기록과 개별 라우터 판정(`routing-individual` 의 `data-selected` 가 포함 여부). 옛 실행 기록에는 이 정보가 없어 나오지 않는다 |
 | `data-testid="researcher-individual-router"` | 조사원 폼의 「개별 라우터 사용」 체크박스(켜면 `individual-steps` 편집기가 나온다) |
 | `data-testid="routing-state"`, `"logged-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과와 로그 링크 |
 | `data-testid="run-item"` | 실행 로그 목록 항목 |

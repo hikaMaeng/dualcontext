@@ -39,5 +39,8 @@ export enum RSC {
   COMMON_ROUTING_SCORES_LABEL = "common.routing.scores.label",
   COMMON_ROUTING_SELECTED_STATUS = "common.routing.selected.status",
   COMMON_ROUTING_EXCLUDED_STATUS = "common.routing.excluded.status",
-  COMMON_ROUTING_NONE_MESSAGE = "common.routing.none.message"
+  COMMON_ROUTING_NONE_MESSAGE = "common.routing.none.message",
+  COMMON_ROUTING_STEPS_LABEL = "common.routing.steps.label",
+  COMMON_ROUTING_PARTS_LABEL = "common.routing.parts.label",
+  COMMON_ROUTING_INDIVIDUAL_LABEL = "common.routing.individual.label"
 }

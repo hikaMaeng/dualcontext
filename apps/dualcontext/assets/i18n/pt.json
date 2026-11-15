@@ -157,5 +157,8 @@
   "researchers.router.hint.message": "Quando ativado, este investigador sai da lista de candidatos do roteador global, e os passos abaixo decidem separadamente se este investigador será usado sozinho (se permanecer, é incluído; se esvaziar, é excluído). Depois de incluído, segue o mesmo caminho dos demais: coleta de material e seleção de procedimentos.",
   "router.preview.individual.label": "Vereditos do roteador individual",
   "router.preview.individual.included.text": "incluído",
-  "router.preview.individual.excluded.text": "excluído"
+  "router.preview.individual.excluded.text": "excluído",
+  "common.routing.steps.label": "Registro das etapas de roteamento",
+  "common.routing.parts.label": "Subperguntas",
+  "common.routing.individual.label": "Vereditos do roteador individual"
 }

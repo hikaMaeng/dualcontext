@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnswerCompare } from "../../components/answers";
 import { RoutingScores } from "../../components/routing-scores";
+import { RoutingSteps } from "../../components/routing-steps";
 import { Button } from "../../components/ui/button";
 import { ListDetail } from "../../components/layout";
 import { api } from "../../lib/api";
@@ -112,6 +113,7 @@ export function RunsView({ t }: { t: Texts }) {
               )}
               {augmentDone && detail.pairs.length === 0 && <p role="status" data-testid="run-routing-none" className="text-sm">{t[SHARED.COMMON_ROUTING_NONE_MESSAGE]}</p>}
               {(detail.answers || running) && <AnswerCompare answers={detail.answers} pending={running && augmentDone} t={t} />}
+              <RoutingSteps routing={detail.routing} t={t} />
               <RoutingScores routing={detail.routing} t={t} />
               <section aria-label={t[RSC.RUNS_SETTINGS_LABEL]} className="grid gap-1">
                 <h3 className="text-sm font-semibold text-muted">{t[RSC.RUNS_SETTINGS_LABEL]}</h3>

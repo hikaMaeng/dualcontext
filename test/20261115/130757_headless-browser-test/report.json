@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "mode": "scenario",
+  "startedAt": "2026-11-15T04:07:58.362Z",
+  "inputUrl": "http://127.0.0.1:18081",
+  "testedUrl": "http://127.0.0.1:18081/",
+  "finalUrl": "http://127.0.0.1:18081/#try",
+  "title": "dualcontext",
+  "mainPresent": true,
+  "documentStatus": 200,
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screenshots": [
+    "F:\\dev\\dualcontext\\test\\20261115\\130757_headless-browser-test\\screenshots\\try-routing-steps.png"
+  ],
+  "trace": "F:\\dev\\dualcontext\\test\\20261115\\130757_headless-browser-test\\trace.zip",
+  "steps": [
+    {
+      "action": "goto",
+      "status": "passed"
+    },
+    {
+      "action": "click",
+      "status": "passed"
+    },
+    {
+      "action": "fill",
+      "status": "passed"
+    },
+    {
+      "action": "click",
+      "status": "passed"
+    },
+    {
+      "action": "assertRole",
+      "status": "passed"
+    },
+    {
+      "action": "assertText",
+      "status": "passed"
+    },
+    {
+      "action": "assertText",
+      "status": "passed"
+    },
+    {
+      "action": "screenshot",
+      "status": "passed"
+    }
+  ],
+  "finishedAt": "2026-11-15T04:08:09.538Z"
+}

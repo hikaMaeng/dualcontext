@@ -157,5 +157,8 @@
   "researchers.router.hint.message": "When on, this researcher is removed from the global router's candidate list, and the steps below decide separately whether to use this researcher alone (kept means included, emptied means excluded). Once included it follows the same path as the others: material collection, then procedure selection.",
   "router.preview.individual.label": "Individual router verdicts",
   "router.preview.individual.included.text": "included",
-  "router.preview.individual.excluded.text": "excluded"
+  "router.preview.individual.excluded.text": "excluded",
+  "common.routing.steps.label": "Routing step log",
+  "common.routing.parts.label": "Sub-questions",
+  "common.routing.individual.label": "Individual router verdicts"
 }

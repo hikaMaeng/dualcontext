@@ -1,0 +1,10 @@
+[
+  { "action": "goto", "url": "/" },
+  { "action": "click", "role": "button", "name": "시험 실행" },
+  { "action": "fill", "label": "질의", "value": "애플의 최신 아이폰 출시일" },
+  { "action": "click", "role": "button", "name": "증강 실행" },
+  { "action": "assertRole", "role": "region", "name": "라우팅 단계별 기록", "timeout": 180000 },
+  { "action": "assertText", "text": "개별 라우터 판정" },
+  { "action": "assertText", "text": "웹 검색(덕덕고) · 선택" },
+  { "action": "screenshot", "name": "try-routing-steps" }
+]

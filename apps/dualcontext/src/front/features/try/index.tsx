@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { WriterConfig } from "dualcontext_domain/common";
 import { AnswerCompare } from "../../components/answers";
 import { RoutingScores } from "../../components/routing-scores";
+import { RoutingSteps } from "../../components/routing-steps";
 import { Button } from "../../components/ui/button";
 import { Input, Select } from "../../components/ui/input";
 import { Field } from "../../components/layout";
@@ -75,6 +76,7 @@ export function TryView({ t }: { t: Texts }) {
             <>
               <p role="status" data-testid="routing-state" className="text-sm text-muted">{t[RSC.TRY_ROUTING_LABEL]}: {run.researcherRouting}</p>
               {run.pairs.length === 0 && <p role="status" data-testid="routing-none" className="text-sm text-fg">{t[SHARED.COMMON_ROUTING_NONE_MESSAGE]}</p>}
+              <RoutingSteps routing={run.routing} t={t} />
               <RoutingScores routing={run.routing} t={t} />
               <AnswerCompare answers={run.answers} pending={running} t={t} />
               <ul aria-label={t[RSC.TRY_PAIRS_LABEL]} className="grid gap-1 text-sm text-muted">

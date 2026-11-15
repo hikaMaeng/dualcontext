@@ -157,5 +157,8 @@
   "researchers.router.hint.message": "开启后，该调查员会从全局路由器的候选列表中移除，由下面的步骤单独判定是否使用它（保留即纳入，清空即排除）。纳入后与其他调查员走相同的流程：资料收集、流程选择。",
   "router.preview.individual.label": "独立路由器判定",
   "router.preview.individual.included.text": "纳入",
-  "router.preview.individual.excluded.text": "排除"
+  "router.preview.individual.excluded.text": "排除",
+  "common.routing.steps.label": "路由步骤记录",
+  "common.routing.parts.label": "子问题",
+  "common.routing.individual.label": "独立路由器判定"
 }
