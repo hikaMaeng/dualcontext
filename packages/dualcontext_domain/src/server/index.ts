@@ -13,4 +13,4 @@ export {
   type Selection
 } from "./route/index.js";
 export { defaultMaxParts, defaultMinPartChars, parseSplitAnswer, splitQuery } from "./split/index.js";
-export { mergeContexts, writeContext } from "./write/index.js";
+export { isWebSource, mergeContexts, webLast, webSectionNote, webSectionTitle, writeContext } from "./write/index.js";

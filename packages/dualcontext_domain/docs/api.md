@@ -19,6 +19,7 @@
 | `selectByEmbedding(ranked, { topK, minScore, margin })` | 임베딩 단계 규칙: 최소 점수 · 최고 점수 대비 마진 · 상위 개수를 차례로 적용. | `src/server/route` |
 | `selectForQuery(query, researchers, ports)` | 질의를 나누고(`ports.split`, 없으면 `splitQuery`) 통째 질의와 하위 질문을 각각 라우팅해 합집합을 돌려준다. 증강과 관리자 라우팅 미리보기가 같이 쓴다. | `src/server/augment` |
 | `writeContext(query, pairs)` | 쌍을 **조사원 기준으로** 묶어 자료(출처 번호 `R<조사원id>-<순번>` · 유사도)를 한 번만 싣고, 그 조사원의 프로시저를 「분석 관점(제안)」으로 나열한다. 「찾지 못한 것」은 실제로 자료가 없거나 수집이 실패한 조사원이 있을 때만 쓴다(거짓 「없음」을 쓰지 않는다)(수집 실패)을 적는다. | `src/server/write` |
+| `isWebSource(researcher)` · `webLast(pairs)` · `webSectionTitle` · `webSectionNote` | 웹 검색 계열(`type: duckduckgo`) 판별과 순서 정렬(큐레이션 쌍 앞, 웹 쌍 뒤)과 웹 섹션의 제목 · 안내 문구. `writeContext` 는 웹 쌍을 큐레이션 조사원 섹션 뒤의 별도 섹션 「웹 검색 결과(검증되지 않은 보조 자료)」에 싣고, 조사원 자료와 어긋나면 조사원 자료를 우선하라고 밝힌다. LLM 라이터(앱)는 같은 문구를 쌍 머리에 붙인다. | `src/server/write` |
 | `mergeContexts(query, parts)` | 쌍별로 만든 조각을 이어 붙인다. 조각 사이 모순은 풀지 않는다. | `src/server/write` |
 | `augmentQuery(query, ports)` | 조사원 선택 → 수집 → 프로시저 선택 → 라이터. `writer.mode` 가 `batch` 면 1회, `per_pair` 면 쌍 수만큼 호출. 결과에 라우팅 방법과 호출 수가 들어 있다. | `src/server/augment` |
 

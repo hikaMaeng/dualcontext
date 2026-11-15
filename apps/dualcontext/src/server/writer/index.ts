@@ -1,6 +1,6 @@
 import type pg from "pg";
 import type { Pair, WriterConfig } from "dualcontext_domain/common";
-import { writeContext } from "dualcontext_domain/server";
+import { isWebSource, webSectionNote, webSectionTitle, writeContext } from "dualcontext_domain/server";
 import type { ModelClient } from "../model/index.js";
 
 const columns = "id, name, engine, mode, prompt, active";
@@ -16,10 +16,13 @@ export async function loadWriter(pool: pg.Pool, writerId?: number): Promise<Writ
   return rows[0] ?? null;
 }
 
-function describePairs(pairs: Pair[]): string {
+/** LLM 라이터 입력. 웹 검색 쌍은 머리에 성격을 밝혀(큐레이션 쌍 뒤에 놓는다) 모델이 비중을 정하게 한다. */
+export function describePairs(pairs: Pair[]): string {
   return pairs
     .map((pair, index) => {
-      const lines = [`### 쌍 ${index + 1}`, `조사원: ${pair.researcher.name} (${pair.researcher.description})`];
+      const web = isWebSource(pair.researcher);
+      const lines = [`### 쌍 ${index + 1}${web ? ` [${webSectionTitle}]` : ""}`, `조사원: ${pair.researcher.name} (${pair.researcher.description})`];
+      if (web) lines.push(`자료 성격: ${webSectionNote}`);
       if (pair.procedure) {
         lines.push(`프로시저: ${pair.procedure.name}`);
         lines.push(`절차: ${pair.procedure.steps.join(" / ")}`);

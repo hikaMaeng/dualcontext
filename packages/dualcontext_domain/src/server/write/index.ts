@@ -1,5 +1,15 @@
 import type { Material, Pair, Procedure, Researcher } from "../../common/index.js";
 
+/** 웹 검색 계열 조사원인가. 큐레이션한 자료와 달리 출처 신뢰도와 최신성이 균일하지 않아 컨텍스트에서 따로 다룬다. */
+export const isWebSource = (researcher: Researcher): boolean => researcher.type === "duckduckgo";
+
+export const webSectionTitle = "웹 검색 결과(검증되지 않은 보조 자료)";
+/** 웹 자료를 읽는 법. 모델이 비중을 스스로 정하게 한다: 전문 자료와 어긋나면 그쪽을 우선하고, 질문과 무관하면 쓰지 않는다. */
+export const webSectionNote = "공개 웹 검색에서 가져온 조각이다. 출처의 신뢰도와 최신성이 균일하지 않다. 위 조사원 자료와 어긋나면 조사원 자료를 우선하고, 질문과 관련 없으면 쓰지 않는다.";
+
+/** 컨텍스트를 만들 때 큐레이션 쌍이 앞, 웹 검색 쌍이 뒤에 오도록 순서를 정한다(각 쪽의 원래 순서는 유지). */
+export const webLast = (pairs: Pair[]): Pair[] => [...pairs.filter((pair) => !isWebSource(pair.researcher)), ...pairs.filter((pair) => isWebSource(pair.researcher))];
+
 /** 자료마다 붙는 출처 번호. 조사원 id 와 순서로 정해져, 쌍별 호출로 나뉘어도 번호가 겹치지 않는다. */
 export const sourceLabel = (researcher: Researcher, index: number) => `R${researcher.id}-${index + 1}`;
 
@@ -40,8 +50,9 @@ export function writeContext(query: string, pairs: Pair[]): string {
     ""
   ];
   const gaps: string[] = [];
+  let webOpened = false;
 
-  for (const { researcher, materials, procedures, error } of groups.values()) {
+  for (const { researcher, materials, procedures, error } of [...groups.values()].sort((a, b) => Number(isWebSource(a.researcher)) - Number(isWebSource(b.researcher)))) {
     if (error) {
       gaps.push(`${researcher.name}: 수집에 실패했다 - ${error}`);
       continue;
@@ -50,7 +61,11 @@ export function writeContext(query: string, pairs: Pair[]): string {
       gaps.push(`${researcher.name}: 질의와 관련된 자료를 찾지 못했다.`);
       continue;
     }
-    lines.push(`## 조사원: ${researcher.name}`, "", ...materials.flatMap((material, index) => [describeMaterial(researcher, material, index), ""]));
+    if (isWebSource(researcher) && !webOpened) {
+      webOpened = true;
+      lines.push(`## ${webSectionTitle}`, "", webSectionNote, "");
+    }
+    lines.push(`${isWebSource(researcher) ? "###" : "##"} 조사원: ${researcher.name}`, "", ...materials.flatMap((material, index) => [describeMaterial(researcher, material, index), ""]));
     if (procedures.length > 0) lines.push("자료를 읽을 때 쓸 수 있는 분석 관점(질문에 맞지 않으면 쓰지 않는다):", ...procedures.map(describeProcedure), "");
   }
 

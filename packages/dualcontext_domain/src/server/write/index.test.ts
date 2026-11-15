@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { Pair, Procedure, Researcher } from "../../common/index.js";
-import { mergeContexts, sourceLabel, writeContext } from "./index.js";
+import { mergeContexts, sourceLabel, webLast, writeContext } from "./index.js";
 
 const researcher = (id: number, name: string): Researcher => ({ id, name, description: "", keywords: [], enabled: true, type: "folder", config: {}, procedureIds: [] });
 const procedure = (id: number, name: string): Procedure => ({ id, name, appliesWhen: [], steps: ["첫째 본다", "둘째 비교한다"], impacts: ["영향"], outputFormat: "표", enabled: true });
@@ -51,4 +51,36 @@ test("부족한 항목은 실제로 있을 때만 쓴다: 거짓 「없음」을
 
 test("쌍별로 만든 조각을 이어 붙인다", () => {
   assert.equal(mergeContexts("질", ["가", "나"]), "# 참고 자료\n\n질의: 질\n\n가\n\n---\n\n나\n\n---");
+});
+
+const search = (id: number, name: string): Researcher => ({ ...researcher(id, name), type: "duckduckgo" });
+
+test("웹 검색 자료는 큐레이션 조사원 뒤의 별도 섹션에 놓이고, 읽는 법이 붙는다", () => {
+  const pairs: Pair[] = [
+    { researcher: search(7, "덕덕고"), procedure: null, materials: [{ title: "웹 기사", text: "웹 본문" }] },
+    { researcher: docs, procedure: null, materials }
+  ];
+  const context = writeContext("환불", pairs);
+  const curated = context.indexOf("## 조사원: 사내문서");
+  const section = context.indexOf("## 웹 검색 결과(검증되지 않은 보조 자료)");
+  assert.ok(curated > 0 && section > curated, "큐레이션 자료가 먼저, 웹 섹션이 뒤");
+  assert.match(context, /웹 섹션|공개 웹 검색에서 가져온 조각이다/);
+  assert.match(context, /조사원 자료와 어긋나면 조사원 자료를 우선하고/);
+  assert.match(context, /### 조사원: 덕덕고/);
+  assert.match(context, /\[R7-1\] 웹 기사\n웹 본문/);
+});
+
+test("웹 검색 쌍이 없으면 웹 섹션을 만들지 않고, 자료가 없는 웹 조사원은 「찾지 못한 것」에만 적는다", () => {
+  assert.doesNotMatch(writeContext("환불", [{ researcher: docs, procedure: null, materials }]), /웹 검색 결과\(/);
+  const empty = writeContext("환불", [{ researcher: docs, procedure: null, materials }, { researcher: search(7, "덕덕고"), procedure: null, materials: [] }]);
+  assert.doesNotMatch(empty, /웹 검색 결과\(/);
+  assert.match(empty, /- 덕덕고: 질의와 관련된 자료를 찾지 못했다\./);
+});
+
+test("webLast 는 큐레이션 쌍을 앞에 두고 각 쪽의 순서를 유지한다", () => {
+  const a: Pair = { researcher: search(7, "웹1"), procedure: null, materials };
+  const b: Pair = { researcher: docs, procedure: null, materials };
+  const c: Pair = { researcher: search(8, "웹2"), procedure: null, materials };
+  const d: Pair = { researcher: researcher(3, "문서고"), procedure: null, materials };
+  assert.deepEqual(webLast([a, b, c, d]).map((pair) => pair.researcher.name), ["사내문서", "문서고", "웹1", "웹2"]);
 });

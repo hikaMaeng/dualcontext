@@ -137,3 +137,14 @@ test("복합 질의는 하위 질문으로도 라우팅해 합집합을 고르�
   assert.deepEqual(result.pairs.map((pair) => pair.researcher), ["사내문서", "웹"]);
   assert.deepEqual(asked, ["사내문서:사내 환불 규정은 어떻게 되는지", "웹:최신 뉴스 동향은 어떤지 알려줘"]);
 });
+
+test("라이터에는 웹 검색 쌍이 큐레이션 쌍 뒤에 가고, 결과의 쌍 순서는 라우팅 순서를 유지한다", async () => {
+  const web: Researcher = { ...researcher(2, "덕덕고", ["환불"], []), type: "duckduckgo" };
+  const seen: string[][] = [];
+  const result = await augmentQuery("환불 규정", ports("batch", {
+    listResearchers: async () => [web, researcher(1, "사내문서", ["환불"], [])],
+    writer: { mode: "batch", write: (_query: string, pairs: Pair[]) => { seen.push(pairs.map((p) => p.researcher.name)); return "x"; } }
+  }));
+  assert.deepEqual(seen, [["사내문서", "덕덕고"]]);
+  assert.deepEqual(result.pairs.map((p) => p.researcher), ["덕덕고", "사내문서"]);
+});

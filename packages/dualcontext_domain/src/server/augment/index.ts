@@ -1,6 +1,6 @@
 import type { AugmentResult, Material, Pair, Procedure, Researcher, RoutingTrace, WriterMode } from "../../common/index.js";
 import type { Selection } from "../route/index.js";
-import { mergeContexts } from "../write/index.js";
+import { mergeContexts, webLast } from "../write/index.js";
 import { selectForQuery, trace, type SelectPorts } from "./select.js";
 
 /** 바깥 세계와의 경계. 저장소, 출처, 모델 호출은 앱이 채운다. */
@@ -75,6 +75,8 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
 
   // 쓸 만한 것이 있는가: 자료가 하나라도 모였거나, 수집 실패가 있어 그 사실을 알려야 하는 경우.
   const useful = pairs.some((pair) => pair.materials.length > 0 || pair.error !== undefined);
+  // 웹 검색 쌍은 큐레이션 쌍 뒤에 둔다(라이터가 별도 섹션으로 다룬다). 반환하는 pairs 의 순서는 그대로다.
+  const ordered = webLast(pairs);
   let context: string;
   let calls: number;
   if (!useful) {
@@ -82,11 +84,11 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
     calls = 0;
   } else if (ports.writer.mode === "per_pair") {
     const parts: string[] = [];
-    for (const pair of pairs) parts.push(await ports.writer.write(query, [pair]));
+    for (const pair of ordered) parts.push(await ports.writer.write(query, [pair]));
     context = mergeContexts(query, parts);
     calls = pairs.length;
   } else {
-    context = await ports.writer.write(query, pairs);
+    context = await ports.writer.write(query, ordered);
     calls = 1;
   }
 
