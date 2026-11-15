@@ -2,6 +2,7 @@ import express from "express";
 import type pg from "pg";
 import { z } from "zod";
 import type { Researcher } from "dualcontext_domain/common";
+import { stageSchema } from "../../routing/config/schema.js";
 
 const identifier = z.string().regex(/^[a-z_][a-z0-9_]*$/);
 const topK = z.number().int().min(1).max(20);
@@ -11,7 +12,9 @@ const common = {
   description: z.string().default(""),
   keywords: z.array(z.string().trim().min(1)).default([]),
   enabled: z.boolean().default(true),
-  procedureIds: z.array(z.number().int()).default([])
+  procedureIds: z.array(z.number().int()).default([]),
+  /** 개별 라우터(조사원 하나를 쓸지 판정하는 단계 파이프라인). null 이면 전역 라우터가 고른다. */
+  router: stageSchema.nullable().default(null)
 };
 
 const body = z.discriminatedUnion("type", [
@@ -39,7 +42,7 @@ const body = z.discriminatedUnion("type", [
   z.object({ ...common, type: z.literal("folder"), config: z.object({ path: z.string().trim().min(1), topK: topK.default(3) }) })
 ]);
 
-const select = `select r.id, r.name, r.description, r.keywords, r.enabled, r.type, r.config,
+const select = `select r.id, r.name, r.description, r.keywords, r.enabled, r.type, r.config, r.router,
   coalesce((select array_agg(rp.procedure_id order by rp.position, rp.procedure_id)
               from researcher_procedures rp where rp.researcher_id = r.id), '{}') as "procedureIds"
   from researchers r`;
@@ -56,10 +59,10 @@ async function save(pool: pg.Pool, id: number | null, data: z.infer<typeof body>
     await client.query("begin");
     const { rows } = await client.query<{ id: number }>(
       id === null
-        ? `insert into researchers (name, description, keywords, enabled, type, config) values ($1, $2, $3, $4, $5, $6) returning id`
-        : `update researchers set name = $1, description = $2, keywords = $3, enabled = $4, type = $5, config = $6, embedding_key = null
-            where id = $7 returning id`,
-      [data.name, data.description, data.keywords, data.enabled, data.type, data.config, ...(id === null ? [] : [id])]
+        ? `insert into researchers (name, description, keywords, enabled, type, config, router) values ($1, $2, $3, $4, $5, $6, $7) returning id`
+        : `update researchers set name = $1, description = $2, keywords = $3, enabled = $4, type = $5, config = $6, router = $7, embedding_key = null
+            where id = $8 returning id`,
+      [data.name, data.description, data.keywords, data.enabled, data.type, data.config, data.router === null ? null : JSON.stringify(data.router), ...(id === null ? [] : [id])]
     );
     if (rows.length === 0) throw new Error("not found");
     await client.query("delete from researcher_procedures where researcher_id = $1", [rows[0].id]);

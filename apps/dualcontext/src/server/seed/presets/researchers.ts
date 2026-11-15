@@ -1,4 +1,4 @@
-import type { ResearcherType } from "dualcontext_domain/common";
+import type { ResearcherType, StageConfig } from "dualcontext_domain/common";
 
 // 사전 정의 조사원. 데이터셋은 허깅페이스에서 받아 ds_* 테이블에 적재한다(seed-data/load-datasets.mjs).
 // description 은 임베딩 라우팅이 읽는 글이므로 어떤 질의를 맡는지 구체적으로 쓴다.
@@ -10,7 +10,27 @@ export type ResearcherPreset = {
   config: Record<string, unknown>;
   /** 연결할 프로시저 이름(연결 순서). */
   procedures: string[];
+  /** 개별 라우터. 없으면 전역 라우터가 고른다. */
+  router?: StageConfig;
 };
+
+/**
+ * 웹 검색의 개별 라우터 프롬프트. 「최신 정보가 필요한가」는 주제 유사도로 드러나지 않아 전역 임베딩 라우팅으로는 가르기 어렵다.
+ * 빠뜨리는 비용이 크므로 애매하면 포함한다.
+ */
+export const webRouterPrompt = `너는 아래 웹 검색 조사원을 이번 질의에 쓸지 판정하는 라우터다.
+
+질의: {{query}}
+
+조사원:
+{{candidates}}
+
+규칙:
+- 답이 시간에 따라 바뀌거나 최근에 생긴 정보가 필요하면 쓴다: 오늘 · 최근 뉴스, 현재 날씨 · 가격 · 환율 · 주가 · 일정, 신제품 출시 · 발표 · 최신 버전, 진행 중인 사건이나 최근 결과.
+- 변하지 않는 지식, 개념 · 방법 설명, 조언, 이미 정해진 규정 · 논문 · 법률 · 의학 같은 전문 자료로 충분히 답할 수 있는 질의에는 쓰지 않는다.
+- 판단이 애매하면 쓴다(빠뜨리는 쪽이 더 나쁘다).
+
+쓰면 조사원의 id 를, 쓰지 않으면 빈 배열을 JSON 배열로만 답하라. 예: [7] 또는 [].`;
 
 const table = (name: string) => ({
   table: name,
@@ -69,6 +89,7 @@ export const researcherPresets: ResearcherPreset[] = [
     keywords: ["최신", "오늘", "현재", "날씨", "뉴스", "가격", "환율"],
     type: "duckduckgo",
     config: { topK: 5 },
-    procedures: ["근거 신뢰도 점검", "수치·사실 추출", "비교 분석"]
+    procedures: ["근거 신뢰도 점검", "수치·사실 추출", "비교 분석"],
+    router: { steps: [{ type: "llm", topK: 1, prompt: webRouterPrompt, showScores: false, allowNone: true, parts: false, onError: "skip" }] }
   }
 ];

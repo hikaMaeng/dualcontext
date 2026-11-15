@@ -1,10 +1,10 @@
-import type { Procedure, Researcher, StepTrace } from "../../common/index.js";
+import type { IndividualTrace, Procedure, Researcher, StepTrace } from "../../common/index.js";
 
 /** 후보 하나의 점수(임베딩 방식에서만). */
 export type ScoredId = { id: number; score: number; selected: boolean };
 
 /** 라우팅 결과. mode 는 실제로 쓰인 단계들(건너뜀·실패 포함), scores 는 임베딩 단계가 있었을 때 그 단계 입력 후보의 점수, steps 는 단계별 기록이다. */
-export type Selection<T> = { mode: string; selected: T[]; scores?: ScoredId[]; steps?: StepTrace[] };
+export type Selection<T> = { mode: string; selected: T[]; scores?: ScoredId[]; steps?: StepTrace[]; /** 개별 라우터를 가진 조사원의 판정(조사원 선택에서만). */ individual?: IndividualTrace[] };
 
 function keywordScore(query: string, keywords: string[]): number {
   const lowered = query.toLowerCase();

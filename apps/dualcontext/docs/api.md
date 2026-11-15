@@ -14,11 +14,11 @@
 | --- | --- |
 | `GET /health`, `GET /api/health` | DB 왕복이 되면 `200 { status:"ok", service, database:"ok" }`, 안 되면 `503` |
 | `GET /api/admin/status` | PostgreSQL · pgvector · textsearch_ko 버전, 한국어 설정 유무, 분석 예시 |
-| `GET/POST /api/admin/researchers`, `PUT/DELETE /api/admin/researchers/:id` | 조사원. 본문 `{ name, description, keywords, enabled, type, config, procedureIds }` |
+| `GET/POST /api/admin/researchers`, `PUT/DELETE /api/admin/researchers/:id` | 조사원. 본문 `{ name, description, keywords, enabled, type, config, procedureIds, router? }`. `router` 는 **개별 라우터**(`{ steps[] }`, 전역 라우터의 조사원 단계와 같은 모양, 1~6단계)이고 `null`(기본)이면 전역 라우터가 고른다. 응답에도 `router` 가 담긴다 |
 | `GET/POST /api/admin/procedures`, `PUT/DELETE /api/admin/procedures/:id` | 프로시저 |
 | `GET/PUT /api/admin/router` | 라우터 설정(질의 분해 + 단계별 라우팅 단계 파이프라인). `PUT` 본문은 아래 형태 그대로이며 zod 로 검증한다 |
-| `GET /api/admin/router/defaults` | 기본 설정과 기본 프롬프트(`{ config, prompts: { researcher, procedure, split } }`). 화면이 새 LLM 단계를 채울 때 쓴다 |
-| `POST /api/admin/router/preview` | `{ query, config?, procedures? }`. 질의 하나의 라우팅만 돌린다(수집 · 라이터 없음). `config` 를 주면 **저장하지 않은 그 설정으로** 돌린다(저장된 설정은 그대로). `procedures: false` 면 2단계를 돌리지 않는다. 응답: `parts`(하위 질문), `selected`, `asked[]`(통째 질의와 하위 질문별 `selected · mode · steps[]`), `scores`, `procedures[]`, `ms` |
+| `GET /api/admin/router/defaults` | 기본 설정과 기본 프롬프트(`{ config, prompts: { researcher, procedure, split, individual } }`). 화면이 새 LLM 단계를 채울 때 쓴다 |
+| `POST /api/admin/router/preview` | `{ query, config?, procedures? }`. 질의 하나의 라우팅만 돌린다(수집 · 라이터 없음). `config` 를 주면 **저장하지 않은 그 설정으로** 돌린다(저장된 설정은 그대로). `procedures: false` 면 2단계를 돌리지 않는다. 응답: `parts`(하위 질문), `selected`, `asked[]`(통째 질의와 하위 질문별 `selected · mode · steps[] · individual[]`; `individual` 은 개별 라우터를 가진 조사원마다 `{ researcher, selected, mode, steps[] }`), `scores`, `procedures[]`, `ms` |
 | `GET/POST /api/admin/writers`, `PUT/DELETE /api/admin/writers/:id`, `POST /api/admin/writers/:id/activate` | 라이터 |
 | `GET/PUT /api/admin/ai-server` | AI 서버 설정. 응답에 API 키는 없고 `hasApiKey` 만 있다 |
 | `GET /api/admin/ai-server/models?kind=embedding\|chat` | 저장된 설정으로 서버의 모델 목록을 불러온다(연결 시험 겸용). 실패 시 `502` |

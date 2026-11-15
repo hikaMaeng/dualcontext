@@ -150,5 +150,12 @@
   "router.preview.none.message": "nenhum",
   "router.preview.steps.label": "Registro de passos",
   "router.preview.procedures.label": "Procedimentos escolhidos",
-  "router.preview.scores.label": "Similaridade por candidato"
+  "router.preview.scores.label": "Similaridade por candidato",
+  "router.individual.heading.text": "Roteador individual",
+  "researchers.router.legend.label": "Roteador",
+  "researchers.router.individual.label": "Usar um roteador individual",
+  "researchers.router.hint.message": "Quando ativado, este investigador sai da lista de candidatos do roteador global, e os passos abaixo decidem separadamente se este investigador será usado sozinho (se permanecer, é incluído; se esvaziar, é excluído). Depois de incluído, segue o mesmo caminho dos demais: coleta de material e seleção de procedimentos.",
+  "router.preview.individual.label": "Vereditos do roteador individual",
+  "router.preview.individual.included.text": "incluído",
+  "router.preview.individual.excluded.text": "excluído"
 }

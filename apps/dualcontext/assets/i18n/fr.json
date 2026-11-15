@@ -150,5 +150,12 @@
   "router.preview.none.message": "aucun",
   "router.preview.steps.label": "Journal des pas",
   "router.preview.procedures.label": "Procédures choisies",
-  "router.preview.scores.label": "Similarité par candidat"
+  "router.preview.scores.label": "Similarité par candidat",
+  "router.individual.heading.text": "Routeur individuel",
+  "researchers.router.legend.label": "Routeur",
+  "researchers.router.individual.label": "Utiliser un routeur individuel",
+  "researchers.router.hint.message": "Si activé, cet enquêteur est retiré de la liste des candidats du routeur global, et les pas ci-dessous décident séparément s'il faut utiliser cet enquêteur seul (conservé = inclus, vidé = exclu). Une fois inclus, il suit le même chemin que les autres : collecte des matériaux, puis choix des procédures.",
+  "router.preview.individual.label": "Verdicts du routeur individuel",
+  "router.preview.individual.included.text": "inclus",
+  "router.preview.individual.excluded.text": "exclu"
 }

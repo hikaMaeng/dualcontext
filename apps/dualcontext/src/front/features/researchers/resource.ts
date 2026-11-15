@@ -12,5 +12,8 @@ export enum RSC {
   RESEARCHERS_PG_REDUCEDDIM_LABEL = "researchers.pg.reduceddim.label",
   RESEARCHERS_PG_TEXT_LABEL = "researchers.pg.text.label",
   RESEARCHERS_PG_TITLE_LABEL = "researchers.pg.title.label",
-  RESEARCHERS_FOLDER_PATH_LABEL = "researchers.folder.path.label"
+  RESEARCHERS_FOLDER_PATH_LABEL = "researchers.folder.path.label",
+  RESEARCHERS_ROUTER_LEGEND_LABEL = "researchers.router.legend.label",
+  RESEARCHERS_ROUTER_INDIVIDUAL_LABEL = "researchers.router.individual.label",
+  RESEARCHERS_ROUTER_HINT_MESSAGE = "researchers.router.hint.message"
 }

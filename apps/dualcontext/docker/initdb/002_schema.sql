@@ -14,6 +14,8 @@ ALTER TABLE researchers ADD COLUMN IF NOT EXISTS config jsonb NOT NULL DEFAULT '
 -- description or model is detected without a version column.
 ALTER TABLE researchers ADD COLUMN IF NOT EXISTS embedding double precision[];
 ALTER TABLE researchers ADD COLUMN IF NOT EXISTS embedding_key text;
+-- Individual router (a stage pipeline judging whether this one researcher is used); NULL = the global router decides.
+ALTER TABLE researchers ADD COLUMN IF NOT EXISTS router jsonb;
 
 -- Procedure: human-written analysis criteria. Independent of any researcher.
 CREATE TABLE IF NOT EXISTS procedures (

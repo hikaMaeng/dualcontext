@@ -1,11 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
-import type { Procedure, Researcher, ResearcherType } from "dualcontext_domain/common";
+import type { Procedure, Researcher, ResearcherType, StageConfig } from "dualcontext_domain/common";
 import { Button } from "../../components/ui/button";
 import { Checkbox, Input, Select } from "../../components/ui/input";
 import { Field, ListDetail } from "../../components/layout";
 import { api, splitList } from "../../lib/api";
 import type { Texts } from "../../i18n";
 import { RSC as SHARED } from "../../resource";
+import { StageEditor } from "../router/stage/index";
 import { RSC } from "./resource";
 
 type Form = {
@@ -24,11 +25,13 @@ type Form = {
   textColumn: string;
   titleColumn: string;
   path: string;
+  /** 개별 라우터. null 이면 전역 라우터가 고른다. */
+  router: StageConfig | null;
 };
 
 const blank: Form = {
   id: null, name: "", description: "", keywords: "", enabled: true, type: "pgvector", procedureIds: [], topK: "3",
-  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: ""
+  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", router: null
 };
 
 function toForm(item: Researcher): Form {
@@ -37,7 +40,7 @@ function toForm(item: Researcher): Form {
     id: item.id, name: item.name, description: item.description, keywords: item.keywords.join(", "), enabled: item.enabled,
     type: item.type, procedureIds: item.procedureIds, topK: String(c.topK ?? 3),
     table: String(c.table ?? ""), vectorColumn: String(c.vectorColumn ?? ""), reducedColumn: String(c.reducedColumn ?? ""),
-    reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? "")
+    reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? ""), router: item.router ?? null
   };
 }
 
@@ -54,7 +57,7 @@ function toBody(form: Form) {
           };
   return {
     name: form.name, description: form.description, keywords: splitList(form.keywords, /,/), enabled: form.enabled,
-    type: form.type, config, procedureIds: form.procedureIds
+    type: form.type, config, procedureIds: form.procedureIds, router: form.router
   };
 }
 
@@ -62,6 +65,8 @@ export function ResearchersView({ t }: { t: Texts }) {
   const [items, setItems] = useState<Researcher[]>([]);
   const [procedures, setProcedures] = useState<Procedure[]>([]);
   const [form, setForm] = useState<Form>(blank);
+  /** 개별 라우터를 처음 켤 때 채울 LLM 단계의 기본 프롬프트(서버가 준다). */
+  const [individualPrompt, setIndividualPrompt] = useState("");
   const [state, setState] = useState<"idle" | "saved" | "failed">("idle");
 
   const load = async () => {
@@ -69,6 +74,7 @@ export function ResearchersView({ t }: { t: Texts }) {
       const [researchers, linked] = await Promise.all([api<Researcher[]>("/researchers"), api<Procedure[]>("/procedures")]);
       setItems(researchers);
       setProcedures(linked);
+      setIndividualPrompt((await api<{ prompts: { individual: string } }>("/router/defaults")).prompts.individual);
     } catch {
       setState("failed");
     }
@@ -154,6 +160,19 @@ export function ResearchersView({ t }: { t: Texts }) {
                   {procedure.name}
                 </label>
               ))}
+            </fieldset>
+            <fieldset className="grid gap-3 rounded-md border border-line p-3">
+              <legend className="px-1 text-sm text-muted">{t[RSC.RESEARCHERS_ROUTER_LEGEND_LABEL]}</legend>
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  data-testid="researcher-individual-router"
+                  checked={form.router !== null}
+                  onChange={(e) => set("router", e.target.checked ? { steps: [{ type: "llm", topK: 1, prompt: individualPrompt, showScores: false, allowNone: true, parts: false, onError: "skip" }] } : null)}
+                />
+                {t[RSC.RESEARCHERS_ROUTER_INDIVIDUAL_LABEL]}
+              </label>
+              <p className="max-w-3xl text-sm text-muted">{t[RSC.RESEARCHERS_ROUTER_HINT_MESSAGE]}</p>
+              {form.router !== null && <StageEditor stage="individual" config={form.router} defaultPrompt={individualPrompt} t={t} onChange={(router) => set("router", router)} />}
             </fieldset>
             <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.enabled} onChange={(e) => set("enabled", e.target.checked)} />{t[SHARED.COMMON_ENABLED_LABEL]}</label>
             <div className="flex items-center gap-3">

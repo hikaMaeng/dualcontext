@@ -150,5 +150,12 @@
   "router.preview.none.message": "없음",
   "router.preview.steps.label": "단계별 기록",
   "router.preview.procedures.label": "프로시저 선택",
-  "router.preview.scores.label": "후보별 유사도"
+  "router.preview.scores.label": "후보별 유사도",
+  "router.individual.heading.text": "개별 라우터",
+  "researchers.router.legend.label": "라우터",
+  "researchers.router.individual.label": "개별 라우터 사용",
+  "researchers.router.hint.message": "켜면 이 조사원은 전역 라우터의 후보 목록에서 빠지고, 아래 단계들이 이 조사원 하나를 쓸지(남으면 포함, 비면 제외)만 따로 판정합니다. 포함된 뒤에는 다른 조사원과 같은 경로(자료 수집, 프로시저 선택)로 이어집니다.",
+  "router.preview.individual.label": "개별 라우터 판정",
+  "router.preview.individual.included.text": "포함",
+  "router.preview.individual.excluded.text": "제외"
 }

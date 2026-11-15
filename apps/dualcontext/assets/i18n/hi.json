@@ -150,5 +150,12 @@
   "router.preview.none.message": "कोई नहीं",
   "router.preview.steps.label": "स्टेप लॉग",
   "router.preview.procedures.label": "चुनी गई प्रक्रियाएँ",
-  "router.preview.scores.label": "प्रति उम्मीदवार समानता"
+  "router.preview.scores.label": "प्रति उम्मीदवार समानता",
+  "router.individual.heading.text": "व्यक्तिगत राउटर",
+  "researchers.router.legend.label": "राउटर",
+  "researchers.router.individual.label": "व्यक्तिगत राउटर का उपयोग करें",
+  "researchers.router.hint.message": "चालू करने पर यह अन्वेषक वैश्विक राउटर की उम्मीदवार सूची से हट जाता है, और नीचे के स्टेप अलग से तय करते हैं कि केवल इस अन्वेषक को इस्तेमाल करना है या नहीं (बचा रहे तो शामिल, खाली हो तो बाहर)। शामिल होने के बाद यह दूसरों की तरह उसी रास्ते (सामग्री संग्रह, फिर प्रक्रिया चयन) पर चलता है।",
+  "router.preview.individual.label": "व्यक्तिगत राउटर के निर्णय",
+  "router.preview.individual.included.text": "शामिल",
+  "router.preview.individual.excluded.text": "बाहर"
 }

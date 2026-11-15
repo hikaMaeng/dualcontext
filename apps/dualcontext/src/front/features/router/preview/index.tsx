@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import type { RouterConfig, StepTrace } from "dualcontext_domain/common";
+import type { IndividualTrace, RouterConfig, StepTrace } from "dualcontext_domain/common";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
@@ -9,7 +9,7 @@ import type { Texts } from "../../../i18n";
 import { RSC as SHARED } from "../../../resource";
 import { RSC } from "./resource";
 
-type Asked = { asked: string; mode: string; selected: string[]; steps: StepTrace[] };
+type Asked = { asked: string; mode: string; selected: string[]; steps: StepTrace[]; individual: IndividualTrace[] };
 type Preview = {
   parts: string[];
   mode: string;
@@ -84,6 +84,15 @@ export function PreviewPanel({ config, t }: { config: RouterConfig; t: Texts }) 
                 <li key={entry.asked} className="grid gap-0.5 text-sm">
                   <span className="truncate">{entry.asked} → {entry.selected.length > 0 ? entry.selected.join(", ") : t[RSC.ROUTER_PREVIEW_NONE_MESSAGE]}</span>
                   <Steps steps={entry.steps} t={t} />
+                  {entry.individual.length > 0 && (
+                    <ul aria-label={t[RSC.ROUTER_PREVIEW_INDIVIDUAL_LABEL]} className="grid gap-0.5 text-sm text-muted">
+                      {entry.individual.map((verdict) => (
+                        <li key={verdict.researcher} data-testid="preview-individual" data-selected={verdict.selected}>
+                          {verdict.researcher} · {verdict.selected ? t[RSC.ROUTER_PREVIEW_INDIVIDUAL_INCLUDED_TEXT] : t[RSC.ROUTER_PREVIEW_INDIVIDUAL_EXCLUDED_TEXT]} · {verdict.mode}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               ))}
             </ul>

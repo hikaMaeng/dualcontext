@@ -150,5 +150,12 @@
   "router.preview.none.message": "لا أحد",
   "router.preview.steps.label": "سجل الخطوات",
   "router.preview.procedures.label": "الإجراءات المختارة",
-  "router.preview.scores.label": "التشابه لكل مرشح"
+  "router.preview.scores.label": "التشابه لكل مرشح",
+  "router.individual.heading.text": "موجّه فردي",
+  "researchers.router.legend.label": "الموجّه",
+  "researchers.router.individual.label": "استخدام موجّه فردي",
+  "researchers.router.hint.message": "عند التفعيل يُستبعد هذا الباحث من قائمة مرشحي الموجّه العام، وتقرّر الخطوات أدناه بشكل منفصل هل يُستخدم هذا الباحث وحده (إن بقي فهو مشمول، وإن فرغ فهو مستبعد). وبعد شموله يتبع المسار نفسه الذي يتبعه الآخرون: جمع المواد ثم اختيار الإجراءات.",
+  "router.preview.individual.label": "أحكام الموجّه الفردي",
+  "router.preview.individual.included.text": "مشمول",
+  "router.preview.individual.excluded.text": "مستبعد"
 }

@@ -10,5 +10,8 @@ export enum RSC {
   ROUTER_PREVIEW_NONE_MESSAGE = "router.preview.none.message",
   ROUTER_PREVIEW_STEPS_LABEL = "router.preview.steps.label",
   ROUTER_PREVIEW_PROCEDURES_LABEL = "router.preview.procedures.label",
-  ROUTER_PREVIEW_SCORES_LABEL = "router.preview.scores.label"
+  ROUTER_PREVIEW_SCORES_LABEL = "router.preview.scores.label",
+  ROUTER_PREVIEW_INDIVIDUAL_LABEL = "router.preview.individual.label",
+  ROUTER_PREVIEW_INDIVIDUAL_INCLUDED_TEXT = "router.preview.individual.included.text",
+  ROUTER_PREVIEW_INDIVIDUAL_EXCLUDED_TEXT = "router.preview.individual.excluded.text"
 }

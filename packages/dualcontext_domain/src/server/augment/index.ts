@@ -32,6 +32,7 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
   const routing: RoutingTrace = {
     parts: parts.length > 0 ? parts : undefined,
     researcherSteps: selections.map((entry) => ({ asked: entry.asked, steps: entry.selection.steps ?? [] })),
+    individual: selections.some((entry) => entry.selection.individual?.length) ? selections.map((entry) => ({ asked: entry.asked, results: entry.selection.individual ?? [] })) : undefined,
     researchers: trace(allResearchers, researcherSelection.scores),
     procedures: []
   };

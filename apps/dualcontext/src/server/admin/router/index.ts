@@ -4,7 +4,7 @@ import type { RouterConfig } from "dualcontext_domain/common";
 import { selectForQuery } from "dualcontext_domain/server";
 import type { Deps } from "../../augment/index.js";
 import { defaultRouterConfig, readRouterConfig, routerConfigSchema, writeRouterConfig } from "../../routing/config/index.js";
-import { procedurePrompt, researcherPrompt, splitPrompt } from "../../routing/config/prompts.js";
+import { individualPrompt, procedurePrompt, researcherPrompt, splitPrompt } from "../../routing/config/prompts.js";
 import { createSelectors } from "../../routing/index.js";
 import { listProceduresOf } from "../procedures/index.js";
 import { listResearchers } from "../researchers/index.js";
@@ -25,7 +25,7 @@ export function routerRouter(deps: Deps) {
 
   // 새 LLM 단계를 만들 때 채울 기본 프롬프트와, 처음 상태(기본 설정).
   router.get("/router/defaults", (_request, response) => {
-    response.json({ config: defaultRouterConfig(), prompts: { researcher: researcherPrompt, procedure: procedurePrompt, split: splitPrompt } });
+    response.json({ config: defaultRouterConfig(), prompts: { researcher: researcherPrompt, procedure: procedurePrompt, split: splitPrompt, individual: individualPrompt } });
   });
 
   router.put("/router", async (request, response) => {
@@ -54,7 +54,7 @@ export function routerRouter(deps: Deps) {
         parts: picked.parts,
         mode: picked.merged.mode,
         selected: picked.merged.selected.map((researcher) => researcher.name),
-        asked: picked.asked.map((entry) => ({ asked: entry.asked, mode: entry.selection.mode, selected: entry.selection.selected.map((researcher) => researcher.name), steps: entry.selection.steps ?? [] })),
+        asked: picked.asked.map((entry) => ({ asked: entry.asked, mode: entry.selection.mode, selected: entry.selection.selected.map((researcher) => researcher.name), steps: entry.selection.steps ?? [], individual: entry.selection.individual ?? [] })),
         scores: (picked.merged.scores ?? []).map((entry) => ({ name: researchers.find((researcher) => researcher.id === entry.id)?.name ?? String(entry.id), score: Number(entry.score.toFixed(4)), selected: entry.selected })),
         procedures,
         researcherMs,

@@ -12,6 +12,9 @@ const step = z.discriminatedUnion("type", [
 
 const stage = z.object({ steps: z.array(step).min(1).max(6) });
 
+/** 단계(stage) 하나의 검증 스키마. 조사원의 개별 라우터도 같은 모양이다. */
+export const stageSchema = stage;
+
 /** 라우터 설정의 검증 스키마. 저장할 때와 읽을 때 같은 것을 쓴다. */
 export const routerConfigSchema = z.object({
   split: z.object({

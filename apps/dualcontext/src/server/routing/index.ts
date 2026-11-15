@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type pg from "pg";
-import type { Procedure, Researcher, RouterConfig } from "dualcontext_domain/common";
+import type { Procedure, Researcher, RouterConfig, StageConfig } from "dualcontext_domain/common";
 import { routeProceduresByKeyword, routeResearchersByKeyword, type Selection } from "dualcontext_domain/server";
 import type { ModelClient } from "../model/index.js";
 import { readRouterConfig } from "./config/index.js";
@@ -50,22 +50,36 @@ export function createSelectors(pool: pg.Pool, model: ModelClient, options: Sele
       return (await splitWithConfig(query, (await readConfig()).split, model)).parts;
     },
 
+    /**
+     * 조사원 선택. 개별 라우터가 있는 조사원은 전역 라우터의 후보 목록(카탈로그)에서 빠지고, 각자 자기 파이프라인으로
+     * 「이 조사원 하나를 쓸지」만 따로 판정한다(남으면 포함). 두 갈래의 결과는 합쳐져 같은 경로(수집 → 프로시저 매칭)로 이어진다.
+     */
     async selectResearchers(query: string, researchers: Researcher[], options: { part?: boolean } = {}): Promise<Selection<Researcher>> {
       const config = await readConfig();
-      const candidates = researchers.filter((researcher) => researcher.enabled);
-      return runPipeline(
-        config.researcher,
-        candidates,
-        {
-          query,
-          embedQuery: queryEmbedder(query),
-          vectorsOf: (items) => embeddingsFor("researchers", items, (r) => `${r.name}\n${r.description}\n${r.keywords.join(", ")}`),
-          chat: (prompt) => model.chat(prompt),
-          line: (r, score) => `id=${r.id} | ${r.name} | ${r.description}${score === undefined ? "" : ` | 유사도 ${score.toFixed(3)}`}`,
-          keywordTopK: (items, topK) => routeResearchersByKeyword(query, items, topK).selected
-        },
-        options.part ? { part: { topK: config.split.partTopK } } : {}
-      );
+      const enabled = researchers.filter((researcher) => researcher.enabled);
+      const individual = enabled.filter((researcher) => researcher.router);
+      const global = enabled.filter((researcher) => !researcher.router);
+      const env = {
+        query,
+        embedQuery: queryEmbedder(query),
+        vectorsOf: (items: Researcher[]) => embeddingsFor("researchers", items, (r) => `${r.name}\n${r.description}\n${r.keywords.join(", ")}`),
+        chat: (prompt: string) => model.chat(prompt),
+        line: (r: Researcher, score?: number) => `id=${r.id} | ${r.name} | ${r.description}${score === undefined ? "" : ` | 유사도 ${score.toFixed(3)}`}`,
+        keywordTopK: (items: Researcher[], topK: number) => routeResearchersByKeyword(query, items, topK).selected
+      };
+      const pipelineOptions = options.part ? { part: { topK: config.split.partTopK } } : {};
+      const [globalSelection, judged] = await Promise.all([
+        runPipeline(config.researcher, global, env, pipelineOptions),
+        Promise.all(individual.map((researcher) => runPipeline(researcher.router as StageConfig, [researcher], env, pipelineOptions)))
+      ]);
+      const scores = [...(globalSelection.scores ?? []), ...judged.flatMap((selection) => selection.scores ?? [])];
+      return {
+        mode: globalSelection.mode,
+        selected: [...globalSelection.selected, ...individual.filter((_researcher, index) => judged[index].selected.length > 0)],
+        scores: scores.length > 0 ? scores : undefined,
+        steps: globalSelection.steps,
+        individual: individual.map((researcher, index) => ({ researcher: researcher.name, selected: judged[index].selected.length > 0, mode: judged[index].mode, steps: judged[index].steps ?? [] }))
+      };
     },
 
     async selectProcedures(query: string, _researcher: Researcher, linked: Procedure[]): Promise<Selection<Procedure>> {

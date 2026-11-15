@@ -16,6 +16,11 @@ export type Researcher = {
   config: Record<string, unknown>;
   /** 이 조사원에 연결된 프로시저 id(연결 순서). 연결은 조사원이 소유한다. */
   procedureIds: number[];
+  /**
+   * 개별 라우터. 없으면(null) 전역 라우터가 고른다. 있으면 이 조사원은 전역 라우터의 후보 목록에서 빠지고,
+   * 이 단계(stage) 파이프라인이 「이 조사원 하나를 쓸지」만 따로 판정한다(남으면 포함, 비면 제외). 포함된 뒤에는 전역 선택과 같은 경로(수집 → 프로시저 매칭)로 합류한다.
+   */
+  router?: StageConfig | null;
 };
 
 /** 프로시저: 사람이 써 둔 분석·평가 순서와 임팩트 기준. 어느 조사원에도 속하지 않고 독립적으로 존재한다. */
@@ -77,6 +82,9 @@ export type RouterConfig = {
 
 /** 라우팅 단계 하나가 실제로 한 일: 입력·출력 후보 수, 걸린 시간, 건너뜀·실패 사유. */
 export type StepTrace = { type: RouterStep["type"]; input: number; output: number; ms: number; note?: string };
+
+/** 개별 라우터를 가진 조사원 하나의 판정 기록: 포함 여부, 파이프라인 모드, 단계별 기록. */
+export type IndividualTrace = { researcher: string; selected: boolean; mode: string; steps: StepTrace[] };
 
 export type WriterEngine = "template" | "llm";
 /** batch: 라이터 한 번에 모든 쌍을 준다. per_pair: 쌍마다 한 번씩 호출하고 결과를 이어 붙인다. */
@@ -143,6 +151,8 @@ export type RoutingTrace = {
   parts?: string[];
   /** 통째 질의와 하위 질문별로 라우팅 단계가 한 일. */
   researcherSteps?: { asked: string; steps: StepTrace[] }[];
+  /** 개별 라우터를 가진 조사원의 판정(통째 질의와 하위 질문별). */
+  individual?: { asked: string; results: IndividualTrace[] }[];
   researchers: RoutingScore[];
   procedures: { researcher: string; candidates: RoutingScore[] }[];
 };

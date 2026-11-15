@@ -150,5 +150,12 @@
   "router.preview.none.message": "none",
   "router.preview.steps.label": "Step log",
   "router.preview.procedures.label": "Chosen procedures",
-  "router.preview.scores.label": "Similarity per candidate"
+  "router.preview.scores.label": "Similarity per candidate",
+  "router.individual.heading.text": "Individual router",
+  "researchers.router.legend.label": "Router",
+  "researchers.router.individual.label": "Use an individual router",
+  "researchers.router.hint.message": "When on, this researcher is removed from the global router's candidate list, and the steps below decide separately whether to use this researcher alone (kept means included, emptied means excluded). Once included it follows the same path as the others: material collection, then procedure selection.",
+  "router.preview.individual.label": "Individual router verdicts",
+  "router.preview.individual.included.text": "included",
+  "router.preview.individual.excluded.text": "excluded"
 }

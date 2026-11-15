@@ -1,0 +1,15 @@
+[
+  { "action": "goto", "url": "/" },
+  { "action": "click", "role": "button", "name": "조사원" },
+  { "action": "click", "role": "button", "name": "웹 검색(덕덕고)" },
+  { "action": "assertRole", "role": "checkbox", "name": "개별 라우터 사용" },
+  { "action": "assertRole", "role": "group", "name": "개별 라우터" },
+  { "action": "assertRole", "role": "group", "name": "단계 1 · LLM 선택" },
+  { "action": "screenshot", "name": "web-researcher-individual-router" },
+  { "action": "click", "role": "button", "name": "새로 만들기" },
+  { "action": "click", "testId": "researcher-individual-router" },
+  { "action": "assertRole", "role": "group", "name": "개별 라우터" },
+  { "action": "click", "testId": "individual-addstep" },
+  { "action": "assertRole", "role": "group", "name": "단계 2 · LLM 선택" },
+  { "action": "screenshot", "name": "new-researcher-two-steps" }
+]

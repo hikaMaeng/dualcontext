@@ -47,9 +47,9 @@ async function ensurePresets(pool: pg.Pool) {
   }
   for (const preset of researcherPresets) {
     const { rows } = await pool.query<{ id: number }>(
-      `insert into researchers (name, description, keywords, type, config) values ($1, $2, $3, $4, $5)
+      `insert into researchers (name, description, keywords, type, config, router) values ($1, $2, $3, $4, $5, $6)
        on conflict (name) do nothing returning id`,
-      [preset.name, preset.description, preset.keywords, preset.type, preset.config]
+      [preset.name, preset.description, preset.keywords, preset.type, preset.config, preset.router ? JSON.stringify(preset.router) : null]
     );
     if (rows.length === 0) continue;
     for (const [position, procedureName] of preset.procedures.entries()) {

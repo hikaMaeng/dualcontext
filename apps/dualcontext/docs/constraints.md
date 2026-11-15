@@ -58,12 +58,13 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `role=main`, `role=heading` level 1 (`#page-title`) | 본문, 화면 제목 |
 | `role=status`, `data-testid="service-state"` | 런타임 상태 줄 |
 | `data-testid="researcher-item"`, `"procedure-item"`, `"writer-item"` | 목록 항목 |
+| `data-testid="researcher-individual-router"` | 조사원 폼의 「개별 라우터 사용」 체크박스(켜면 `individual-steps` 편집기가 나온다) |
 | `data-testid="routing-state"`, `"logged-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과와 로그 링크 |
 | `data-testid="run-item"` | 실행 로그 목록 항목 |
 | `data-testid="run-detail"`, `"run-routing"`, `"run-settings"`, `"run-pair"`, `"run-context"` | 실행 로그 상세 |
 | `data-testid="answer-before"`, `"answer-after"`, `"busy-state"` | 증강 전 · 후 최종 답변(시험 실행과 로그 상세 공통), 실행 중 표시 |
 | `data-testid="split-method"`, `"split-maxparts"`, `"split-minchars"`, `"split-parttopk"`, `"split-prompt"` | 라우터 질의 분해 설정 |
 | `data-testid="researcher-steps"`, `"procedure-steps"`, `"researcher-addtype"`, `"researcher-addstep"` (procedure 도 같음) | 라우터 단계 목록과 단계 추가 |
-| `data-testid="<stage>-step-<n>"` 와 `…-type`, `-topk`, `-onerror`, `-minscore`, `-margin`, `-showscores`, `-allownone`, `-prompt`, `-parts` | 라우터 단계 하나(`stage` 는 `researcher`/`procedure`, `n` 은 0부터) |
-| `data-testid="preview-query"`, `"preview-result"`, `"preview-selected"`, `"preview-step"` | 라우팅 미리보기 |
+| `data-testid="<stage>-step-<n>"` 와 `…-type`, `-topk`, `-onerror`, `-minscore`, `-margin`, `-showscores`, `-allownone`, `-prompt`, `-parts` | 라우터 단계 하나(`stage` 는 `researcher`/`procedure`/`individual`, `n` 은 0부터; `individual` 은 조사원 편집 폼의 개별 라우터) |
+| `data-testid="preview-query"`, `"preview-result"`, `"preview-selected"`, `"preview-step"`, `"preview-individual"` | 라우팅 미리보기(`preview-individual` 은 개별 라우터 판정, `data-selected` 가 포함 여부) |
 | `data-testid="embedding-url"`, `"embedding-model"`, `"chat-url"`, `"chat-model"` | AI 서버 입력 |

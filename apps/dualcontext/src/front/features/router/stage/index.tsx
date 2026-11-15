@@ -8,7 +8,8 @@ import type { Texts } from "../../../i18n";
 import { StepEditor } from "../step/index";
 import { RSC } from "./resource";
 
-type StageName = "researcher" | "procedure";
+/** individual 은 조사원 하나에 붙는 개별 라우터(그 조사원을 쓸지 판정)의 단계 목록이다. */
+type StageName = "researcher" | "procedure" | "individual";
 
 /** 새 단계의 시작값. LLM 단계는 이 단계(stage)의 기본 프롬프트로 채운다. */
 function newStep(type: RouterStep["type"], prompt: string): RouterStep {
@@ -19,10 +20,10 @@ function newStep(type: RouterStep["type"], prompt: string): RouterStep {
 
 type Props = { stage: StageName; config: StageConfig; defaultPrompt: string; t: Texts; onChange: (config: StageConfig) => void };
 
-/** 한 단계(조사원 선택 또는 프로시저 선택)의 라우팅 단계 목록 편집. 위에서 아래로 차례로 좁혀 간다. */
+/** 한 단계(조사원 선택, 프로시저 선택, 또는 조사원 하나의 개별 라우터)의 라우팅 단계 목록 편집. 위에서 아래로 차례로 좁혀 간다. */
 export function StageEditor({ stage, config, defaultPrompt, t, onChange }: Props) {
   const [addType, setAddType] = useState<RouterStep["type"]>("llm");
-  const heading = stage === "researcher" ? t[RSC.ROUTER_RESEARCHER_HEADING_TEXT] : t[RSC.ROUTER_PROCEDURE_HEADING_TEXT];
+  const heading = stage === "researcher" ? t[RSC.ROUTER_RESEARCHER_HEADING_TEXT] : stage === "procedure" ? t[RSC.ROUTER_PROCEDURE_HEADING_TEXT] : t[RSC.ROUTER_INDIVIDUAL_HEADING_TEXT];
   const replace = (index: number, step: RouterStep) => onChange({ steps: config.steps.map((existing, position) => (position === index ? step : existing)) });
   const move = (index: number, direction: -1 | 1) => {
     const steps = [...config.steps];
