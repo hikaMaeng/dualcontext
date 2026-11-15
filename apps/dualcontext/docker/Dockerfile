@@ -5,7 +5,8 @@
 FROM pgvector/pgvector:pg17
 
 # 1. Korean morphological analysis: mecab-ko engine, dictionary, and the
-#    textsearch_ko extension. Build tools are purged in the same layer.
+#    textsearch_ko extension. Build tools are purged in the same layer, except
+#    git: the codebase researcher shallow-clones repositories at runtime.
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libatomic1 ca-certificates curl make g++ patch git automake autoconf libtool \
       postgresql-server-dev-17 \
@@ -20,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && git clone --depth 1 https://github.com/i0seph/textsearch_ko.git \
     && (cd textsearch_ko && make USE_PGXS=1 && make USE_PGXS=1 install) \
     && cd / && rm -rf /mecab-* /textsearch_ko \
-    && apt-get purge -y --auto-remove curl make g++ patch git automake autoconf libtool postgresql-server-dev-17 \
+    && apt-get purge -y --auto-remove curl make g++ patch automake autoconf libtool postgresql-server-dev-17 \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Node runtime only. dist is a self-contained bundle, so no npm and no
