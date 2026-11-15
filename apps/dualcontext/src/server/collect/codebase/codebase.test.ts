@@ -93,7 +93,8 @@ test("설정 검증: git 은 안전한 url, directory 는 path 가 필요하고 
 
 test("토큰화: camelCase · snake_case 를 나누고 전체 식별자도 남기며 한글은 버린다", () => {
   assert.deepEqual(tokenize("collectFolder"), ["collect", "folder", "collectfolder"]);
-  assert.deepEqual(tokenize("max_file_bytes"), ["max", "file", "bytes"]);
+  assert.deepEqual(tokenize("max_file_bytes"), ["max", "file", "bytes", "max_file_bytes"]);
+  assert.deepEqual(tokenize("flask url_for", true), ["flask", "url", "url_for"], "밑줄 이름의 전체 토큰은 불용어 조각(for)이 빠져도 남는다");
   assert.deepEqual(tokenize("폴더 조사원"), []);
   assert.deepEqual(tokenize("how does the login work", true), ["login"]);
 });
