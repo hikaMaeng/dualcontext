@@ -25,13 +25,21 @@ type Form = {
   textColumn: string;
   titleColumn: string;
   path: string;
+  /** 코드베이스 조사원: 출처(git 클론 | 볼륨 폴더), 레포 URL · ref · 하위 경로 · 토큰 환경 변수 이름 · 갱신 주기. 상한 설정은 화면에 없어 저장할 때 그대로 되돌려 보낸다. */
+  cbSource: "git" | "directory";
+  cbUrl: string;
+  cbRef: string;
+  cbSubPath: string;
+  cbTokenEnv: string;
+  cbRefresh: string;
+  cbLimits: Record<string, unknown>;
   /** 개별 라우터. null 이면 전역 라우터가 고른다. */
   router: StageConfig | null;
 };
 
 const blank: Form = {
   id: null, name: "", description: "", keywords: "", enabled: true, type: "pgvector", procedureIds: [], topK: "3",
-  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", router: null
+  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", cbSource: "git", cbUrl: "", cbRef: "", cbSubPath: "", cbTokenEnv: "", cbRefresh: "24", cbLimits: {}, router: null
 };
 
 function toForm(item: Researcher): Form {
@@ -40,7 +48,10 @@ function toForm(item: Researcher): Form {
     id: item.id, name: item.name, description: item.description, keywords: item.keywords.join(", "), enabled: item.enabled,
     type: item.type, procedureIds: item.procedureIds, topK: String(c.topK ?? 3),
     table: String(c.table ?? ""), vectorColumn: String(c.vectorColumn ?? ""), reducedColumn: String(c.reducedColumn ?? ""),
-    reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? ""), router: item.router ?? null
+    reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? ""), router: item.router ?? null,
+    cbSource: c.source === "directory" ? "directory" : "git", cbUrl: String(c.url ?? ""), cbRef: String(c.ref ?? ""), cbSubPath: String(c.subPath ?? ""),
+    cbTokenEnv: String(c.tokenEnv ?? ""), cbRefresh: String(c.refreshHours ?? 24),
+    cbLimits: Object.fromEntries(["maxFiles", "maxRepoMB", "maxIndexSeconds"].filter((key) => c[key] !== undefined).map((key) => [key, c[key]]))
   };
 }
 
@@ -50,6 +61,13 @@ function toBody(form: Form) {
       ? { topK: Number(form.topK) }
       : form.type === "folder"
         ? { path: form.path, topK: Number(form.topK) }
+        : form.type === "codebase"
+          ? {
+              ...form.cbLimits, source: form.cbSource, topK: Number(form.topK), refreshHours: Number(form.cbRefresh),
+              ...(form.cbSource === "git"
+                ? { url: form.cbUrl, ...(form.cbRef ? { ref: form.cbRef } : {}), ...(form.cbSubPath ? { subPath: form.cbSubPath } : {}), ...(form.cbTokenEnv ? { tokenEnv: form.cbTokenEnv } : {}) }
+                : { path: form.path })
+            }
         : {
             table: form.table, vectorColumn: form.vectorColumn, textColumn: form.textColumn, topK: Number(form.topK),
             ...(form.titleColumn ? { titleColumn: form.titleColumn } : {}),
@@ -138,6 +156,7 @@ export function ResearchersView({ t }: { t: Texts }) {
                 <option value="pgvector">{t[RSC.RESEARCHERS_TYPE_PGVECTOR_TEXT]}</option>
                 <option value="duckduckgo">{t[RSC.RESEARCHERS_TYPE_DUCKDUCKGO_TEXT]}</option>
                 <option value="folder">{t[RSC.RESEARCHERS_TYPE_FOLDER_TEXT]}</option>
+                <option value="codebase">{t[RSC.RESEARCHERS_TYPE_CODEBASE_TEXT]}</option>
               </Select>
             </Field>
             {form.type === "pgvector" && (
@@ -151,6 +170,28 @@ export function ResearchersView({ t }: { t: Texts }) {
               </div>
             )}
             {form.type === "folder" && <Field label={t[RSC.RESEARCHERS_FOLDER_PATH_LABEL]}><Input value={form.path} onChange={(e) => set("path", e.target.value)} /></Field>}
+            {form.type === "codebase" && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label={t[RSC.RESEARCHERS_CODEBASE_SOURCE_LABEL]}>
+                  <Select value={form.cbSource} onChange={(e) => set("cbSource", e.target.value as Form["cbSource"])}>
+                    <option value="git">{t[RSC.RESEARCHERS_CODEBASE_SOURCE_GIT_TEXT]}</option>
+                    <option value="directory">{t[RSC.RESEARCHERS_CODEBASE_SOURCE_DIRECTORY_TEXT]}</option>
+                  </Select>
+                </Field>
+                <Field label={t[RSC.RESEARCHERS_CODEBASE_REFRESH_LABEL]}><Input type="number" min={0} max={720} value={form.cbRefresh} onChange={(e) => set("cbRefresh", e.target.value)} /></Field>
+                {form.cbSource === "git" ? (
+                  <>
+                    <Field label={t[RSC.RESEARCHERS_CODEBASE_URL_LABEL]}><Input required value={form.cbUrl} onChange={(e) => set("cbUrl", e.target.value)} /></Field>
+                    <Field label={t[RSC.RESEARCHERS_CODEBASE_REF_LABEL]}><Input value={form.cbRef} onChange={(e) => set("cbRef", e.target.value)} /></Field>
+                    <Field label={t[RSC.RESEARCHERS_CODEBASE_SUBPATH_LABEL]}><Input value={form.cbSubPath} onChange={(e) => set("cbSubPath", e.target.value)} /></Field>
+                    <Field label={t[RSC.RESEARCHERS_CODEBASE_TOKENENV_LABEL]}><Input value={form.cbTokenEnv} onChange={(e) => set("cbTokenEnv", e.target.value)} /></Field>
+                  </>
+                ) : (
+                  <Field label={t[RSC.RESEARCHERS_FOLDER_PATH_LABEL]}><Input required value={form.path} onChange={(e) => set("path", e.target.value)} /></Field>
+                )}
+                <p className="max-w-3xl text-sm text-muted sm:col-span-2">{t[RSC.RESEARCHERS_CODEBASE_HINT_MESSAGE]}</p>
+              </div>
+            )}
             <Field label={t[SHARED.COMMON_TOPK_LABEL]}><Input type="number" min={1} max={20} value={form.topK} onChange={(e) => set("topK", e.target.value)} /></Field>
             <fieldset className="grid gap-2 rounded-md border border-line p-3">
               <legend className="px-1 text-sm text-muted">{t[RSC.RESEARCHERS_PROCEDURES_LABEL]}</legend>
