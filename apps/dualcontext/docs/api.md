@@ -14,7 +14,7 @@
 | --- | --- |
 | `GET /health`, `GET /api/health` | DB 왕복이 되면 `200 { status:"ok", service, database:"ok" }`, 안 되면 `503` |
 | `GET /api/admin/status` | PostgreSQL · pgvector · textsearch_ko 버전, 한국어 설정 유무, 분석 예시 |
-| `GET/POST /api/admin/researchers`, `PUT/DELETE /api/admin/researchers/:id` | 조사원. 본문 `{ name, description, keywords, enabled, type, config, procedureIds, router? }`. `router` 는 **개별 라우터**(`{ steps[] }`, 전역 라우터의 조사원 단계와 같은 모양, 1~6단계)이고 `null`(기본)이면 전역 라우터가 고른다. 응답에도 `router` 가 담긴다 |
+| `GET/POST /api/admin/researchers`, `PUT/DELETE /api/admin/researchers/:id` | 조사원. 본문 `{ name, description, keywords, enabled, type, config, procedureIds, defaultProcedureId?, router? }`. `defaultProcedureId`(정수 또는 `null`. 생략하면 생성은 `null`, **`PUT` 은 기존 값을 유지**하되 새 `procedureIds` 에서 빠졌으면 `null`; 명시한 `null` 은 해제)는 **기본 프로시저**로, 프로시저 라우팅이 하나도 고르지 못했을 때 대신 붙는다(폴백, `internals.md`). **`procedureIds` 안의 id 여야 한다**: 아니면 `400 { error }`(연결을 해제하면서 그것을 기본으로 남기는 요청도 같다. 자동으로 해제하지 않으니 호출자가 `null` 로 바꾸거나 연결을 유지한다). 응답과 목록(`GET`)에도 `defaultProcedureId` 가 담긴다. 프로시저를 삭제하면 DB 가 `null` 로 되돌린다. `router` 는 **개별 라우터**(`{ steps[] }`, 전역 라우터의 조사원 단계와 같은 모양, 1~6단계)이고 `null`(기본)이면 전역 라우터가 고른다. 응답에도 `router` 가 담긴다 |
 | `GET/POST/DELETE /api/admin/researchers/:id/crawl` | 크롤러 조사원 전용(다른 타입이면 `404`). `GET`: 캐시 상태 `{ status(idle/running/ok/error), running, pages, chunks, finishedAt, error }`. `POST`: 지금 백그라운드로 크롤을 시작하고 `202`(이미 돌고 있으면 그 크롤에 합류). `DELETE`: 크롤한 페이지·조각과 상태를 지운다(크롤 중이면 `409`) |
 | `GET/POST /api/admin/procedures`, `PUT/DELETE /api/admin/procedures/:id` | 프로시저 |
 | `GET/PUT /api/admin/router` | 라우터 설정(질의 분해 + 단계별 라우팅 단계 파이프라인). `PUT` 본문은 아래 형태 그대로이며 zod 로 검증한다 |

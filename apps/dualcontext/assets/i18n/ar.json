@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "مجلد في الوحدة (ملفات نصية)",
   "researchers.keywords.label": "كلمات التوجيه المفتاحية (مفصولة بفواصل)",
   "researchers.procedures.label": "الإجراءات المرتبطة (بترتيب الاختيار)",
+  "researchers.default.procedure.label": "الإجراء الافتراضي",
+  "researchers.default.procedure.none.text": "لا شيء",
+  "researchers.default.procedure.hint.message": "يُرفق بدلًا منه عندما لا يختار توجيه الإجراءات أي إجراء (يمكن الاختيار من الإجراءات المرتبطة فقط)",
   "researchers.pg.table.label": "الجدول",
   "researchers.pg.vector.label": "عمود المتجه بالبعد الكامل",
   "researchers.pg.reduced.label": "عمود المتجه المخفَّض MRL (فهرس HNSW)",
@@ -230,5 +233,6 @@
   "runs.answer.empty.message": "لم تُنتج أي إجابة بعد.",
   "runs.routing.empty.message": "لا يوجد سجل توجيه بعد.",
   "runs.routing.procedure.label": "سجل توجيه الإجراءات",
+  "runs.routing.fallback.message": "لم يختر توجيه الإجراءات أي إجراء، لذلك أُرفق الإجراء الافتراضي بدلًا منه",
   "runs.context.empty.message": "لم يُنتج أي سياق."
 }

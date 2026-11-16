@@ -17,6 +17,11 @@ export type Researcher = {
   /** 이 조사원에 연결된 프로시저 id(연결 순서). 연결은 조사원이 소유한다. */
   procedureIds: number[];
   /**
+   * 기본 프로시저 id. 프로시저 라우팅이 하나도 고르지 못했을 때 대신 붙는다(폴백). null 이면 없다(기본값).
+   * 이 조사원에 연결된(procedureIds) 프로시저여야 한다. 프로시저가 삭제되면 DB 가 null 로 되돌린다.
+   */
+  defaultProcedureId: number | null;
+  /**
    * 개별 라우터. 없으면(null) 전역 라우터가 고른다. 있으면 이 조사원은 전역 라우터의 후보 목록에서 빠지고,
    * 이 단계(stage) 파이프라인이 「이 조사원 하나를 쓸지」만 따로 판정한다(남으면 포함, 비면 제외). 포함된 뒤에는 전역 선택과 같은 경로(수집 → 프로시저 매칭)로 합류한다.
    */
@@ -142,6 +147,7 @@ export type AugmentPair = {
   materials: Material[];
   /** 수집이 실패했다면 그 이유. */
   error?: string;
+  /** 프로시저 라우팅 방법(keyword · embedding · llm …). 기본 프로시저가 폴백으로 붙은 쌍은 `default`, 자료가 없어 라우팅을 건너뛴 쌍은 `skipped(no-material)`. */
   procedureRouting: string;
 };
 
@@ -154,7 +160,12 @@ export type RoutingTrace = {
   /** 개별 라우터를 가진 조사원의 판정(통째 질의와 하위 질문별). */
   individual?: { asked: string; results: IndividualTrace[] }[];
   researchers: RoutingScore[];
-  procedures: { researcher: string; candidates: RoutingScore[] }[];
+  procedures: {
+    researcher: string;
+    candidates: RoutingScore[];
+    /** `default`: 프로시저 라우팅이 하나도 고르지 못해 조사원의 기본 프로시저가 대신 붙었다(폴백). 없으면 라우팅이 골랐거나 아무것도 붙지 않았다. */
+    fallback?: "default";
+  }[];
 };
 
 export type AugmentResult = {

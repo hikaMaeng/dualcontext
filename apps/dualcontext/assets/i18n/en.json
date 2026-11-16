@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "Volume folder (text files)",
   "researchers.keywords.label": "Routing keywords (comma separated)",
   "researchers.procedures.label": "Linked procedures (in selection order)",
+  "researchers.default.procedure.label": "Default procedure",
+  "researchers.default.procedure.none.text": "None",
+  "researchers.default.procedure.hint.message": "Attached instead when procedure routing selects none (only linked procedures can be chosen)",
   "researchers.pg.table.label": "Table",
   "researchers.pg.vector.label": "Full-dimension vector column",
   "researchers.pg.reduced.label": "MRL-reduced vector column (HNSW index)",
@@ -230,5 +233,6 @@
   "runs.answer.empty.message": "No answers have been produced yet.",
   "runs.routing.empty.message": "No routing record yet.",
   "runs.routing.procedure.label": "Procedure routing record",
+  "runs.routing.fallback.message": "Procedure routing selected none, so the default procedure was attached instead",
   "runs.context.empty.message": "No context was produced."
 }

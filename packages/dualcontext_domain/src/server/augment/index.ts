@@ -17,10 +17,14 @@ export type AugmentPorts = SelectPorts & {
 /** 조사원 한 곳에서 모으는 자료의 상한(여러 질의로 모은 것을 합쳐도 컨텍스트가 길어지지 않게 한다). */
 const maxMaterials = 6;
 
+/** 기본 프로시저가 폴백으로 붙은 쌍의 procedureRouting 값. 라우터 모드(keyword · embedding · llm)와 구분된다. */
+export const defaultProcedureRouting = "default";
+
 /**
  * 질의를 증강한다: 조사원 라우팅 → 조사원별 수집 → (질의, 조사원)별 프로시저 라우팅 → 라이터.
  * 한 조사원에 프로시저가 여럿 선택되면 같은 자료에 쌍이 여럿 생긴다.
  * 복합 질의는 하위 질문으로 나눠 라우팅하고(합집합), 하위 질문이 고른 조사원은 그 하위 질문으로 수집한다.
+ * 프로시저 라우팅이 하나도 고르지 못하면 조사원의 활성 기본 프로시저(`defaultProcedureId`, 연결된 것만)가 대신 붙고 쌍의 procedureRouting 은 `default` 다.
  * **마땅한 조사원이 없으면(선택 0개) 컨텍스트를 만들지 않는다**: context 는 빈 문자열이고 라이터는 부르지 않는다.
  * 조사원은 골랐지만 어느 출처에서도 자료가 나오지 않았을 때(오류 없이)도 마찬가지다. 수집 오류는 숨기지 않고 컨텍스트에 남긴다.
  * 라이터가 batch 면 모든 쌍을 한 번에, per_pair 면 쌍마다 한 번씩 호출하고 이어 붙인다.
@@ -60,10 +64,15 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
     }
     const linked = await ports.listProceduresOf(researcher);
     const procedureSelection = await ports.selectProcedures(query, researcher, linked);
-    routing.procedures.push({ researcher: researcher.name, candidates: trace(linked, procedureSelection.scores) });
     const procedures = procedureSelection.selected;
     const base = { researcher, materials: materials.found, error: materials.error };
-    if (procedures.length === 0) {
+    // 폴백: 라우팅이 하나도 고르지 못했을 때만, 연결 목록에 있는 활성 기본 프로시저를 대신 붙인다(고른 것이 있으면 붙이지 않는다).
+    const fallback = procedures.length === 0 ? linked.find((procedure) => procedure.id === researcher.defaultProcedureId && procedure.enabled) : undefined;
+    routing.procedures.push({ researcher: researcher.name, candidates: trace(linked, procedureSelection.scores), ...(fallback ? { fallback: "default" as const } : {}) });
+    if (fallback) {
+      pairs.push({ ...base, procedure: fallback });
+      procedureRoutings.push(defaultProcedureRouting);
+    } else if (procedures.length === 0) {
       pairs.push({ ...base, procedure: null });
       procedureRoutings.push(procedureSelection.mode);
     }

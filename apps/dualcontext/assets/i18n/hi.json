@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "वॉल्यूम फ़ोल्डर (टेक्स्ट फ़ाइलें)",
   "researchers.keywords.label": "रूटिंग कीवर्ड (अल्पविराम से अलग)",
   "researchers.procedures.label": "जुड़ी प्रक्रियाएँ (चयन के क्रम में)",
+  "researchers.default.procedure.label": "डिफ़ॉल्ट प्रक्रिया",
+  "researchers.default.procedure.none.text": "कोई नहीं",
+  "researchers.default.procedure.hint.message": "प्रक्रिया रूटिंग कोई भी न चुने तो इसकी जगह यह जुड़ती है (केवल जुड़ी हुई प्रक्रियाओं में से चुनी जा सकती है)",
   "researchers.pg.table.label": "तालिका",
   "researchers.pg.vector.label": "पूर्ण आयाम वेक्टर कॉलम",
   "researchers.pg.reduced.label": "MRL घटे आयाम का वेक्टर कॉलम (HNSW इंडेक्स)",
@@ -230,5 +233,6 @@
   "runs.answer.empty.message": "अभी तक कोई उत्तर नहीं बना है।",
   "runs.routing.empty.message": "अभी कोई रूटिंग रिकॉर्ड नहीं है।",
   "runs.routing.procedure.label": "प्रक्रिया रूटिंग रिकॉर्ड",
+  "runs.routing.fallback.message": "प्रक्रिया रूटिंग ने कोई प्रक्रिया नहीं चुनी, इसलिए डिफ़ॉल्ट प्रक्रिया जोड़ी गई",
   "runs.context.empty.message": "कोई संदर्भ नहीं बना।"
 }

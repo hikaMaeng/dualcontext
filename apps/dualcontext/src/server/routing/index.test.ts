@@ -7,7 +7,7 @@ import { individualPrompt } from "./config/prompts.js";
 import { createSelectors } from "./index.js";
 
 const researcher = (id: number, name: string, description: string, router: Researcher["router"] = null): Researcher => ({
-  id, name, description, keywords: [], enabled: true, type: "folder", config: {}, procedureIds: [], router
+  id, name, description, keywords: [], enabled: true, type: "folder", config: {}, procedureIds: [], defaultProcedureId: null, router
 });
 
 /** 글에 「날씨」가 있으면 [1,0], 아니면 [0,1]. 코사인은 같은 방향이면 1, 직교면 0 이다. */

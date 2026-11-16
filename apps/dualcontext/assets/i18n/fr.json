@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "Dossier du volume (fichiers texte)",
   "researchers.keywords.label": "Mots-clés de routage (séparés par des virgules)",
   "researchers.procedures.label": "Procédures liées (dans l'ordre de sélection)",
+  "researchers.default.procedure.label": "Procédure par défaut",
+  "researchers.default.procedure.none.text": "Aucune",
+  "researchers.default.procedure.hint.message": "Jointe à la place lorsque le routage des procédures n'en choisit aucune (uniquement parmi les procédures liées)",
   "researchers.pg.table.label": "Table",
   "researchers.pg.vector.label": "Colonne vectorielle pleine dimension",
   "researchers.pg.reduced.label": "Colonne vectorielle réduite MRL (index HNSW)",
@@ -230,5 +233,6 @@
   "runs.answer.empty.message": "Aucune réponse n'a encore été produite.",
   "runs.routing.empty.message": "Pas encore d'enregistrement de routage.",
   "runs.routing.procedure.label": "Enregistrement du routage des procédures",
+  "runs.routing.fallback.message": "Le routage des procédures n'en a choisi aucune ; la procédure par défaut a été jointe à la place",
   "runs.context.empty.message": "Aucun contexte n'a été produit."
 }

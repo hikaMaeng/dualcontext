@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "볼륨 폴더(텍스트 파일)",
   "researchers.keywords.label": "라우팅 키워드(쉼표로 구분)",
   "researchers.procedures.label": "연결할 프로시저(선택한 순서)",
+  "researchers.default.procedure.label": "기본 프로시저",
+  "researchers.default.procedure.none.text": "없음",
+  "researchers.default.procedure.hint.message": "프로시저 라우팅이 하나도 고르지 못했을 때 대신 붙는다(연결된 프로시저 중에서만 고를 수 있다)",
   "researchers.pg.table.label": "테이블",
   "researchers.pg.vector.label": "전체 차원 벡터 컬럼",
   "researchers.pg.reduced.label": "MRL 축소 차원 벡터 컬럼(HNSW 인덱스)",
@@ -230,5 +233,6 @@
   "runs.answer.empty.message": "아직 만들어진 답변이 없습니다.",
   "runs.routing.empty.message": "아직 라우팅 기록이 없습니다.",
   "runs.routing.procedure.label": "프로시저 라우팅 기록",
+  "runs.routing.fallback.message": "프로시저 라우팅이 고르지 못해 기본 프로시저가 대신 붙었다",
   "runs.context.empty.message": "컨텍스트가 만들어지지 않았습니다."
 }

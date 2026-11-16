@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "卷内文件夹(文本文件)",
   "researchers.keywords.label": "路由关键词(用逗号分隔)",
   "researchers.procedures.label": "关联的流程(按选择顺序)",
+  "researchers.default.procedure.label": "默认流程",
+  "researchers.default.procedure.none.text": "无",
+  "researchers.default.procedure.hint.message": "流程路由一个都没选出时改为附加此流程(只能从已关联的流程中选择)",
   "researchers.pg.table.label": "表",
   "researchers.pg.vector.label": "完整维度向量列",
   "researchers.pg.reduced.label": "MRL 缩减维度向量列(HNSW 索引)",
@@ -230,5 +233,6 @@
   "runs.answer.empty.message": "尚未生成任何回答。",
   "runs.routing.empty.message": "尚无路由记录。",
   "runs.routing.procedure.label": "流程路由记录",
+  "runs.routing.fallback.message": "流程路由未选出任何流程,因此改为附加默认流程",
   "runs.context.empty.message": "未生成上下文。"
 }
