@@ -85,8 +85,15 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `data-testid="routing-steps"`, `"routing-step"`, `"routing-individual"` | 시험 실행 · 실행 로그의 라우팅 단계별 기록과 개별 라우터 판정(`routing-individual` 의 `data-selected` 가 포함 여부). 옛 실행 기록에는 이 정보가 없어 나오지 않는다 |
 | `data-testid="researcher-individual-router"` | 조사원 폼의 「개별 라우터 사용」 체크박스(켜면 `individual-steps` 편집기가 나온다) |
 | `data-testid="routing-state"`, `"logged-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과와 로그 링크 |
-| `data-testid="run-item"` | 실행 로그 목록 항목 |
-| `data-testid="run-detail"`, `"run-routing"`, `"run-settings"`, `"run-pair"`, `"run-context"` | 실행 로그 상세 |
+| `data-testid="run-list"`, `"run-item"`(`data-run-id` · `data-status`), `"run-item-query"`, `"run-item-researchers"`, `"run-item-status"` | 실행 로그 목록과 2줄 항목(링크, `#runs/<id>`). 1줄 `일시 | 질의`, 2줄 선택된 조사원들. 두 줄 모두 한 줄 엘립시스이고 전체 내용은 `title` 로 노출 |
+| `data-testid="run-total"`, `"run-list-empty"`, `"run-pager"`, `"run-pager-prev"`, `"run-pager-next"`, `"run-pager-position"` | 총 건수, 빈 목록, 페이징(pageSize 20, 「현재 쪽 / 전체 쪽」) |
+| `role=search` `data-testid="run-filters"`, `"run-filters-hint"`, `"run-filter-researchers-select"`, `"run-filter-procedures-select"`, `"run-filter-researchers-chips"`, `"run-filter-procedures-chips"`, `"run-filter-chip"`(`data-name`), `"run-filter-clear"`, `"run-search-input"`, `"run-search-mode"` | 실행 로그 필터(조사원 · 프로시저 멀티 셀렉트와 칩, 서로 OR 이고 검색어와는 AND)와 검색(키워드 / 의미). 칩의 제거 버튼은 접근 가능한 이름 `<이름> 선택 해제` |
+| `data-testid="run-back"`, `"run-detail"`(`data-status`), `"run-query"`, `"run-meta"`, `"run-status"`, `"run-error"`, `"run-delete"`, `"run-loading"` | 실행 로그 뷰 상단 요약(질의 전체, 시각 · 상태 · 소요 시간 한 줄, 삭제) |
+| `role=tablist` / `tab` / `tabpanel`, `data-testid="run-tab-answer"`·`"run-tab-routing"`·`"run-tab-researchers"`·`"run-tab-context"`, `"run-panel-<탭>"` | 뷰 서브탭(좌우 화살표 · Home · End 로 이동, 이동하면 바로 선택). 활성 패널 하나만 그린다 |
+| `data-testid="run-routing"`, `"run-routing-none"`, `"run-routing-empty"`, `"run-procedure-routing"` | 라우팅 탭(조사원 라우팅 방법, 마땅한 조사원 없음, 기록 없음, 쌍별 프로시저 라우팅 기록). 단계 · 점수표는 `routing-steps` · `routing-scores` |
+| `data-testid="run-pair"`, `"run-pairs-empty"` | 조사원 탭(선택된 쌍과 근거 자료) |
+| `data-testid="run-context"`(`data-format` = `markdown` 또는 `text`), `"run-context-empty"`, `"run-settings"` | 컨텍스트 탭. 마크다운 구문이 보이면 마크다운으로 렌더하고 아니면 원문 그대로. 실행 당시 설정 스냅샷은 컨텍스트가 어떻게 만들어졌는지의 근거라 같은 탭 아래에 둔다 |
+| `data-testid="run-answer-empty"`, `"answer-before"`, `"answer-after"` | 답변 탭 |
 | `data-testid="answer-before"`, `"answer-after"`, `"busy-state"` | 증강 전 · 후 최종 답변(시험 실행과 로그 상세 공통), 실행 중 표시. 답변 본문은 마크다운으로 렌더한다(`components/markdown`, react-markdown + GFM, 원문 HTML 은 렌더하지 않음) |
 | `data-testid="split-method"`, `"split-maxparts"`, `"split-minchars"`, `"split-parttopk"`, `"split-prompt"` | 라우터 질의 분해 설정 |
 | `data-testid="researcher-steps"`, `"procedure-steps"`, `"researcher-addtype"`, `"researcher-addstep"` (procedure 도 같음) | 라우터 단계 목록과 단계 추가 |

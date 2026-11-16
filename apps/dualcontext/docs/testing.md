@@ -11,6 +11,7 @@ npm run test --workspaces
 * `src/server/collect/codebase/codebase.test.ts`: URL · SSRF 대역 · DNS 재바인딩 · ref · 하위 경로 검증, 클론 인자(토큰이 argv 에 없음 · 환경 격리 · 가림), 스캔(심볼릭 링크 · 비밀 파일 · 상한), 구조 인덱스(심볼 · import · 호출), 검색(호출 이웃 보강), 볼륨 폴더 소스 경로 탈출 거부.
 * 코드베이스 실측(자동 테스트 아님): `collectCodebase` 를 공개 레포(expressjs/cors, pallets/flask `src/flask`)로 실제 클론 · 인덱싱 · 질의해 본 기록은 `test/20261115/codebase-researcher_report.md`.
 * `src/server/collect/crawler/crawler.test.ts`: SSRF(IPv4/IPv6 차단 대역, 내부 호스트 이름, 스킴·포트·사용자 정보, 이름이 내부 주소로 풀림), robots.txt(그룹 선택, 최장 규칙, 와일드카드, Crawl-delay), 설정 상한과 지문, 링크 정규화, 청크, 랭킹, 갱신 판단, 크롤(깊이·페이지 수·중복·도메인·간격·시간 상한·robots 오류·내부 주소 리다이렉트), 크롤러 응답 변환.
+* `src/front/features/runs/**` · `src/front/components/tabs`: 실행 로그 화면의 순수 로직. 목록 쿼리스트링 구성(`api/path.ts`, 가짜 `fetch` 로 `/api/admin/runs?page&pageSize&researcher…&procedure…&q&mode` 와 필터 · 삭제 경로 확인), 쪽 계산과 필터 변경 시 1쪽 복귀(`query`), 해시 경로 해석(`route`), 이름 합치기 · 초 표기(`format`), 진행 단계(`view/phase`), 컨텍스트 마크다운 판별(`view/tabs/context/markdown.ts`), 탭 키보드 이동(`components/tabs/keys.ts`, RTL 포함). 화면 렌더 자체의 자동 시험은 없다(배포 후 브라우저 검증 몫).
 * `packages/dualcontext_domain/src/server/augment/index.test.ts`: 라우팅, 폴백, 프로시저 상위 개수, 쌍별 라이터 호출 수, 수집 실패 표시.
 * `packages/dualcontext_domain/src/server/route/index.test.ts`: 코사인 상위 K, LLM 답 파싱.
 
