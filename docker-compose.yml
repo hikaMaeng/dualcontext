@@ -28,6 +28,15 @@ services:
       # (pgdata/ today); do not add a second volume. The target is the path the
       # base image declares as VOLUME, so no anonymous volume is created.
       - dualcontext_data:/var/lib/postgresql/data
+      # Read-only view of host source trees for "codebase" researchers with a directory source
+      # (path "workspace/<project>"). A bind mount, not a volume: nothing is written to it. Set
+      # DUALCONTEXT_WORKSPACE_DIR in the git-ignored root .env; unset, it is an empty folder.
+      - type: bind
+        source: ${DUALCONTEXT_WORKSPACE_DIR:-./.docker/workspace}
+        target: /var/lib/postgresql/data/workspace
+        read_only: true
+        bind:
+          create_host_path: true
     networks:
       - dualcontext_internal
 

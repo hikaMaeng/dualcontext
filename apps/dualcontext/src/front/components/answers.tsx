@@ -1,6 +1,7 @@
 import type { Answer, Answers } from "dualcontext_domain/common";
 import type { Texts } from "../i18n";
 import { RSC } from "../resource";
+import { MarkdownText } from "./markdown";
 
 function AnswerBox({ label, answer, pending, testId, t }: { label: string; answer: Answer | undefined; pending: boolean; testId: string; t: Texts }) {
   return (
@@ -10,7 +11,7 @@ function AnswerBox({ label, answer, pending, testId, t }: { label: string; answe
         {answer && !answer.skipped ? ` · ${(answer.ms / 1000).toFixed(1)}${t[RSC.COMMON_SECONDS_TEXT]}` : ""}
       </h3>
       {answer && answer.text !== null && (
-        <pre data-testid={testId} className="max-h-[32rem] overflow-auto whitespace-pre-wrap rounded-md border border-line bg-sidebar p-3 font-sans text-sm leading-6">{answer.text}</pre>
+        <div data-testid={testId} className="max-h-[32rem] overflow-auto break-words rounded-md border border-line bg-sidebar p-3 text-sm leading-6"><MarkdownText text={answer.text} /></div>
       )}
       {answer?.skipped && (
         <p role="status" data-testid={`${testId}-skipped`} className="rounded-md border border-dashed border-line p-3 text-sm text-muted">
