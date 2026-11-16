@@ -1,6 +1,6 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { adminRouter } from "./admin/index.js";
-import { abandonRunningRuns } from "./admin/runs/index.js";
+import { abandonRunningRuns, backfillInBackground, startupBackfillLimit } from "./admin/runs/index.js";
 import { createApp } from "./app.js";
 import { createPool, pingDatabase } from "./db/index.js";
 import { readEnv } from "./env.js";
@@ -26,6 +26,8 @@ if (stdio) {
   // 이전 프로세스에서 진행 중이던 시험 실행은 재시작과 함께 사라졌으므로 닫아 둔다.
   const abandoned = await abandonRunningRuns(pool);
   if (abandoned > 0) console.log(`closed ${abandoned} interrupted run(s)`);
+  // 옛 실행 로그의 질의 임베딩(의미 검색용)을 뒤에서 채운다. 기다리지 않고, 임베딩 서버가 안 되면 조용히 멈춘다.
+  backfillInBackground(pool, deps.model, startupBackfillLimit);
   const app = createApp({ checkDatabase: () => pingDatabase(pool), admin: adminRouter(deps) });
   const server = app.listen(env.port, () => {
     console.log(`dualcontext listening on ${env.port}`);

@@ -12,11 +12,11 @@
 | `src/server/collect` | 조사원 타입별 수집기 폴더: `duckduckgo`, `pgvector`, `folder`, `crawler`. `crawler/` 는 역할별 하위 폴더(`config` 설정·상한, `guard` SSRF 방어, `robots`, `chunk`, `client` 크롤러 컨테이너 REST 클라이언트, `walk` 너비 우선 크롤, `store` 캐시·임베딩·검색)로 나뉜다. | `collect/index.ts`, `collect/crawler/index.ts` |
 | `src/server/writer` | 라이터 설정을 `{mode, write}` 로 바꾼다(LLM 실패 시 기본 조립으로 대체). | `writer/index.ts` |
 | `src/server/model` | AI 서버 클라이언트(임베딩 · LLM, OpenAI 호환). 채팅은 `chat/`(스트리밍, 유휴 시간 기준 중단), `stream/`(SSE 해석), `limit/`(동시 호출 제한 · 503/429 재시도)로 나눈다. | `model/index.ts` |
-| `src/server/admin` | 관리 API. 엔티티별 폴더: `researchers`, `procedures`, `router`, `writers`, `ai-server`, `runs`(시험 실행 로그), `crawl`(크롤러 조사원의 상태·지금 크롤·캐시 지우기). | `admin/index.ts` |
+| `src/server/admin` | 관리 API. 엔티티별 폴더: `researchers`, `procedures`, `router`, `writers`, `ai-server`, `runs`(시험 실행 로그: `index.ts` 는 라우터, `lifecycle/` 실행 · 진행 방송 · 정리, `list/` 목록 — `params/` 입력 검증, `query/` SQL 빌더, `filters/` 필터 이름, `semantic/` 의미 검색 상수 — , `embedding/` 질의 임베딩 저장 · 백필), `crawl`(크롤러 조사원의 상태·지금 크롤·캐시 지우기). | `admin/index.ts` |
 | `src/server/seed` | 기본 라우터 · 라이터 · AI 서버 값과 사전 정의 프리셋(한 번만). | `seed/index.ts` |
 | `src/server/db` | 커넥션 풀과 상태 조회. | `db/index.ts` |
 | `src/front` | Vite React 관리자. `features/*` 폴더마다 화면과 `resource.ts`. 왼쪽 메뉴 셸은 `main.tsx`. | `main.tsx` |
-| `docker/` | 이미지, 엔트리포인트, DB 초기화 SQL(`initdb/`, 크롤러 캐시 테이블은 `004_crawler.sql`). | `docker/Dockerfile` |
+| `docker/` | 이미지, 엔트리포인트, DB 초기화 SQL(`initdb/`, 크롤러 캐시 테이블은 `004_crawler.sql`, 실행 로그 검색 열 · 트리거 · 인덱스는 `005_runs_search.sql`). | `docker/Dockerfile` |
 | `seed-data/` | 허깅페이스 데이터셋 적재 스크립트(호스트에서 실행). | `load-datasets.mjs` |
 
 ## 컨테이너 하나, 프로세스 둘, 볼륨 하나
@@ -35,7 +35,7 @@
 | `router_config` | 1행. `pipeline` jsonb 에 질의 분해와 1단계(조사원) · 2단계(프로시저)의 라우팅 단계 목록 전체(옛 단일 방법 열은 변환용으로만 남음) |
 | `writers` | 라이터. 엔진 · 호출 방식 · 프롬프트, 활성은 최대 1개 |
 | `ai_server` | 1행. 임베딩/LLM 서버 주소 · 모델 · (쓰기 전용) API 키 |
-| `augment_runs` | 시험 실행 로그. 질의 · 상태 · 소요 시간 · 라우팅 방법 · 설정 스냅샷(jsonb) · 쌍과 자료(jsonb) · 컨텍스트. 최근 500건만 보관 |
+| `augment_runs` | 시험 실행 로그. 질의 · 상태 · 소요 시간 · 라우팅 방법 · 설정 스냅샷(jsonb) · 쌍과 자료(jsonb) · 컨텍스트. 최근 500건만 보관. 목록용 파생 열(트리거가 채움): `researcher_names` · `procedure_names`(text[], GIN), `search_tsv`(tsvector, GIN), `query_embedding`(double precision[]) + `embedding_key`(임베딩 모델 이름) |
 | `ds_*` | 사전 정의 테이블형 조사원의 데이터. `embedding vector(768)` 와 `embedding_mrl vector(256)`, HNSW 는 후자에만 |
 | `crawl_state` · `crawl_pages` · `crawl_chunks` | 크롤러 조사원의 캐시. 조사원 1개당 상태 1행, 페이지(URL 별 내용 해시), 청크(텍스트 + `double precision[]` 임베딩 + 만든 모델 이름). 조사원이 지워지면 함께 지워진다 |
 | `seed_state` | 일회성 시드 표식 |
