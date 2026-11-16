@@ -6,6 +6,7 @@ import { createPool, pingDatabase } from "./db/index.js";
 import { readEnv } from "./env.js";
 import { createMcpServer } from "./mcp/index.js";
 import { createModelClient } from "./model/index.js";
+import { ensurePlanConfig } from "./plan/config/index.js";
 import { ensureDefaults } from "./seed/index.js";
 
 // `--stdio` runs the MCP server over stdin/stdout and nothing else. Stdout is
@@ -16,6 +17,8 @@ const env = readEnv();
 const pool = createPool(env.databaseUrl);
 const deps = { pool, model: createModelClient(pool, env.llmApiKey), dataDir: env.dataDir };
 await ensureDefaults(pool);
+// 계획 설정 단일 행(기본 classic). 서버와 MCP stdio 프로세스 모두 읽으므로 둘 다 확인한다. 이미 있으면 건드리지 않는다.
+await ensurePlanConfig(pool);
 
 if (stdio) {
   const transport = new StdioServerTransport();

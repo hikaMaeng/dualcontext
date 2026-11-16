@@ -1,0 +1,21 @@
+run 236 status=ok 1776s error=-
+mode=reevaluate stop=evaluation-failed planMs=1663737 items=16 levels=[{"level":2,"linked":2,"created":7,"analyzed":9,"candidates":17},{"level":3,"linked":3,"created":0,"analyzed":7,"candidates":13}] waves=[["i5","i6","i7","i9","i10","i11","i12","i14","i15"],["i2","i13","i16"],["i1","i3","i4","i8"]]
+ i1 L1 TOP r0 built ctx=74108 needs=[컨테이너 상태·로그 확인 명령어] 도커 컨테이너 종료 코드(exit code) 의미
+ i2 L1 TOP r0 built ctx=60351 needs=[컨테이너 상태(state)의 정의 | 도커 로그 드라이버와 저장 위치] 컨테이너 상태·로그 확인 명령어
+ i3 L1 TOP r0 built ctx=54353 needs=[Dockerfile 기본 구조 | CMD·ENTRYPOINT 명령어 정의] CMD/ENTRYPOINT 설정 오류
+ i4 L1 TOP r0 built ctx=86345 needs=[도커 포트 매핑(-p 옵션) 기본 개념 | 포트 사용 상태 확인 방법 | 바인딩 주소의 의미] 포트 충돌 및 바인딩 실패
+ i5 L1 TOP r0 built ctx=11108 needs=[] 볼륨·데이터 마운트 오류
+ i6 L1 TOP r0 built ctx=14422 needs=[] 리소스 제한(OOM·메모리·CPU)
+ i7 L1 TOP r0 built ctx=9710 needs=[] 헬스체크(healthcheck) 실패
+ i8 L1 TOP r0 built ctx=69398 needs=[컨테이너 상태·로그 확인 명령어] 네트워크·도커 데몬 문제
+ i9 L1 TOP r0 built ctx=9722 needs=[] 이미지·권한·의존 서비스 문제
+ i10 L2 TOP r0 built ctx=22292 needs=[] 컨테이너 상태(state)의 정의
+ i11 L2 pre r0 built ctx=23227 needs=[] 도커 로그 드라이버와 저장 위치
+ i12 L2 pre r0 built ctx=8943 needs=[] Dockerfile 기본 구조
+ i13 L2 pre r0 built ctx=28707 needs=[Dockerfile 기본 구조] CMD·ENTRYPOINT 명령어 정의
+ i14 L2 pre r0 built ctx=28279 needs=[] 도커 포트 매핑(-p 옵션) 기본 개념
+ i15 L2 pre r0 built ctx=4386 needs=[] 포트 사용 상태 확인 방법
+ i16 L2 pre r0 built ctx=50711 needs=[도커 포트 매핑(-p 옵션) 기본 개념 | 포트 사용 상태 확인 방법] 바인딩 주소의 의미
+ round 0 score=92 pass=false missing=[exit code 128+n 신호 매핑 | 컨테이너 상태(state) 정의 | journald 로그 드라이버 설정 | HEALTHCHECK start_period] added=[] reason=질의가 요구한 단계별 진단법과 원인별 해결책을 exit code 해석, 로그 확인, CMD/ENTRYPOINT/포트/볼륨/OOM/헬스체크/네트워크·데몬/이미지·권한·의존 서비스 등 7개 원인 모두 다루어 빠짐없이 잘 구성했다.
+ round 1 score=undefined pass=undefined missing=[] added=[] reason=chat produced no data for 180s (reasoningChars=0 contentChars=0)
+final context chars=412054 after.fromPlan=true

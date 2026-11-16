@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { PlanProgressLine } from "../../../components/plan-progress";
 import type { Texts } from "../../../i18n";
 import { useRun } from "../../../lib/run";
 import { RSC as ROOT } from "../../../resource";
@@ -40,6 +41,7 @@ export function RunView({ id, t }: { id: number; t: Texts }) {
       {detail && (
         <article aria-labelledby="run-heading" className="grid gap-4" data-testid="run-detail" data-status={detail.status}>
           <RunSummary detail={detail} phase={runPhase(detail)} onRemove={() => void remove()} t={t} />
+          <PlanProgressLine run={detail} t={t} />
           <RunTabs detail={detail} phase={runPhase(detail)} t={t} tab={tab} onTab={setTab} />
         </article>
       )}

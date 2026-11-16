@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { WriterConfig } from "dualcontext_domain/common";
 import { AnswerCompare } from "../../components/answers";
+import { PlanProgressLine } from "../../components/plan-progress";
 import { RoutingScores } from "../../components/routing-scores";
 import { RoutingSteps } from "../../components/routing-steps";
 import { Button } from "../../components/ui/button";
@@ -10,16 +11,19 @@ import { api } from "../../lib/api";
 import { useRun } from "../../lib/run";
 import type { Texts } from "../../i18n";
 import { RSC as SHARED } from "../../resource";
+import { ModeSelect, type ModeOverride } from "./mode";
 import { RSC } from "./resource";
 
 /**
  * MCP 도구와 같은 증강 경로를 관리자가 직접 시험한다. 실행은 서버에서 비동기로 돌고(수 분 걸릴 수 있다),
  * 이 화면은 runId 를 받아 진행을 따라간다: 라우팅 · 컨텍스트가 만들어지는 대로, 증강 전/후 답변이 끝나는 대로 채워진다.
+ * 컨텍스트 모드는 저장된 계획 설정을 따르거나 이번 실행에만 다른 모드를 고를 수 있다(계획 과정은 실행 로그의 「계획」 탭에서 본다).
  */
 export function TryView({ t }: { t: Texts }) {
   const [query, setQuery] = useState("");
   const [writers, setWriters] = useState<WriterConfig[]>([]);
   const [writerId, setWriterId] = useState("");
+  const [mode, setMode] = useState<ModeOverride>("");
   const [runId, setRunId] = useState<number | null>(null);
   const [starting, setStarting] = useState(false);
   const [startFailed, setStartFailed] = useState(false);
@@ -34,7 +38,7 @@ export function TryView({ t }: { t: Texts }) {
     setStarting(true);
     setStartFailed(false);
     try {
-      const started = await api<{ runId: number }>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}) } });
+      const started = await api<{ runId: number }>("/augment", { method: "POST", body: { query, ...(writerId ? { writerId: Number(writerId) } : {}), ...(mode ? { mode } : {}) } });
       setRunId(started.runId);
     } catch {
       setStartFailed(true);
@@ -58,6 +62,7 @@ export function TryView({ t }: { t: Texts }) {
             {writers.map((writer) => <option key={writer.id} value={writer.id}>{writer.name}</option>)}
           </Select>
         </Field>
+        <ModeSelect value={mode} t={t} onChange={setMode} />
         <Button type="submit" disabled={starting} className="justify-self-start">{t[RSC.TRY_RUN_BUTTON]}</Button>
       </form>
       {startFailed && <p role="alert" className="text-sm text-danger">{t[SHARED.COMMON_ERROR_ALERT]}</p>}
@@ -71,6 +76,7 @@ export function TryView({ t }: { t: Texts }) {
               {run?.stage === "answering" ? t[RSC.TRY_STAGE_ANSWERING_STATUS] : t[RSC.TRY_STAGE_AUGMENT_STATUS]} {t[RSC.TRY_BUSY_STATUS]}
             </p>
           )}
+          {run && <PlanProgressLine run={run} t={t} />}
           {run?.status === "error" && <p role="alert" data-testid="run-error" className="text-sm text-danger">{t[RSC.TRY_FAILED_ALERT]}: {run.error}</p>}
           {run && augmentDone && (
             <>
@@ -81,7 +87,7 @@ export function TryView({ t }: { t: Texts }) {
               <AnswerCompare answers={run.answers} pending={running} t={t} />
               <ul aria-label={t[RSC.TRY_PAIRS_LABEL]} className="grid gap-1 text-sm text-muted">
                 {run.pairs.map((pair, index) => (
-                  <li key={index} data-testid="pair-item">{pair.researcher} / {pair.procedure ?? "-"} ({pair.materialCount}) [{pair.procedureRouting}]</li>
+                  <li key={index} data-testid="pair-item" data-item={pair.item}>{pair.item && <span data-testid="pair-item-name" className="me-1 rounded border border-line px-1 text-xs">{pair.item}</span>}{pair.researcher} / {pair.procedure ?? "-"} ({pair.materialCount}) [{pair.procedureRouting}]</li>
                 ))}
               </ul>
               {run.context && (

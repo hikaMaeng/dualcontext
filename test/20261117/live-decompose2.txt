@@ -1,0 +1,14 @@
+run 237 status=ok 978s error=-
+mode=decompose stop=mode-decompose planMs=796497 items=11 levels=[{"level":2,"linked":7,"created":4,"analyzed":6,"candidates":11},{"level":3,"linked":6,"created":1,"analyzed":4,"candidates":12}] waves=[["i2","i11"],["i8"],["i9"],["i10"],["i6","i7"],["i1"],["i3","i5"],["i4"]]
+ i1 L1 TOP r0 built ctx=6877 needs=[임차권등기명령의 개념] 민사집행법 임차권등기명령 규정
+ i2 L1 TOP r0 built ctx=5829 needs=[] 임차권등기명령 단계별 신청 절차
+ i3 L1 TOP r0 built ctx=13160 needs=[민사집행법 임차권등기명령 규정 | 임차권등기명령 단계별 신청 절차] 신청 요건 및 구비 서류 목록
+ i4 L1 TOP r0 built ctx=13717 needs=[민사집행법 임차권등기명령 규정 | 임차권등기명령 단계별 신청 절차 | 신청 요건 및 구비 서류 목록] 임차권등기명령 관련 판례 쟁점
+ i5 L1 TOP r0 built ctx=12276 needs=[민사집행법 임차권등기명령 규정 | 임차권등기명령 단계별 신청 절차] 이의·취소 절차와 법적 효과
+ i6 L1 TOP r0 built ctx=16350 needs=[임차권등기의 개념과 완료 요건 | 보증금 반환 청구권의 법적 근거 | 가압류와 본집행의 절차적 요건] 보증금 반환 청구 연계 절차
+ i7 L2 pre r0 built ctx=13225 needs=[임차권의 개념과 법적 성질 | 임차권등기의 개념과 완료 요건 | 가압류와 본집행의 절차적 요건] 임차권등기명령의 개념
+ i8 L2 pre r0 built ctx=7159 needs=[임차권의 개념과 법적 성질] 임차권등기의 개념과 완료 요건
+ i9 L2 pre r0 built ctx=11359 needs=[임차권등기의 개념과 완료 요건 | 임차권등기명령 단계별 신청 절차] 보증금 반환 청구권의 법적 근거
+ i10 L2 pre r0 built ctx=12413 needs=[임차권등기의 개념과 완료 요건 | 보증금 반환 청구권의 법적 근거] 가압류와 본집행의 절차적 요건
+ i11 L3 pre r0 built ctx=4090 needs=[] 임차권의 개념과 법적 성질
+final context chars=68344 after.fromPlan=undefined

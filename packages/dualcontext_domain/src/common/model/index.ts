@@ -133,6 +133,8 @@ export type Answer = {
   ms: number;
   /** 증강 후 답변을 만들지 않았다(컨텍스트가 없어 증강 전 답변과 같다). */
   skipped?: boolean;
+  /** reevaluate 계획의 마지막 라운드 답변을 그대로 썼다(같은 프롬프트 · 같은 최종 컨텍스트라 다시 부르지 않았다). */
+  fromPlan?: boolean;
 };
 
 /** 컨텍스트 증강 전(질의만)과 후(질의 + 증강된 컨텍스트)의 최종 답변. */
@@ -149,6 +151,8 @@ export type AugmentPair = {
   error?: string;
   /** 프로시저 라우팅 방법(keyword · embedding · llm …). 기본 프로시저가 폴백으로 붙은 쌍은 `default`, 자료가 없어 라우팅을 건너뛴 쌍은 `skipped(no-material)`. */
   procedureRouting: string;
+  /** 컨텍스트 계획 모드에서 이 쌍을 만든 아이템 이름(classic 모드에는 없다). */
+  item?: string;
 };
 
 /** 라우팅 판단의 근거. 조사원 후보 점수와, 선택된 조사원마다의 프로시저 후보 점수. */
@@ -201,3 +205,5 @@ export const serviceDomain = Object.freeze({
   service: "dualcontext",
   packageName: "dualcontext_domain"
 });
+
+export * from "./plan/index.js";

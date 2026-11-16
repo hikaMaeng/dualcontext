@@ -35,12 +35,14 @@ async function ask(model: ModelClient, prompt: string): Promise<Answer> {
 /**
  * 증강 전후 답변을 병렬로 만든다. 한쪽이 실패해도 다른 쪽과 실행 전체는 살린다.
  * onAnswer 는 답변 하나가 끝나는 즉시 불린다(비동기 실행이 진행 상황을 기록하는 자리).
+ * preparedAfter 는 이미 같은 프롬프트(after) · 같은 컨텍스트로 만든 답변이다(reevaluate 계획의 마지막 라운드). 주면 모델을 다시 부르지 않고 그대로 기록한다.
  */
 export async function generateAnswers(
   model: ModelClient,
   query: string,
   context: string,
-  onAnswer?: (which: keyof Answers, answer: Answer) => Promise<void> | void
+  onAnswer?: (which: keyof Answers, answer: Answer) => Promise<void> | void,
+  preparedAfter?: Answer
 ): Promise<Answers> {
   // 마땅한 조사원이 없어 컨텍스트가 비면 증강 후 답변은 증강 전 답변과 같은 입력이다. 모델을 한 번 더 부르지 않는다.
   const skipAfter = context.trim() === "";
@@ -53,7 +55,9 @@ export async function generateAnswers(
     ask(model, fill(answerPrompts.before, { query })).then((answer) => record("before", answer)),
     (skipAfter
       ? Promise.resolve<Answer>({ text: null, error: null, ms: 0, skipped: true })
-      : ask(model, fill(answerPrompts.after, { query, context }))
+      : preparedAfter
+        ? Promise.resolve<Answer>(preparedAfter)
+        : ask(model, fill(answerPrompts.after, { query, context }))
     ).then((answer) => record("after", answer))
   ]);
   return { before, after };

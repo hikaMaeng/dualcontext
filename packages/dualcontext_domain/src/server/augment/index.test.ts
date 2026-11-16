@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Pair, Procedure, Researcher } from "../../common/index.js";
 import { routeProceduresByKeyword, routeResearchersByKeyword } from "../route/index.js";
-import { writeContext } from "../write/index.js";
+import { mergeContexts, writeContext } from "../write/index.js";
+import type { Provided } from "../plan/ports.js";
 import { augmentQuery, type AugmentPorts } from "./index.js";
 
 const researcher = (id: number, name: string, keywords: string[], procedureIds: number[], defaultProcedureId: number | null = null): Researcher => ({
@@ -207,4 +208,72 @@ test("기본 프로시저는 라우팅 후보에서 빠진다(범용 문구가 �
   }));
   assert.deepEqual(offered, [1]);
   assert.deepEqual(result.pairs.map((p) => p.procedure), ["긴급"]);
+});
+
+test("사전 컨텍스트(provided)는 라이터에만 전달되고 라우팅 · 수집은 질의만으로 한다(batch)", async () => {
+  const collected: string[] = [];
+  const seen: unknown[][] = [];
+  const result = await augmentQuery("긴급 환불", ports("batch", {
+    collect: async (r, text) => { collected.push(text); return [{ title: `${r.name} 문서`, text: "원문" }]; },
+    writer: { mode: "batch", write: (...args: unknown[]) => { seen.push(args); return "ctx"; } }
+  }), [{ name: "환불 규정", context: "규정 본문" }]);
+  assert.deepEqual(collected, ["긴급 환불"]);
+  assert.equal(seen.length, 1);
+  assert.deepEqual(seen[0][2], [{ name: "환불 규정", context: "규정 본문" }]);
+  assert.equal(result.context, "ctx");
+});
+
+test("사전 컨텍스트는 per_pair 라이터의 호출마다 전달되고, 빈 배열이면 세 번째 인자 없이 부른다(기존 호출과 같다)", async () => {
+  const lengths: number[] = [];
+  await augmentQuery("긴급 환불", ports("per_pair", {
+    selectProcedures: async (_q, _r, candidates) => ({ mode: "fixed", selected: candidates }),
+    writer: { mode: "per_pair", write: (...args: unknown[]) => { lengths.push(args.length); return "p"; } }
+  }), [{ name: "선행", context: "본문" }]);
+  assert.deepEqual(lengths, [3, 3]);
+  lengths.length = 0;
+  await augmentQuery("긴급 환불", ports("batch", { writer: { mode: "batch", write: (...args: unknown[]) => { lengths.push(args.length); return "b"; } } }), []);
+  assert.deepEqual(lengths, [2]);
+});
+
+test("사전 컨텍스트가 비지 않으면 맞는 조사원이 없어도 라이터를 부른다(batch: 빈 쌍 + provided → 사전 컨텍스트 섹션만)", async () => {
+  const seen: unknown[][] = [];
+  const result = await augmentQuery("전혀 다른 질문", ports("batch", {
+    writer: { mode: "batch", write: (query: string, pairs: Pair[], provided?: Provided[]) => { seen.push([pairs, provided]); return writeContext(query, pairs, provided); } }
+  }), [{ name: "선행", context: "본문" }]);
+  assert.equal(seen.length, 1);
+  assert.deepEqual(seen[0][0], []);
+  assert.deepEqual(result.writer, { mode: "batch", calls: 1 });
+  assert.match(result.context, /## 사전 제공된 컨텍스트[\s\S]*### 선행\n\n본문/);
+  assert.doesNotMatch(result.context, /찾지 못한 것/);
+});
+
+test("사전 컨텍스트가 있으면 조사원은 골랐지만 자료가 0개여도 라이터를 부른다(A→B 에서 B 에만 자료가 있는 경우)", async () => {
+  const batchSeen: number[] = [];
+  const batch = await augmentQuery("환불", ports("batch", {
+    collect: async () => [],
+    writer: { mode: "batch", write: (_q: string, pairs: Pair[]) => { batchSeen.push(pairs.length); return "b"; } }
+  }), [{ name: "B", context: "B 본문" }]);
+  assert.deepEqual(batchSeen, [1], "batch 는 쌍 전체(자료 0개 쌍 포함)로 1회");
+  assert.equal(batch.context, "b");
+
+  const perPairSeen: unknown[][] = [];
+  const perPair = await augmentQuery("환불", ports("per_pair", {
+    collect: async () => [],
+    writer: { mode: "per_pair", write: (...args: unknown[]) => { perPairSeen.push(args); return "p"; } }
+  }), [{ name: "B", context: "B 본문" }]);
+  assert.equal(perPairSeen.length, 1, "per_pair 는 쓸모 있는 쌍이 없으면 빈 쌍 배열로 1회");
+  assert.deepEqual(perPairSeen[0][1], []);
+  assert.deepEqual(perPairSeen[0][2], [{ name: "B", context: "B 본문" }]);
+  assert.deepEqual(perPair.writer, { mode: "per_pair", calls: 1 });
+  assert.equal(perPair.context, mergeContexts("환불", ["p"]));
+});
+
+test("provided 가 없거나 내용이 모두 비면 기존과 같다: 쓸모없는 쌍이면 라이터를 부르지 않는다", async () => {
+  for (const provided of [undefined, [], [{ name: "빈것", context: "  " }]]) {
+    let called = false;
+    const result = await augmentQuery("전혀 다른 질문", ports("batch", { writer: { mode: "batch", write: () => { called = true; return "x"; } } }), provided);
+    assert.equal(result.context, "");
+    assert.equal(called, false);
+    assert.deepEqual(result.writer, { mode: "batch", calls: 0 });
+  }
 });

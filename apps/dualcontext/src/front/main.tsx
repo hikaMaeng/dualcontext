@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
-import { Activity, Bot, FlaskConical, GitBranch, History, ListChecks, PenLine, Search } from "lucide-react";
+import { Activity, Bot, FlaskConical, GitBranch, History, ListChecks, Network, PenLine, Search } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { AiServerView } from "./features/aiserver";
+import { PlanView } from "./features/plan";
 import { ProceduresView } from "./features/procedures";
 import { ResearchersView } from "./features/researchers";
 import { RouterView } from "./features/router";
@@ -20,13 +21,14 @@ const t = texts(language);
 document.documentElement.lang = language;
 document.documentElement.dir = direction(language);
 
-type Page = "researchers" | "procedures" | "router" | "writers" | "aiserver" | "try" | "runs";
+type Page = "researchers" | "procedures" | "router" | "plan" | "writers" | "aiserver" | "try" | "runs";
 type DatabaseStatus = { koreanConfig: boolean; koreanSample: string | null };
 
 const pages: { id: Page; label: string; icon: typeof Search }[] = [
   { id: "researchers", label: t[RSC.APP_NAV_RESEARCHERS_BUTTON], icon: Search },
   { id: "procedures", label: t[RSC.APP_NAV_PROCEDURES_BUTTON], icon: ListChecks },
   { id: "router", label: t[RSC.APP_NAV_ROUTER_BUTTON], icon: GitBranch },
+  { id: "plan", label: t[RSC.APP_NAV_PLAN_BUTTON], icon: Network },
   { id: "writers", label: t[RSC.APP_NAV_WRITERS_BUTTON], icon: PenLine },
   { id: "aiserver", label: t[RSC.APP_NAV_AISERVER_BUTTON], icon: Bot },
   { id: "try", label: t[RSC.APP_NAV_TRY_BUTTON], icon: FlaskConical },
@@ -79,6 +81,7 @@ function App() {
         {page === "researchers" && <ResearchersView t={t} />}
         {page === "procedures" && <ProceduresView t={t} />}
         {page === "router" && <RouterView t={t} />}
+        {page === "plan" && <PlanView t={t} />}
         {page === "writers" && <WritersView t={t} />}
         {page === "aiserver" && <AiServerView t={t} />}
         {page === "try" && <TryView t={t} />}

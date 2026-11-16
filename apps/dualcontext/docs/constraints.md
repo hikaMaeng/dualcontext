@@ -10,6 +10,7 @@
 | stdio 모드 stdout | MCP 클라이언트 | stdout 은 프로토콜 전용. 로그는 stderr. |
 | `ds_*` 테이블 벡터 | pgvector 조사원 | `embedding`(768) 은 설정된 임베딩 모델의 출력이고, `embedding_mrl`(256) 은 그 앞 256개를 재정규화한 값이다. 모델이나 차원을 바꾸면 전부 다시 임베딩해야 한다. |
 | `augment_runs` 로그 | 관리자 「실행 로그」 화면 | **시험 실행만** 기록한다(MCP 호출은 기록하지 않는다). 키 `id`, 범위 전체, 상한 최근 500건(새 로그를 쓸 때 오래된 것을 지운다), 지우는 쪽 서버 · 관리자(개별 삭제). `settings` 스냅샷에는 API 키를 넣지 않는다. 질의 원문과 수집된 자료가 평문으로 남는다. |
+| `runAugment` · `plan_config` (`augment/index.ts`, `plan/config`) | MCP 도구, 시험 실행(`admin/runs/lifecycle`), 관리자 「계획 설정」 화면 | 저장 기본 `classic` = 기존 경로와 같은 결과(`plan: null`). 계획 모드 결과도 `AugmentResult` 모양(`researcherRouting: "plan"`, 평탄화한 `pairs[].item`). 실행 상세의 `plan`(`PlanTrace`) · `planProgress` · `settings.plan` 은 프런트가 읽는 계약이다. |
 | 조사원 임베딩 캐시 | 라우터(임베딩) | `embedding_key` = 모델 이름 + 글의 해시. 글이나 모델이 바뀌면 키가 달라져 다시 계산한다. |
 | 코드베이스 인덱스 `codebase/<키>/index.json` | 코드베이스 조사원 | 볼륨 하위 폴더(단일 볼륨 규칙 유지). 키 = 출처 설정(url · ref · subPath, 또는 폴더 경로)의 해시 16자, 범위 = 조사원 설정 하나(같은 설정은 공유), 상한 파일당 64MB, 오래되면 질의가 뒤에서 갱신한다. **조사원을 지우거나 설정을 바꿔도 옛 키 폴더는 자동으로 지워지지 않는다**(수동 삭제). 형식 `version` 이 다르면 다시 만든다. |
 
@@ -86,6 +87,11 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `data-testid="researcher-default-procedure-select"`, `"researcher-default-procedure"` | 조사원 폼의 「기본 프로시저」 단일 선택(연결된 프로시저 + 「없음」만, 연결을 해제하면 기본도 지워진다)과 목록 항목의 기본 프로시저 표시(있을 때만) |
 | `data-testid="researcher-individual-router"` | 조사원 폼의 「개별 라우터 사용」 체크박스(켜면 `individual-steps` 편집기가 나온다) |
 | `data-testid="routing-state"`, `"logged-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과와 로그 링크 |
+| `data-testid="try-mode"`, `"try-mode-hint"`, `"pair-item-name"`(`pair-item` 의 `data-item`) | 시험 실행의 컨텍스트 모드 선택(값 `""` = 저장 설정 따름, 아니면 `classic`/`decompose`/`reevaluate` 를 `POST /augment` 의 `mode` 로 보냄)과 쌍의 아이템 이름 |
+| `role=radio` `data-testid="plan-mode-classic"`·`"plan-mode-decompose"`·`"plan-mode-reevaluate"`, `"plan-mode"` | 계획 설정의 모드 3택(라디오의 설명은 `aria-describedby`) |
+| `data-testid="plan-form"`, `"plan-maxlevels"`, `"plan-maxneeds"`, `"plan-maxitems"`, `"plan-max-provided-chars"`(500~20000, 옛 저장값에 없으면 `/plan/defaults` 의 값, 그것도 없으면 3000 으로 보이고 저장 시 함께 저장), `"plan-dedupe"`, `"plan-reeval"`(`data-active`), `"plan-reeval-inactive"`, `"plan-reeval-maxrounds"`, `"plan-reeval-passscore"`, `"plan-reeval-maxmissing"`, `"plan-reeval-maxnewitems"` | 계획 설정의 한도. 재평가 칸은 저장 모드가 reevaluate 가 아니어도 편집 가능하고 `plan-reeval-inactive` 안내가 붙는다 |
+| `data-testid="plan-prompt-analyze"`·`-prerequisites`·`-dedupe`·`-evaluate` 와 각 `…-reset` | 프롬프트 4종과 칸별 「기본값으로」(`/plan/defaults` 의 값, 같으면 비활성) |
+| `data-testid="plan-save"`, `"plan-saved"`, `"plan-error"`, `"plan-load-error"` | 저장, 저장됨, 저장 실패(400 이면 서버 검증 문장을 그대로, 아니면 일반 오류), 불러오기 실패 |
 | `data-testid="run-list"`, `"run-item"`(`data-run-id` · `data-status`), `"run-item-query"`, `"run-item-researchers"`, `"run-item-status"` | 실행 로그 목록과 2줄 항목(링크, `#runs/<id>`). 1줄 `일시 | 질의`, 2줄 선택된 조사원들. 두 줄 모두 한 줄 엘립시스이고 전체 내용은 `title` 로 노출 |
 | `data-testid="run-total"`, `"run-list-empty"`, `"run-pager"`, `"run-pager-prev"`, `"run-pager-next"`, `"run-pager-position"` | 총 건수, 빈 목록, 페이징(pageSize 20, 「현재 쪽 / 전체 쪽」) |
 | `role=search` `data-testid="run-filters"`, `"run-filters-hint"`, `"run-filter-researchers-select"`, `"run-filter-procedures-select"`, `"run-filter-researchers-chips"`, `"run-filter-procedures-chips"`, `"run-filter-chip"`(`data-name`), `"run-filter-clear"`, `"run-search-input"`, `"run-search-mode"` | 실행 로그 필터(조사원 · 프로시저 멀티 셀렉트와 칩, 서로 OR 이고 검색어와는 AND)와 검색(키워드 / 의미). 칩의 제거 버튼은 접근 가능한 이름 `<이름> 선택 해제` |
@@ -95,6 +101,15 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `data-testid="run-pair"`, `"run-pairs-empty"` | 조사원 탭(선택된 쌍과 근거 자료) |
 | `data-testid="run-context"`(`data-format` = `markdown` 또는 `text`), `"run-context-empty"`, `"run-settings"` | 컨텍스트 탭. 마크다운 구문이 보이면 마크다운으로 렌더하고 아니면 원문 그대로. 실행 당시 설정 스냅샷은 컨텍스트가 어떻게 만들어졌는지의 근거라 같은 탭 아래에 둔다 |
 | `data-testid="run-answer-empty"`, `"answer-before"`, `"answer-after"` | 답변 탭 |
+| `data-testid="run-tab-plan"`, `"run-panel-plan"`, `"run-plan"`(`data-mode`) | 계획 탭. 탭 순서 답변 · 계획 · 라우팅 · 조사원 · 컨텍스트. 실행의 `plan` 이 null(classic · 옛 실행, 또는 계획이 아직 끝나지 않음)이면 탭이 없다. 서버는 진행 중 부분 기록을 주지 않는다 |
+| `role=status` `data-testid="plan-progress"`(`data-stage`) | 「계획 진행 중: <단계>」. 실행이 running 이고 `plan` 이 없고 `planProgress` 가 있을 때만(실행 로그 뷰 요약 아래, 시험 실행 화면). 단계 라벨 7종(analyze · dependencies · build · answer · evaluate · reinforce · done) |
+| `data-testid="plan-summary"`(`data-mode` · `data-stop`), `"plan-summary-items"`, `"plan-summary-levels"`, `"plan-summary-stop"` | 계획 요약 한 줄(모드 · 아이템 수 · 단계 수 = level 최댓값 · 정지 사유 라벨 · 소요). `stop` 이 없을 때만 「진행 중」(실행이 running) 또는 「-」 |
+| `data-testid="plan-tree"`, `"plan-tree-empty"`, `"plan-node-<id>"`(`data-item-id` · `data-status` · `data-level` · `data-round` · `data-depth`), `"plan-node-repeat"`(`data-item-id`), `"plan-node-repeat-note"`, `"plan-node-unknown"` | 의존성 트리. top 아이템이 루트, needs 를 들여쓴다. 같은 아이템은 처음 자리에서만 `plan-node-<id>` 로 펼치고 이후는 `plan-node-repeat`(「↑ 위에 나옴」)이라 `plan-node-<id>` 는 문서에서 유일하다. top 에서 닿지 않는 아이템은 뒤에 루트로 붙는다 |
+| `data-testid="plan-node-name"`, `"plan-node-level"`, `"plan-node-status"`, `"plan-node-round"`, `"plan-node-description"`, `"plan-node-error"`, `"plan-node-context"`, `"plan-node-context-empty"`, `"plan-node-pairs"`, `"plan-node-pairs-empty"` | 노드 머리(이름 · 단계 · 상태 배지 · round>0 이면 「보강 n」 · 소요)와 `<details>` 를 펼치면 보이는 본문(설명 · 오류 · 컨텍스트 마크다운 · 쓴 조사원/프로시저) |
+| `data-testid="plan-levels"`, `"plan-level-row"`(`data-level`), `"plan-levels-empty"`, `"plan-waves"`, `"plan-wave"`(`data-wave`), `"plan-waves-empty"` | 단계별 분석 로그 표와 생성 웨이브(아이템 id 를 이름으로, 없는 id 는 그대로). 행의 `data-failed` 는 사전 요구 분석 실패 수 |
+| `data-testid="plan-level-failed"`(`data-level`) | 사전 요구 분석 실패가 있는 단계의 다음 줄 `<details>`: 「사전 요구 분석 실패: n」, 펼치면 아이템 · 오류 |
+| `data-testid="plan-rounds"`, `"plan-rounds-empty"`, `"plan-round"`(`data-round` · `data-pass`), `"plan-round-score"`, `"plan-round-pass"`, `"plan-round-reason"`, `"plan-round-missing"`, `"plan-round-added"`, `"plan-round-answer-chars"`, `"plan-round-answer"`, `"plan-round-evaluation-error"` | 재평가 라운드(reevaluate 모드이거나 rounds 가 있을 때). 라운드 0 은 「처음 답변」 |
+| `data-testid="run-pair-item"`, `"run-pair"` 의 `data-item` | 조사원 탭에서 계획 모드 쌍의 아이템 이름 |
 | `data-testid="answer-before"`, `"answer-after"`, `"busy-state"` | 증강 전 · 후 최종 답변(시험 실행과 로그 상세 공통), 실행 중 표시. 답변 본문은 마크다운으로 렌더한다(`components/markdown`, react-markdown + GFM, 원문 HTML 은 렌더하지 않음) |
 | `data-testid="split-method"`, `"split-maxparts"`, `"split-minchars"`, `"split-parttopk"`, `"split-prompt"` | 라우터 질의 분해 설정 |
 | `data-testid="researcher-steps"`, `"procedure-steps"`, `"researcher-addtype"`, `"researcher-addstep"` (procedure 도 같음) | 라우터 단계 목록과 단계 추가 |

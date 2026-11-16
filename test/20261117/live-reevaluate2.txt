@@ -1,0 +1,20 @@
+run 238 status=ok 1725s error=-
+mode=reevaluate stop=answer-failed planMs=1609426 items=16 levels=[{"level":2,"linked":2,"created":7,"analyzed":9,"candidates":17},{"level":3,"linked":4,"created":0,"analyzed":7,"candidates":11}] waves=[["i5","i6","i7","i9","i10","i11","i12","i14"],["i2","i15"],["i1","i8","i13"],["i3","i16"],["i4"]]
+ i1 L1 TOP r0 built ctx=16741 needs=[컨테이너 상태·로그 확인 명령어] 도커 컨테이너 종료 코드(exit code) 의미
+ i2 L1 TOP r0 built ctx=23880 needs=[컨테이너 라이프사이클 상태 정의 | 도커 데몬 실행 전제 | systemd 기반 호스트 전제] 컨테이너 상태·로그 확인 명령어
+ i3 L1 TOP r0 built ctx=25823 needs=[Dockerfile 기본 구조와 명령어 | CMD와 ENTRYPOINT의 차이 및 실행 형태 | 런타임 명령어 오버라이드 규칙] CMD/ENTRYPOINT 설정 오류
+ i4 L1 TOP r0 built ctx=6039 needs=[도커 포트 매핑(-p 옵션) 기본 개념] 포트 충돌 및 바인딩 실패
+ i5 L1 TOP r0 built ctx=11648 needs=[] 볼륨·데이터 마운트 오류
+ i6 L1 TOP r0 built ctx=14074 needs=[] 리소스 제한(OOM·메모리·CPU)
+ i7 L1 TOP r0 built ctx=9482 needs=[] 헬스체크(healthcheck) 실패
+ i8 L1 TOP r0 built ctx=11643 needs=[컨테이너 상태·로그 확인 명령어] 네트워크·도커 데몬 문제
+ i9 L1 TOP r0 built ctx=5178 needs=[] 이미지·권한·의존 서비스 문제
+ i10 L2 pre r0 built ctx=27509 needs=[] 컨테이너 라이프사이클 상태 정의
+ i11 L2 pre r0 built ctx=20213 needs=[] 도커 데몬 실행 전제
+ i12 L2 pre r0 built ctx=13524 needs=[] systemd 기반 호스트 전제
+ i13 L2 pre r0 built ctx=23036 needs=[CMD와 ENTRYPOINT의 차이 및 실행 형태 | 런타임 명령어 오버라이드 규칙] Dockerfile 기본 구조와 명령어
+ i14 L2 pre r0 built ctx=13079 needs=[] CMD와 ENTRYPOINT의 차이 및 실행 형태
+ i15 L2 pre r0 built ctx=26549 needs=[CMD와 ENTRYPOINT의 차이 및 실행 형태] 런타임 명령어 오버라이드 규칙
+ i16 L2 pre r0 built ctx=28131 needs=[네트워크·도커 데몬 문제] 도커 포트 매핑(-p 옵션) 기본 개념
+ round 0 score=undefined pass=undefined missing=[] added=[] reason=undefined
+final context chars=124728 after.fromPlan=undefined

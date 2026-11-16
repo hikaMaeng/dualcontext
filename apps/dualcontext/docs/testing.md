@@ -14,8 +14,17 @@ npm run test --workspaces
 * `src/server/admin/runs/list/list.test.ts` · `src/server/admin/runs/router.test.ts`: 목록 파라미터 검증, 쿼리 빌더(필터 OR · 종류 사이 AND · 검색어 AND, 쪽 offset, 사용자 값은 전부 `$n` 파라미터), `listRuns`(total · page · match, 임베딩 실패는 `EmbeddingUnavailable`), 임베딩 저장 · 백필 상한, 라우터(400 · 503 · `/runs/filters` 순서). 가짜 pool · 가짜 모델.
 * `src/server/admin/researchers/default-procedure/index.test.ts`: 기본 프로시저 검증(연결되지 않은 id 는 `400`, 연결 해제와의 모순 `400`, 저장 · 응답에 `defaultProcedureId`). 폴백 동작은 도메인 `augment/index.test.ts`(발동 · 라우팅이 골랐을 때 · 기본 없음 · 비활성/미연결 · 자료 없음 `skipped`).
 * `src/server/admin/runs/list/db.test.ts`: **실제 PostgreSQL**(pgvector + textsearch_ko) 필요. `DUALCONTEXT_TEST_DATABASE_URL` 이 있을 때만 돌고 없으면 7건이 건너뛰어진다. 임시 스키마(`dc_runs_test_<pid>`)에 `initdb/*.sql` 을 적용하고 끝나면 지우므로 가리킨 DB 의 기존 테이블은 건드리지 않는다. 005 멱등, 이름 추출, 갱신 쿼리의 트리거 반영, 필터 OR/AND · total, 한국어/영어 FTS, 의미 검색 순위 · 최소 유사도 · 모델/차원 불일치 제외. 이미지에 DB 가 있으므로 `docker run --entrypoint docker-entrypoint.sh -e POSTGRES_PASSWORD=x -p 127.0.0.1:55432:5432 <이미지> postgres` 로 임시 DB 를 띄워 돌린다.
-* `src/front/features/runs/**` · `src/front/components/tabs`: 실행 로그 화면의 순수 로직. 목록 쿼리스트링 구성(`api/path.ts`, 가짜 `fetch` 로 `/api/admin/runs?page&pageSize&researcher…&procedure…&q&mode` 와 필터 · 삭제 경로 확인), 쪽 계산과 필터 변경 시 1쪽 복귀(`query`), 해시 경로 해석(`route`), 이름 합치기 · 초 표기(`format`), 진행 단계(`view/phase`), 컨텍스트 마크다운 판별(`view/tabs/context/markdown.ts`), 탭 키보드 이동(`components/tabs/keys.ts`, RTL 포함). 화면 렌더 자체의 자동 시험은 없다(배포 후 브라우저 검증 몫).
-* `packages/dualcontext_domain/src/server/augment/index.test.ts`: 라우팅, 폴백, 프로시저 상위 개수, 쌍별 라이터 호출 수, 수집 실패 표시.
+* `src/front/features/runs/**` · `src/front/components/tabs`: 실행 로그 화면의 순수 로직. 목록 쿼리스트링 구성(`api/path.ts`, 가짜 `fetch` 로 `/api/admin/runs?page&pageSize&researcher…&procedure…&q&mode` 와 필터 · 삭제 경로 확인), 쪽 계산과 필터 변경 시 1쪽 복귀(`query`), 해시 경로 해석(`route`), 이름 합치기 · 초 표기(`format`), 진행 단계(`view/phase`), 컨텍스트 마크다운 판별(`view/tabs/context/markdown.ts`), 탭 키보드 이동(`components/tabs/keys.ts`, RTL 포함), 계획 탭 트리 구성(`view/tabs/plan/model`: top 루트 · needs 들여쓰기 · 공유 노드는 두 번째부터 접힘 · 순환 끊기 · 없는 id · 고아 아이템 · key 유일 · 웨이브 이름 · 단계 수). 화면 렌더 자체의 자동 시험은 없다(배포 후 브라우저 검증 몫).
+* `src/front/features/plan/api/api.test.ts`: 저장 실패에서 서버 검증 문장 추출(400 + `{error}` 만, 그 밖은 null), 옛 설정에 없는 `maxProvidedChars` 를 기본값으로 채우기(`withPlanDefaults`).
+* `src/server/plan/parse/index.test.ts`: 응답 JSON 추출(코드펜스 · 잡설 · 문자열 속 괄호, 기대 스키마에 맞는 후보 선택), 항목 검증 · 이름 중복 · 길이 상한, 중복 정리 번호 · 기존 id 검증, 점수 클램프, 평가 형식 오류(missing 없음 · 배열 아님 · 항목 틀림)는 던짐.
+* `src/server/plan/config/index.test.ts`: 기본 설정(classic), 계약 범위, 옛 행 채우기, 실행 한 번 override(숫자 한도만, 저장 설정 불변), 옛 기본 프롬프트 승격(고친 키는 유지).
+* `src/server/plan/provided/index.test.ts`: 사전 컨텍스트 중첩 제거(실제 `writeContext` 3단계 사슬에서 아래 단계 자료가 다시 실리지 않음, 섹션 경계 · 여러 섹션 · 머리글 없는 글), 길이 상한과 「(이하 N자 생략)」의 N.
+* `src/server/plan/ports/index.test.ts`: build 가 다듬은 사전 컨텍스트(중첩 제거 · 자르기)를 넘김. 가짜 모델로 포트 어댑터(프롬프트 자리표시자, 상한, 실패는 던짐, build 의 아이템 질의 · provided 전달 · 원본 기록, answer 프롬프트, 평가 부족 항목을 자르지 않음, 구분자 무력화 · 주입 문자열이 데이터 구간을 닫지 못함, 기본 프롬프트의 구분자 · 안내 · 편향 문구 없음).
+* `src/server/augment/index.test.ts`: `runAugment` 모드 분기(classic 은 기존 결과 그대로 · plan null, mode override, 실제 도메인 플래너 + 가짜 모델의 decompose, analyze 실패는 던짐, reevaluate 답변 재사용 조건), `planResult` 평탄화.
+* `src/server/admin/plan/index.test.ts`: `GET/PUT /plan/config`(400 시 저장 안 함), `GET /plan/defaults` 모양, `POST /augment` 의 `mode` · `plan` 검증 400.
+* `src/server/admin/runs/lifecycle/index.test.ts`: 가짜 pool 로 시험 실행(스냅샷 `settings.plan`, `plan` 열 저장, `plan_progress` 기록, override 가 저장 설정을 바꾸지 않음, 재사용한 증강 후 답변, 플래너 실패는 error).
+* `src/server/writer/index.test.ts`: 사전 컨텍스트가 없으면 프롬프트가 이전과 같고, 있으면 `{{provided}}` / 첫 `{{query}}` 뒤 / 끝에 들어가며 LLM 실패 대체 조립에도 남는다.
+* `packages/dualcontext_domain/src/server/augment/index.test.ts`: 라우팅, 폴백, 프로시저 상위 개수, 쌍별 라이터 호출 수, 수집 실패 표시, 사전 컨텍스트(라이터에만 전달 · 빈 배열이면 기존 호출과 같음).
 * `packages/dualcontext_domain/src/server/route/index.test.ts`: 코사인 상위 K, LLM 답 파싱.
 
 ## 타입 검사

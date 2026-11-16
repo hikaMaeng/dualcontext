@@ -1,8 +1,18 @@
 import { useEffect, useState } from "react";
-import type { Answers, AugmentPair, RoutingTrace } from "dualcontext_domain/common";
+import type { Answers, AugmentPair, PlanTrace, RoutingTrace } from "dualcontext_domain/common";
 import { api } from "./api";
 
 export type RunStatus = "running" | "ok" | "error";
+
+/**
+ * 계획 진행 단계(실행 상세의 planProgress). 도메인은 같은 모양을 `dualcontext_domain/server` 의 PlanProgress 로만 내보내고
+ * 프런트는 common 만 import 하므로 여기서 같은 모양으로 둔다. at 은 서버가 기록한 시각(ISO).
+ */
+export type PlanProgressStage = "analyze" | "dependencies" | "build" | "answer" | "evaluate" | "reinforce" | "done";
+export type RunPlanProgress = { stage: PlanProgressStage; detail?: string; at: string };
+
+/** 실행 로그의 쌍. 계획 모드(decompose · reevaluate)에서는 그 쌍을 쓴 컨텍스트 아이템 이름이 함께 온다. */
+export type RunPair = AugmentPair & { item?: string };
 
 /** 실행 로그 한 건의 상세. 진행 중이면 아직 채워지지 않은 필드가 비어 있다. */
 export type RunDetail = {
@@ -17,10 +27,17 @@ export type RunDetail = {
   /** 라우팅이 후보마다 매긴 점수(임베딩 방식). 증강 단계가 끝나야 채워진다. */
   routing: RoutingTrace | null;
   settings: unknown;
-  pairs: AugmentPair[];
+  pairs: RunPair[];
   context: string | null;
   /** 답변은 끝나는 대로 하나씩 채워진다. */
   answers: Partial<Answers> | null;
+  /**
+   * 컨텍스트 계획 기록. classic 모드와 이 필드가 생기기 전의 실행은 null(또는 없음)이다.
+   * 서버는 계획이 끝난 뒤에만 채운다(진행 중 부분 trace 는 없다 — 진행은 planProgress 로 본다).
+   */
+  plan?: PlanTrace | null;
+  /** 계획 진행 단계. 계획 모드 실행이 진행 중일 때 단계마다 갱신된다. classic · 옛 실행은 null(또는 없음). */
+  planProgress?: RunPlanProgress | null;
 };
 
 const pollMs = 3000;

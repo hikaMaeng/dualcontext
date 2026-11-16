@@ -15,6 +15,7 @@ export enum RSC {
   APP_NAV_RESEARCHERS_BUTTON = "app.nav.researchers.button",
   APP_NAV_PROCEDURES_BUTTON = "app.nav.procedures.button",
   APP_NAV_ROUTER_BUTTON = "app.nav.router.button",
+  APP_NAV_PLAN_BUTTON = "app.nav.plan.button",
   APP_NAV_WRITERS_BUTTON = "app.nav.writers.button",
   APP_NAV_AISERVER_BUTTON = "app.nav.aiserver.button",
   APP_NAV_TRY_BUTTON = "app.nav.try.button",

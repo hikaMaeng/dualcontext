@@ -11,6 +11,7 @@
 | 라우팅 | 키워드 · 코사인 상위 K · LLM 답 파싱의 순수 규칙. 임베딩/LLM 호출은 앱이 한다. | `src/server/route` |
 | 라이터 | 쌍 목록 → 컨텍스트. 결정적 조립과 쌍별 결과 이어 붙이기. | `src/server/write` |
 | 증강 | 위 전체를 잇는 진입점 `augmentQuery`. 일괄/쌍별 호출 방식 처리. | `src/server/augment` |
+| 컨텍스트 계획기 | 질의를 컨텍스트 아이템 DAG 로 분해하고 종단점부터 만든다. 재평가 루프 포함([plan.md](plan.md)). | `src/server/plan` |
 
 Express, Vite, PostgreSQL, MCP, 모델 서버 호출은 앱 모듈이 소유한다. 이 패키지는 그 모두를 `AugmentPorts` 로만 받는다.
 코드 식별자는 `Researcher` 이고 사용자에게 보이는 정식 명칭은 「조사원」이다.

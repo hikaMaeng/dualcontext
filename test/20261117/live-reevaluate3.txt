@@ -1,0 +1,7 @@
+run 239 status=ok 521s error=-
+mode=reevaluate stop=no-missing planMs=499733 items=3 levels=[{"level":2,"linked":2,"created":0,"analyzed":3,"candidates":2}] waves=[["i1","i2"],["i3"]]
+ i1 L1 TOP r0 built ctx=2405 needs=[] 도커 컨테이너 즉시 종료 주요 원인
+ i2 L1 TOP r0 built ctx=16426 needs=[] 도커 로그 및 상태 진단 방법
+ i3 L1 TOP r0 built ctx=7858 needs=[도커 컨테이너 즉시 종료 주요 원인 | 도커 로그 및 상태 진단 방법] 원인별 도커 컨테이너 종료 해결책
+ round 0 score=95 pass=false missing=[] added=[] reason=주요 원인(명령어 오류, 애플리케이션 예외, 포트 충돌, 리소스 부족, 헬스체크 실패, 포그라운드 프로세스 부재)과 진단법, 원인별 해결책, 권장 진단 순서를 표와 단계로 체계적으로 정리하고 참고 자료를 적절히 인용하여 질의에 완전히 답하고 있음
+final context chars=26761 after.fromPlan=true

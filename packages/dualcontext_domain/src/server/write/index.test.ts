@@ -84,3 +84,20 @@ test("webLast 는 큐레이션 쌍을 앞에 두고 각 쪽의 순서를 유지�
   const d: Pair = { researcher: researcher(3, "문서고"), procedure: null, materials };
   assert.deepEqual(webLast([a, b, c, d]).map((pair) => pair.researcher.name), ["사내문서", "문서고", "웹1", "웹2"]);
 });
+
+test("사전 컨텍스트가 있으면 조사원 자료 앞에 「사전 제공된 컨텍스트」 섹션이 붙고 안쪽 머리글은 낮아진다", () => {
+  const pairs: Pair[] = [{ researcher: docs, procedure: null, materials }];
+  const context = writeContext("환불", pairs, [{ name: "환불 규정", context: "# 참고 자료\n\n규정 본문" }, { name: "빈 것", context: "  " }]);
+  const section = context.indexOf("## 사전 제공된 컨텍스트");
+  assert.ok(section > 0);
+  assert.ok(section < context.indexOf("## 조사원: 사내문서"));
+  assert.match(context, /### 환불 규정\n\n#### 참고 자료\n\n규정 본문/);
+  assert.doesNotMatch(context, /### 빈 것/);
+});
+
+test("사전 컨텍스트가 없거나 비면 이전과 같은 글이다", () => {
+  const pairs: Pair[] = [{ researcher: docs, procedure: null, materials }];
+  assert.equal(writeContext("환불", pairs, []), writeContext("환불", pairs));
+  assert.equal(writeContext("환불", pairs, [{ name: "a", context: "" }]), writeContext("환불", pairs));
+  assert.doesNotMatch(writeContext("환불", pairs), /사전 제공된 컨텍스트/);
+});

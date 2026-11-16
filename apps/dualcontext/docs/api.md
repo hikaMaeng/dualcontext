@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | `augment_context` | `query: string` (비어 있지 않음) | 증강된 컨텍스트 텍스트 |
 
-도구는 이것 하나뿐이다. 붙는 방법은 `usage.md`.
+도구는 이것 하나뿐이다. 경로는 저장된 계획 설정의 `mode` 를 따른다(`classic` 기본: 기존 경로, `decompose` · `reevaluate`: 1차 아이템 컨텍스트를 합친 것, 「계획 설정」 아래). 계획 모드에서 질의 분석(analyze)이 실패하면 도구 호출이 오류가 된다(빈 결과로 숨기지 않는다). reevaluate 의 답변 · 평가는 컨텍스트를 고르는 데만 쓰고 돌려주지 않는다. 붙는 방법은 `usage.md`.
 
 ## HTTP
 
@@ -23,10 +23,12 @@
 | `GET/POST /api/admin/writers`, `PUT/DELETE /api/admin/writers/:id`, `POST /api/admin/writers/:id/activate` | 라이터 |
 | `GET/PUT /api/admin/ai-server` | AI 서버 설정. 응답에 API 키는 없고 `hasApiKey` 만 있다 |
 | `GET /api/admin/ai-server/models?kind=embedding\|chat` | 저장된 설정으로 서버의 모델 목록을 불러온다(연결 시험 겸용). 실패 시 `502` |
-| `POST /api/admin/augment` | `{ query, writerId? }`. **비동기**: 실행 기록(`running`)을 만들고 즉시 `202 { runId, status }` 를 돌려준다. 작업은 서버에서 이어지며 단계(`augment` → `answering` → `done`)마다 기록을 갱신한다. 진행은 `GET /runs/:id`(폴링) 또는 `GET /runs/:id/events`(SSE)로 본다. `?wait=1` 이면 끝까지 기다려 `{ context, routing, researcherRouting, pairs, writer, answers, runId }` 를 돌려준다(스크립트 호환용, 증강 단계가 실패하면 `502 { error, runId }`). 증강 경로는 MCP 도구와 같고, 이어서 LLM 으로 **최종 답변 두 개**를 만든다: `answers.before`(질의만), `answers.after`(질의 + 컨텍스트). 컨텍스트가 비면 `answers.after = { skipped: true }` |
+| `GET/PUT /api/admin/plan/config` | 컨텍스트 계획 설정(아래 「계획 설정」). `PUT` 은 설정 **전체**를 받고 zod 로 검증한다(실패 `400 { error }`, 저장하지 않음). 응답은 저장 뒤 다시 읽은 설정 |
+| `GET /api/admin/plan/defaults` | `{ config: 기본 설정(mode classic), prompts: { analyze, prerequisites, dedupe, evaluate } }`. 화면의 「기본값으로」 용 |
+| `POST /api/admin/augment` | `{ query, writerId?, mode?, plan? }`. `mode`(`classic` · `decompose` · `reevaluate`)와 `plan`(숫자 한도만의 부분 설정: `{ maxLevels?, maxNeedsPerItem?, maxItems?, maxProvidedChars?, reevaluate?: { maxRounds?, passScore?, maxMissing?, maxNewItems? } }`, 범위는 「계획 설정」과 같고 모르는 키 · 프롬프트 · `dedupe` 는 `400`)은 **이번 실행에만** 저장 설정 위에 얹는다(저장 설정은 그대로). 없으면 저장된 설정의 모드다. **비동기**: 실행 기록(`running`)을 만들고 즉시 `202 { runId, status }` 를 돌려준다. 작업은 서버에서 이어지며 단계(`augment` → `answering` → `done`)마다 기록을 갱신한다. 진행은 `GET /runs/:id`(폴링) 또는 `GET /runs/:id/events`(SSE)로 본다. `?wait=1` 이면 끝까지 기다려 `{ context, routing, researcherRouting, pairs, writer, plan, answers, runId }`(`plan` 은 classic 이면 `null`)를 돌려준다(스크립트 호환용, 증강 단계가 실패하면 `502 { error, runId }`). 증강 경로는 MCP 도구와 같고, 이어서 LLM 으로 **최종 답변 두 개**를 만든다: `answers.before`(질의만), `answers.after`(질의 + 컨텍스트). 컨텍스트가 비면 `answers.after = { skipped: true }`. reevaluate 에서 마지막 라운드 답변이 최종 컨텍스트로 만든 것이면 모델을 다시 부르지 않고 그 답을 `answers.after` 로 쓰고 `fromPlan: true` 를 붙인다 |
 | `GET /api/admin/runs` | 시험 실행 로그 목록(쪽 단위, 응답은 도메인 타입 `RunListPage`). 쿼리: `page`(1부터, 기본 1), `pageSize`(기본 20, 최대 100), `researcher` · `procedure`(반복 가능, **종류 안에서는 OR**: 주어진 이름 중 하나라도 선택된 실행이면 통과, 두 종류 사이와 `q` 와는 AND), `q`(검색어, 앞뒤 공백 제거, 최대 500자), `mode`(`keyword`(기본) · `semantic`). 잘못된 값은 `400 { error }`. 응답 `{ items, total, page, pageSize }`: `items[]` 는 `id, createdAt, query(전체, 자르지 않음), status, durationMs, researchers[], procedures[]` 와 `q` 가 있을 때만 `match { by, score }`. `researchers`/`procedures` 는 기록의 `pairs` 에서 뽑은 이름(중복 제거, 선택 순서 유지, procedure `null` 제외). 정렬은 최신순(`id` 내림차순), 단 `mode=semantic` 이고 `q` 가 있으면 유사도 내림차순. `keyword` 는 질의 + 최종 출력(`answers.before/after.text`) + `context` 에 대한 한국어 형태소 전문 검색(어절은 AND)이고 `match.score` 는 `ts_rank`. `semantic` 은 `q` 를 임베딩해 질의 임베딩과의 코사인 유사도로 거르고(최소 `0.8`, `list/semantic/index.ts`) 순위를 매기며 `match.score` 는 코사인 유사도다. 임베딩 서버가 안 되거나 모델이 비어 있으면 빈 결과가 아니라 `503 { error }`. 임베딩이 아직 없는 옛 실행은 `semantic` 결과에서 빠진다(시작 시 · 검색 때 뒤에서 채운다. `internals.md`). 예: `/api/admin/runs?page=1&pageSize=20&researcher=코드&researcher=문서&procedure=P&q=얕은 클론` |
 | `GET /api/admin/runs/filters` | 목록 필터에 쓸 이름 `{ researchers[], procedures[] }`(타입 `RunFilterOptions`). 실행 기록에 실제로 나온 이름만, 가나다순(코드포인트 순) |
-| `GET /api/admin/runs/:id` | 로그 상세(폴링용): 위 필드 + `status(running/ok/error), stage, error, routing(후보별 라우팅 점수), settings(실행 당시 설정 스냅샷, 답변 프롬프트 포함), pairs(자료 포함), context, answers`. 진행 중이면 아직 채워지지 않은 필드가 비어 있다(답변은 끝나는 대로 하나씩 채워진다) |
+| `GET /api/admin/runs/:id` | 로그 상세(폴링용): 위 필드 + `status(running/ok/error), stage, error, routing(후보별 라우팅 점수), settings(실행 당시 설정 스냅샷, 답변 프롬프트 포함, `settings.plan` = 이번 실행에 쓴 계획 설정 전체(모드 · override 적용 후, 프롬프트 포함)), pairs(자료 포함), context, answers, plan, planProgress`. `plan` 은 최상위 필드로 `PlanTrace`(도메인 `common/model/plan`) 그대로이며 classic 실행 · 옛 실행은 `null`, 계획 실행도 증강 단계가 끝나야(`stage` 가 `answering` 이 될 때) 채워진다. `planProgress` 는 진행 중 계획 단계 `{ stage(analyze/dependencies/build/answer/evaluate/reinforce/done), detail?, at }` 또는 `null`(SSE 로도 갱신된다). 계획 실행의 `researcherRouting` 은 `"plan"`, `routing` 은 `{ researchers: [], procedures: [] }`, `pairs` 는 모든 아이템(사전 아이템 포함)의 쌍을 아이템 순서로 평탄화한 것이고 쌍마다 `item`(아이템 이름)이 붙는다(만들지 못한 아이템의 쌍은 `materials: []`). `writer.calls` 는 아이템 수. 진행 중이면 아직 채워지지 않은 필드가 비어 있다(답변은 끝나는 대로 하나씩 채워진다) |
 | `GET /api/admin/runs/:id/events` | SSE. 접속 즉시 현재 상태를 보내고, 상태가 바뀔 때마다 상세 행 전체를 `data:` 로 보낸 뒤 실행이 끝나면 스트림을 닫는다. 15초마다 `: keep-alive` 를 보낸다 |
 | `DELETE /api/admin/runs/:id` | 로그 한 건 삭제. 실행 중이면 `409` |
 | `GET /*` | 빌드된 프런트(SPA 폴백) |
@@ -36,6 +38,26 @@
 ## MCP 응답
 
 마땅한 조사원이 없으면(선택 0개, 또는 조사원은 골랐지만 자료가 하나도 모이지 않음) **컨텍스트를 공급하지 않는다**: `augment_context` 는 `content: []`(빈 결과)를 돌려준다. 호출한 쪽은 자기 지식으로 답한다.
+
+## 계획 설정(`/plan`)
+
+문서 하나(`plan_config.config` jsonb, 타입 `ContextPlanConfig`). 기본값은 `src/server/plan/config/index.ts#defaultPlanConfig`.
+
+| 필드 | 기본 | 범위 | 뜻 |
+| --- | --- | --- | --- |
+| `mode` | `classic` | `classic` · `decompose` · `reevaluate` | 경로. classic = 기존 그대로, decompose = 아이템 분해 · 의존성까지, reevaluate = 답변 평가 · 보강 루프 추가 |
+| `maxLevels` | 3 | 1~6 | 아이템 단계 수(1 이면 의존성 분석 없음) |
+| `maxNeedsPerItem` | 4 | 1~8 | 아이템 하나가 낼 수 있는 사전 아이템 수 |
+| `maxItems` | 16 | 1~40 | 아이템 전체 수(보강 포함) |
+| `maxProvidedChars` | 3000 | 500~20000 | 사전 컨텍스트 하나를 의존하는 아이템의 라이터에 넘길 때의 최대 글자(넘으면 앞부분 + 「…(이하 N자 생략)」). 넘기기 전에 그 안의 「사전 제공된 컨텍스트」 섹션(중첩)은 뺀다. 이 필드가 없던 때 저장된 행은 읽을 때 3000 이 채워진다. `PUT` 에는 필수 |
+| `dedupe` | `llm` | `name` · `llm` | 중복 정리. llm 이 실패하면 name |
+| `reevaluate.maxRounds` | 2 | 0~5 | 최초 답변 뒤 보강 라운드 수 |
+| `reevaluate.passScore` | 80 | 0~100 | 통과 점수(이상) |
+| `reevaluate.maxMissing` | 0 | 0~40 | 통과로 인정하는 부족 항목 수(이하) |
+| `reevaluate.maxNewItems` | 4 | 1~8 | 한 라운드 보강 아이템 수 |
+| `prompts.analyze` · `prerequisites` · `dedupe` · `evaluate` | `plan/prompts` | 비어 있지 않음, 2만 자 이하 | 모델이 JSON 만 내도록 스키마를 적은 프롬프트. 자리표시자: analyze `{{query}} {{max}}`, prerequisites `{{query}} {{item}} {{known}} {{max}}`, dedupe `{{query}} {{candidates}} {{existing}}`, evaluate `{{query}} {{context}} {{answer}} {{max}}` |
+
+아이템 하나는 기존 경로(라우팅 · 수집 · 프로시저 · 라이터)로 질의 `이름: 설명` 을 증강하고, 사전 아이템 컨텍스트를 라이터에 함께 준다. 응답 해석 규칙은 `plan/parse`(코드펜스 · 잡설 허용, 파서마다 기대 모양의 첫 JSON 후보, 아이템 목록은 잘못된 항목 버림, 평가는 `score` 숫자와 `missing` 배열(빈 배열 가능)이 필수이고 항목이 하나라도 틀리면 실패, 이름 80 · 설명 600 · 이유 400자 상한, 부족 항목 보존 100개, 점수 0~100 정수 클램프). 바깥 텍스트는 `<<<이름 … 이름>>>` 구분자 안에 들어가며 값 속 `<<<`/`>>>` 는 `‹‹‹`/`›››` 로 바뀐다. 시작 시 저장된 프롬프트가 옛 기본값과 글자까지 같으면 새 기본값으로 바뀐다(고친 프롬프트는 유지).
 
 ## 라우터 설정(`/router`)
 

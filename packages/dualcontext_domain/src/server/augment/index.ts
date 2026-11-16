@@ -1,4 +1,5 @@
 import type { AugmentResult, Material, Pair, Procedure, Researcher, RoutingTrace, WriterMode } from "../../common/index.js";
+import type { Provided } from "../plan/ports.js";
 import type { Selection } from "../route/index.js";
 import { mergeContexts, webLast } from "../write/index.js";
 import { selectForQuery, trace, type SelectPorts } from "./select.js";
@@ -11,7 +12,8 @@ export type AugmentPorts = SelectPorts & {
   /** 2단계 라우팅: (질의, 조사원)으로 연결된 프로시저를 고른다. */
   selectProcedures: (query: string, researcher: Researcher, candidates: Procedure[]) => Promise<Selection<Procedure>>;
   collect: (researcher: Researcher, query: string) => Promise<Material[]>;
-  writer: { mode: WriterMode; write: (query: string, pairs: Pair[]) => Promise<string> | string };
+  /** provided 는 사전 컨텍스트(계획기가 앞 아이템에서 만든 것). 없으면 undefined 로 부른다(기존 라이터와 호환). */
+  writer: { mode: WriterMode; write: (query: string, pairs: Pair[], provided?: Provided[]) => Promise<string> | string };
 };
 
 /** 조사원 한 곳에서 모으는 자료의 상한(여러 질의로 모은 것을 합쳐도 컨텍스트가 길어지지 않게 한다). */
@@ -28,8 +30,16 @@ export const defaultProcedureRouting = "default";
  * **마땅한 조사원이 없으면(선택 0개) 컨텍스트를 만들지 않는다**: context 는 빈 문자열이고 라이터는 부르지 않는다.
  * 조사원은 골랐지만 어느 출처에서도 자료가 나오지 않았을 때(오류 없이)도 마찬가지다. 수집 오류는 숨기지 않고 컨텍스트에 남긴다.
  * 라이터가 batch 면 모든 쌍을 한 번에, per_pair 면 쌍마다 한 번씩 호출하고 이어 붙인다.
+ * provided(사전 컨텍스트)는 **라이터에만** 전달한다: 라우팅 · 수집은 질의만으로 한다. 빈 배열은 없는 것과 같다.
+ * 비지 않은 provided 가 있으면 쌍이 쓸모없어도(선택 0개 · 자료 0개) 라이터를 부른다: 사전 컨텍스트만으로도 이 아이템의 컨텍스트가 된다
+ * (A 가 B 를 필요로 하고 B 에만 자료가 있을 때 A 가 비지 않게). 이때 batch 는 쌍 전체(빈 배열일 수 있다)로 1회,
+ * per_pair 는 쌍이 쓸모없으므로 빈 쌍 배열로 1회 부른다. provided 가 없거나 모두 비면 기존과 같다(라이터를 부르지 않고 "").
+ * see docs/plan.md#build
  */
-export async function augmentQuery(query: string, ports: AugmentPorts): Promise<AugmentResult> {
+export async function augmentQuery(query: string, ports: AugmentPorts, provided?: Provided[]): Promise<AugmentResult> {
+  const given = provided && provided.length > 0 ? provided : undefined;
+  // 라이터를 부를 이유가 되는 사전 컨텍스트: 내용이 있는 것만.
+  const providedUseful = (given ?? []).some((entry) => typeof entry.context === "string" && entry.context.trim() !== "");
   const allResearchers = await ports.listResearchers();
   // 복합 질의는 하위 질문으로도 라우팅한다: 통째로는 한 분야에 밀려 다른 분야의 조사원이 빠진다. 선택은 합집합이다.
   const { parts, asked: selections, merged: researcherSelection } = await selectForQuery(query, allResearchers, ports);
@@ -85,7 +95,8 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
   }
 
   // 쓸 만한 것이 있는가: 자료가 하나라도 모였거나, 수집 실패가 있어 그 사실을 알려야 하는 경우.
-  const useful = pairs.some((pair) => pair.materials.length > 0 || pair.error !== undefined);
+  const pairsUseful = pairs.some((pair) => pair.materials.length > 0 || pair.error !== undefined);
+  const useful = pairsUseful || providedUseful;
   // 웹 검색 쌍은 큐레이션 쌍 뒤에 둔다(라이터가 별도 섹션으로 다룬다). 반환하는 pairs 의 순서는 그대로다.
   const ordered = webLast(pairs);
   let context: string;
@@ -93,13 +104,18 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
   if (!useful) {
     context = "";
     calls = 0;
+  } else if (ports.writer.mode === "per_pair" && !pairsUseful) {
+    // 쌍은 쓸모없고 사전 컨텍스트만 있다: 쌍마다 부를 대상이 없으므로 빈 쌍 배열로 한 번 부른다.
+    context = mergeContexts(query, [await ports.writer.write(query, [], given)]);
+    calls = 1;
   } else if (ports.writer.mode === "per_pair") {
     const parts: string[] = [];
-    for (const pair of ordered) parts.push(await ports.writer.write(query, [pair]));
+    // 쌍별 호출도 각 호출이 사전 컨텍스트를 받는다(쌍 하나만 보는 LLM 라이터도 앞 아이템을 반영해야 한다).
+    for (const pair of ordered) parts.push(await (given ? ports.writer.write(query, [pair], given) : ports.writer.write(query, [pair])));
     context = mergeContexts(query, parts);
     calls = pairs.length;
   } else {
-    context = await ports.writer.write(query, ordered);
+    context = await (given ? ports.writer.write(query, ordered, given) : ports.writer.write(query, ordered));
     calls = 1;
   }
 

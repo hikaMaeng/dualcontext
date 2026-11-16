@@ -1,0 +1,13 @@
+run 235 status=ok 1276s error=-
+mode=decompose stop=mode-decompose planMs=1030829 items=10 levels=[{"level":2,"linked":2,"created":3,"analyzed":4,"candidates":11},{"level":3,"linked":2,"created":3,"analyzed":3,"candidates":6}] waves=[["i8","i9","i10"],["i6"],["i7"],["i2","i3"],["i5"],["i1"],["i4"]]
+ i1 L1 TOP r0 built ctx=102797 needs=[임차권등기명령의 개념과 법적 성질 | 민법 임차권 및 보증금 반환 규정] 민사집행법 임차권등기명령 규정
+ i2 L1 TOP r0 built ctx=46884 needs=[임대차계약 | 보증금 지급사실] 민법 임차권 및 보증금 반환 규정
+ i3 L1 TOP r0 built ctx=43887 needs=[임대차계약 | 보증금 지급사실] 임차권등기명령 신청 실무 매뉴얼
+ i4 L1 TOP r0 built ctx=159065 needs=[임차권등기명령의 개념과 법적 성질 | 민사집행법 임차권등기명령 규정] 대법원 임차권등기명령 판례
+ i5 L2 pre r0 built ctx=50928 needs=[민법 임차권 및 보증금 반환 규정] 임차권등기명령의 개념과 법적 성질
+ i6 L2 pre r0 built ctx=15368 needs=[임차권의 개념과 발생 | 임대차계약의 성립·유효 요건 일반 규정] 임대차계약
+ i7 L2 pre r0 built ctx=25256 needs=[보증금의 법적 성질 | 임대차계약] 보증금 지급사실
+ i8 L3 pre r0 built ctx=3682 needs=[] 임차권의 개념과 발생
+ i9 L3 pre r0 built ctx=5862 needs=[] 임대차계약의 성립·유효 요건 일반 규정
+ i10 L3 pre r0 built ctx=4496 needs=[] 보증금의 법적 성질
+final context chars=352724 after.fromPlan=undefined
