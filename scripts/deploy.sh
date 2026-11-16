@@ -302,6 +302,12 @@ service_target_port_of() {
   compose_query "$1" '(svc?.ports ?? []).find((p) => Number(p?.published) > 0 && Number(p?.target) > 0)?.target'
 }
 
+# A service that publishes no host port (an internal worker reached only over the compose network)
+# declares its port with `expose:`; its health is probed from inside its own container.
+service_internal_port_of() {
+  compose_query "$1" '(svc?.ports ?? []).length === 0 ? (svc?.expose ?? [])[0] : ""'
+}
+
 published_port_valid() {
   local port_target="$1"
   local port_number="${port_target##*:}"
@@ -346,6 +352,7 @@ for service in "${services[@]}"; do
   deploy_marker=".docker/deploy-$service.sha256"
   current_runtime_fingerprint="$(service_fingerprint "$service")"
   current_port="$(docker compose port "$service" "$(service_target_port_of "$service")" 2>/dev/null || true)"
+  [[ -z "$current_port" && -n "$(service_internal_port_of "$service")" ]] && current_port="internal:$(service_internal_port_of "$service")"
   if [[ -f "$deploy_marker" ]] &&
     [[ "$(cat "$deploy_marker")" == "$current_runtime_fingerprint" ]] &&
     printf '%s\n' "${running_services[@]}" | grep -Fxq "$service" &&
@@ -486,8 +493,30 @@ for service in "${services[@]}"; do
   port_host="${port_host%]}"
   port_reason="ok"
   health_report=""
+  internal_port="$(service_internal_port_of "$service")"
 
-  if [[ -z "$port_target" ]]; then
+  if [[ -z "$port_target" && -n "$internal_port" ]]; then
+    port_target="internal:$internal_port"
+    port_reason="internal-only"
+    for health_path in "${health_paths[@]}"; do
+      health_status="000"
+      for attempt in {1..30}; do
+        # No `-o /dev/null`: it is not writable for the unprivileged user in some images. The status is the last line.
+        health_status="$(docker compose exec -T "$service" curl -s --max-time 5 -w '
+%{http_code}' "http://127.0.0.1:$internal_port$health_path" 2>/dev/null | tail -n 1 || true)"
+        health_status="${health_status:-000}"
+        [[ "$health_status" =~ ^2[0-9][0-9]$ ]] && break
+        sleep 1
+      done
+      if [[ "$health_status" =~ ^2[0-9][0-9]$ ]]; then
+        health_report+=" health[$health_path]=ok"
+        deploy_report_lines+=("health service=$service path=$health_path http=$health_status url=container://$service:$internal_port$health_path")
+      else
+        health_report+=" health[$health_path]=failed(http=$health_status)"
+        verify_status="failed"
+      fi
+    done
+  elif [[ -z "$port_target" ]]; then
     port_reason="published-port-missing"
     verify_status="failed"
   elif ! published_port_valid "$port_target"; then

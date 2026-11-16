@@ -4,8 +4,8 @@
 * 단독 기동(운영 스택과 분리):
 
 ```sh
-CRAWLER_HOST_PORT=18992 docker compose -p dualcrawltest up -d --build --no-deps crawler
-curl -s http://127.0.0.1:18992/health
+docker compose -p dualcrawltest up -d --build --no-deps crawler
+docker compose -p dualcrawltest exec -T crawler curl -s http://127.0.0.1:11235/health
 docker compose -p dualcrawltest down
 ```
 

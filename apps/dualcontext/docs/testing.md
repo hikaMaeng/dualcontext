@@ -50,8 +50,8 @@ Git Bash 에서는 `MSYS_NO_PATHCONV=1` 을 붙여야 `/app/...` 경로가 변�
 운영 중인 스택을 건드리지 않고 임시 프로젝트 이름으로 크롤러만 띄워 확인한다.
 
 ```sh
-CRAWLER_HOST_PORT=18992 docker compose -p dualcrawltest build crawler
-CRAWLER_HOST_PORT=18992 docker compose -p dualcrawltest up -d --no-deps crawler
+docker compose -p dualcrawltest build crawler
+docker compose -p dualcrawltest up -d --no-deps crawler
 # 임시 pgvector DB 에 004_crawler.sql 을 적용하고, 임베딩은 가짜 임베더로 대체한 통합 스크립트로
 # collectCrawler 를 실행한다(실제 사이트 크롤 → 청크 → 저장 → 검색 → 캐시 재사용 → 낡은 캐시의 백그라운드 재크롤).
 docker compose -p dualcrawltest down
