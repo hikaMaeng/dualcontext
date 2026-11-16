@@ -15,7 +15,8 @@
 | `src/server/admin` | 관리 API. 엔티티별 폴더: `researchers`, `procedures`, `router`, `writers`, `ai-server`, `runs`(시험 실행 로그: `index.ts` 는 라우터, `lifecycle/` 실행 · 진행 방송 · 정리, `list/` 목록 — `params/` 입력 검증, `query/` SQL 빌더, `filters/` 필터 이름, `semantic/` 의미 검색 상수 — , `embedding/` 질의 임베딩 저장 · 백필), `crawl`(크롤러 조사원의 상태·지금 크롤·캐시 지우기). | `admin/index.ts` |
 | `src/server/seed` | 기본 라우터 · 라이터 · AI 서버 값과 사전 정의 프리셋(한 번만). | `seed/index.ts` |
 | `src/server/db` | 커넥션 풀과 상태 조회. | `db/index.ts` |
-| `src/front` | Vite React 관리자. `features/*` 폴더마다 화면과 `resource.ts`. 왼쪽 메뉴 셸은 `main.tsx`. | `main.tsx` |
+| `src/front` | Vite React 관리자. `features/*` 폴더마다 화면과 `resource.ts`. 왼쪽 메뉴 셸은 `main.tsx`(해시의 첫 마디로 화면을 고른다). | `main.tsx` |
+| `src/front/features/runs` | 실행 로그. 폴더 단위: `route`(해시 `#runs`/`#runs/<id>` 해석), `query`(목록 조건 · 쪽 계산, 순수), `api`(목록 · 필터 · 삭제 호출과 쿼리스트링 구성), `format`, `status`, `list`(목록 화면 · `item` · `pager` · `filters`(`multi` · `search`)), `view`(뷰 화면 · `phase` · `summary` · `tabs`(`answer` · `routing` · `researchers` · `context`)). 폴더마다 자기 `resource.ts`. 탭 UI 는 `components/tabs`. | `features/runs/index.tsx` |
 | `docker/` | 이미지, 엔트리포인트, DB 초기화 SQL(`initdb/`, 크롤러 캐시 테이블은 `004_crawler.sql`, 실행 로그 검색 열 · 트리거 · 인덱스는 `005_runs_search.sql`). | `docker/Dockerfile` |
 | `seed-data/` | 허깅페이스 데이터셋 적재 스크립트(호스트에서 실행). | `load-datasets.mjs` |
 

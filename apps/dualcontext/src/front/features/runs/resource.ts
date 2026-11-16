@@ -1,18 +1,13 @@
+// 실행 로그 전체(목록 · 뷰)가 같이 쓰는 키. 하위 폴더는 자기 키만 자기 resource.ts 에 둔다.
 export enum RSC {
   RUNS_TITLE_TEXT = "runs.title.text",
-  RUNS_DETAIL_HEADING_TEXT = "runs.detail.heading.text",
   RUNS_QUERY_LABEL = "runs.query.label",
   RUNS_TIME_LABEL = "runs.time.label",
   RUNS_DURATION_LABEL = "runs.duration.label",
+  RUNS_STATUS_LABEL = "runs.status.label",
   RUNS_OK_STATUS = "runs.ok.status",
   RUNS_FAILED_ALERT = "runs.failed.alert",
   RUNS_RUNNING_STATUS = "runs.running.status",
-  RUNS_STAGE_AUGMENT_STATUS = "runs.stage.augment.status",
-  RUNS_STAGE_ANSWERING_STATUS = "runs.stage.answering.status",
-  RUNS_FAILURE_LABEL = "runs.failure.label",
-  RUNS_ROUTING_LABEL = "runs.routing.label",
-  RUNS_SETTINGS_LABEL = "runs.settings.label",
-  RUNS_PAIRS_LABEL = "runs.pairs.label",
-  RUNS_MATERIALS_LABEL = "runs.materials.label",
-  RUNS_CONTEXT_LABEL = "runs.context.label"
+  RUNS_RESEARCHERS_LABEL = "runs.researchers.label",
+  RUNS_LOADING_STATUS = "runs.loading.status"
 }

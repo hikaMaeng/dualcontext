@@ -33,7 +33,8 @@ const pages: { id: Page; label: string; icon: typeof Search }[] = [
   { id: "runs", label: t[RSC.APP_NAV_RUNS_BUTTON], icon: History }
 ];
 
-const fromHash = (): Page => (pages.find((entry) => `#${entry.id}` === window.location.hash)?.id ?? "researchers");
+// `#runs/227` 처럼 화면 안의 하위 경로가 붙은 해시도 첫 마디로 화면을 정한다(하위 경로는 그 화면이 해석한다).
+const fromHash = (): Page => (pages.find((entry) => entry.id === window.location.hash.slice(1).split("/")[0])?.id ?? "researchers");
 
 function App() {
   const [page, setPage] = useState<Page>(fromHash);
