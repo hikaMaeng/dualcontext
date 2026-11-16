@@ -44,6 +44,7 @@
   "researchers.codebase.subpath.label": "रिपॉज़िटरी के अंदर उप-पथ (वैकल्पिक)",
   "researchers.codebase.tokenenv.label": "टोकन पर्यावरण चर का नाम (निजी रिपॉज़िटरी, वैकल्पिक)",
   "researchers.codebase.refresh.label": "इंडेक्स रीफ़्रेश अंतराल (घंटे, 0 = केवल एक बार)",
+  "researchers.codebase.projects.label": "प्रत्येक उप-फ़ोल्डर को अलग प्रोजेक्ट मानें",
   "researchers.codebase.hint.message": "सिंबल, कॉल और इम्पोर्ट संरचना इंडेक्स में खोजता है। URL में टोकन नहीं डाल सकते; प्रमाणीकरण केवल सर्वर पर्यावरण चर के नाम से होता है। क्लोन किया गया कोड कभी चलाया नहीं जाता।",
   "procedures.title.text": "प्रक्रियाएँ",
   "procedures.applies.label": "लागू होने के कीवर्ड (अल्पविराम से अलग; खाली का अर्थ हमेशा)",

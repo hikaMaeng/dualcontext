@@ -44,6 +44,7 @@
   "researchers.codebase.subpath.label": "레포 안 하위 경로(선택)",
   "researchers.codebase.tokenenv.label": "토큰 환경 변수 이름(비공개 레포, 선택)",
   "researchers.codebase.refresh.label": "인덱스 갱신 주기(시간, 0 이면 처음 한 번)",
+  "researchers.codebase.projects.label": "하위 폴더를 각각 개별 프로젝트로 인식",
   "researchers.codebase.hint.message": "심볼 · 호출 · import 구조 인덱스로 검색합니다. URL 에 토큰을 넣을 수 없고, 인증은 서버 환경 변수 이름으로만 지정합니다. 클론한 코드는 실행하지 않습니다.",
   "procedures.title.text": "프로시저",
   "procedures.applies.label": "적용 조건 키워드(쉼표로 구분, 비우면 항상 적용)",

@@ -44,6 +44,7 @@
   "researchers.codebase.subpath.label": "Sous-chemin dans le dépôt (facultatif)",
   "researchers.codebase.tokenenv.label": "Nom de la variable d'environnement du jeton (dépôt privé, facultatif)",
   "researchers.codebase.refresh.label": "Intervalle d'actualisation de l'index (heures, 0 = une fois)",
+  "researchers.codebase.projects.label": "Traiter chaque sous-dossier comme un projet distinct",
   "researchers.codebase.hint.message": "Recherche dans un index de structure de symboles, d'appels et d'imports. Aucun jeton dans l'URL ; l'authentification se fait uniquement par le nom d'une variable d'environnement du serveur. Le code cloné n'est jamais exécuté.",
   "procedures.title.text": "Procédures",
   "procedures.applies.label": "Mots-clés d'application (séparés par des virgules ; vide = toujours)",

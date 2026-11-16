@@ -33,6 +33,7 @@ type Form = {
   cbSubPath: string;
   cbTokenEnv: string;
   cbRefresh: string;
+  cbProjects: boolean;
   cbLimits: Record<string, unknown>;
   crawler: CrawlerForm;
   /** 개별 라우터. null 이면 전역 라우터가 고른다. */
@@ -41,7 +42,7 @@ type Form = {
 
 const blank: Form = {
   id: null, name: "", description: "", keywords: "", enabled: true, type: "pgvector", procedureIds: [], topK: "3",
-  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", cbSource: "git", cbUrl: "", cbRef: "", cbSubPath: "", cbTokenEnv: "", cbRefresh: "24", cbLimits: {}, crawler: blankCrawler, router: null
+  table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", cbSource: "git", cbUrl: "", cbRef: "", cbSubPath: "", cbTokenEnv: "", cbRefresh: "24", cbProjects: false, cbLimits: {}, crawler: blankCrawler, router: null
 };
 
 function toForm(item: Researcher): Form {
@@ -52,7 +53,7 @@ function toForm(item: Researcher): Form {
     table: String(c.table ?? ""), vectorColumn: String(c.vectorColumn ?? ""), reducedColumn: String(c.reducedColumn ?? ""),
     reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? ""), router: item.router ?? null,
     cbSource: c.source === "directory" ? "directory" : "git", cbUrl: String(c.url ?? ""), cbRef: String(c.ref ?? ""), cbSubPath: String(c.subPath ?? ""),
-    cbTokenEnv: String(c.tokenEnv ?? ""), cbRefresh: String(c.refreshHours ?? 24),
+    cbTokenEnv: String(c.tokenEnv ?? ""), cbRefresh: String(c.refreshHours ?? 24), cbProjects: Boolean(c.projects),
     cbLimits: Object.fromEntries(["maxFiles", "maxRepoMB", "maxIndexSeconds"].filter((key) => c[key] !== undefined).map((key) => [key, c[key]])),
     crawler: toCrawlerForm(item.config)
   };
@@ -69,7 +70,7 @@ function toBody(form: Form) {
               ...form.cbLimits, source: form.cbSource, topK: Number(form.topK), refreshHours: Number(form.cbRefresh),
               ...(form.cbSource === "git"
                 ? { url: form.cbUrl, ...(form.cbRef ? { ref: form.cbRef } : {}), ...(form.cbSubPath ? { subPath: form.cbSubPath } : {}), ...(form.cbTokenEnv ? { tokenEnv: form.cbTokenEnv } : {}) }
-                : { path: form.path })
+                : { path: form.path, ...(form.cbProjects ? { projects: true } : {}) })
             }
           : form.type === "crawler"
             ? toCrawlerConfig(form.crawler, Number(form.topK))
@@ -193,7 +194,13 @@ export function ResearchersView({ t }: { t: Texts }) {
                     <Field label={t[RSC.RESEARCHERS_CODEBASE_TOKENENV_LABEL]}><Input value={form.cbTokenEnv} onChange={(e) => set("cbTokenEnv", e.target.value)} /></Field>
                   </>
                 ) : (
-                  <Field label={t[RSC.RESEARCHERS_FOLDER_PATH_LABEL]}><Input required value={form.path} onChange={(e) => set("path", e.target.value)} /></Field>
+                  <>
+                    <Field label={t[RSC.RESEARCHERS_FOLDER_PATH_LABEL]}><Input required value={form.path} onChange={(e) => set("path", e.target.value)} /></Field>
+                    <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                      <Checkbox checked={form.cbProjects} onChange={(e) => set("cbProjects", e.target.checked)} />
+                      {t[RSC.RESEARCHERS_CODEBASE_PROJECTS_LABEL]}
+                    </label>
+                  </>
                 )}
                 <p className="max-w-3xl text-sm text-muted sm:col-span-2">{t[RSC.RESEARCHERS_CODEBASE_HINT_MESSAGE]}</p>
               </div>

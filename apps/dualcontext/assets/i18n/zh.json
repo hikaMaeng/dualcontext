@@ -44,6 +44,7 @@
   "researchers.codebase.subpath.label": "仓库内子路径（可选）",
   "researchers.codebase.tokenenv.label": "令牌环境变量名称（私有仓库，可选）",
   "researchers.codebase.refresh.label": "索引刷新间隔（小时，0 表示仅一次）",
+  "researchers.codebase.projects.label": "将每个子文件夹视为独立项目",
   "researchers.codebase.hint.message": "基于符号、调用和导入结构索引进行搜索。URL 中不能包含令牌，认证只能通过服务器环境变量名称指定。克隆的代码不会被执行。",
   "procedures.title.text": "流程",
   "procedures.applies.label": "适用条件关键词(用逗号分隔,留空表示始终适用)",

@@ -44,6 +44,7 @@
   "researchers.codebase.subpath.label": "Subruta dentro del repositorio (opcional)",
   "researchers.codebase.tokenenv.label": "Nombre de la variable de entorno del token (repositorio privado, opcional)",
   "researchers.codebase.refresh.label": "Intervalo de actualización del índice (horas, 0 = una vez)",
+  "researchers.codebase.projects.label": "Tratar cada subcarpeta como un proyecto independiente",
   "researchers.codebase.hint.message": "Busca en un índice de estructura de símbolos, llamadas e importaciones. No se pueden poner tokens en la URL; la autenticación es solo el nombre de una variable de entorno del servidor. El código clonado nunca se ejecuta.",
   "procedures.title.text": "Procedimientos",
   "procedures.applies.label": "Palabras clave de aplicación (separadas por comas; vacío significa siempre)",

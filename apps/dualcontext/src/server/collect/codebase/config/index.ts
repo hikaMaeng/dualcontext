@@ -13,7 +13,7 @@ const tryCheck = (check: () => unknown) => {
 /**
  * 코드베이스 조사원 설정.
  * - source "git": url(https 공개 레포)을 서버 안에서 얕게 클론한다. ref 는 브랜치 · 태그, subPath 는 레포 안 하위 폴더.
- * - source "directory": 볼륨 안 폴더(path)에 미리 받아 둔 코드베이스를 읽는다.
+ * - source "directory": 볼륨 안 폴더(path)에 미리 받아 둔 코드베이스를 읽는다. projects 이면 그 하위 폴더 각각이 개별 프로젝트다.
  * 비공개 레포 인증은 tokenEnv(서버 환경 변수 이름)로만 한다. 토큰 값을 설정에 넣을 수 없다.
  */
 export const codebaseConfigSchema = z
@@ -23,6 +23,8 @@ export const codebaseConfigSchema = z
     ref: z.string().optional(),
     subPath: z.string().optional(),
     path: z.string().trim().optional(),
+    /** directory 전용: path 의 하위 폴더 각각을 개별 프로젝트(= 개별 인덱스)로 인식한다. */
+    projects: z.boolean().default(false),
     tokenEnv: z.string().regex(/^DUALCONTEXT_GIT_TOKEN[A-Z0-9_]*$/).optional(),
     /** 인덱스를 다시 만드는 주기(시간). 0 이면 처음 한 번만. 기본 24. */
     refreshHours: z.number().int().min(0).max(720).default(24),
@@ -39,6 +41,7 @@ export const codebaseConfigSchema = z
     } else if (config.path === undefined || config.path === "") {
       ctx.addIssue({ code: "custom", path: ["path"], message: "path is required for a directory source" });
     }
+    if (config.projects && config.source !== "directory") ctx.addIssue({ code: "custom", path: ["projects"], message: "projects requires a directory source" });
   });
 
 export type CodebaseConfig = z.infer<typeof codebaseConfigSchema>;

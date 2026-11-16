@@ -44,6 +44,7 @@
   "researchers.codebase.subpath.label": "Sub path inside the repository (optional)",
   "researchers.codebase.tokenenv.label": "Token environment variable name (private repo, optional)",
   "researchers.codebase.refresh.label": "Index refresh interval (hours, 0 = once)",
+  "researchers.codebase.projects.label": "Treat each subfolder as a separate project",
   "researchers.codebase.hint.message": "Searches a symbol, call and import structure index. Tokens cannot go in the URL; authentication is only the name of a server environment variable. Cloned code is never executed.",
   "procedures.title.text": "Procedures",
   "procedures.applies.label": "Applies-when keywords (comma separated, empty means always)",

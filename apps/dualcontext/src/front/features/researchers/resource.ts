@@ -23,6 +23,7 @@ export enum RSC {
   RESEARCHERS_CODEBASE_SUBPATH_LABEL = "researchers.codebase.subpath.label",
   RESEARCHERS_CODEBASE_TOKENENV_LABEL = "researchers.codebase.tokenenv.label",
   RESEARCHERS_CODEBASE_REFRESH_LABEL = "researchers.codebase.refresh.label",
+  RESEARCHERS_CODEBASE_PROJECTS_LABEL = "researchers.codebase.projects.label",
   RESEARCHERS_CODEBASE_HINT_MESSAGE = "researchers.codebase.hint.message",
   RESEARCHERS_ROUTER_LEGEND_LABEL = "researchers.router.legend.label",
   RESEARCHERS_ROUTER_INDIVIDUAL_LABEL = "researchers.router.individual.label",

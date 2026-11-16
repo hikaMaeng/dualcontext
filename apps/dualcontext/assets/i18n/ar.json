@@ -44,6 +44,7 @@
   "researchers.codebase.subpath.label": "مسار فرعي داخل المستودع (اختياري)",
   "researchers.codebase.tokenenv.label": "اسم متغير بيئة الرمز (مستودع خاص، اختياري)",
   "researchers.codebase.refresh.label": "فاصل تحديث الفهرس (بالساعات، 0 = مرة واحدة)",
+  "researchers.codebase.projects.label": "اعتبار كل مجلد فرعي مشروعًا مستقلًا",
   "researchers.codebase.hint.message": "يبحث في فهرس لبنية الرموز والاستدعاءات والاستيراد. لا يمكن وضع الرموز في العنوان؛ المصادقة تكون باسم متغير بيئة الخادم فقط. لا تُنفَّذ الشيفرة المستنسخة أبدًا.",
   "procedures.title.text": "الإجراءات",
   "procedures.applies.label": "كلمات شرط التطبيق (مفصولة بفواصل؛ الفارغ يعني دائمًا)",
