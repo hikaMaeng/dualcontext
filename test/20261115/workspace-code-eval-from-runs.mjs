@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 const src = readFileSync(new URL("./workspace-code-eval.mjs", import.meta.url), "utf8");
 const set = [...src.matchAll(/^  \["([^"]+)", "([^"]+)", "([^"]+)"\]/gm)].map((m) => ({ project: m[1], query: m[2], cue: m[3] }));
 const base = "http://127.0.0.1:18081/api/admin";
-const runs = await (await fetch(`${base}/runs`)).json();
+const runs = (await (await fetch(`${base}/runs?pageSize=100`)).json()).items;
 let collected = 0, hit = 0, done = 0;
 for (const item of set) {
   const run = runs.filter((r) => r.query === item.query).sort((a, b) => b.id - a.id)[0];
