@@ -63,12 +63,14 @@ export async function augmentQuery(query: string, ports: AugmentPorts): Promise<
       continue;
     }
     const linked = await ports.listProceduresOf(researcher);
-    const procedureSelection = await ports.selectProcedures(query, researcher, linked);
+    // 기본 프로시저는 라우팅 후보가 아니다: 범용 문구가 구체적 프로시저보다 앞서(1위 적중 24→19로 측정됨) 오히려 흐리기 때문이다. 폴백으로만 붙는다.
+    const candidates = linked.filter((procedure) => procedure.id !== researcher.defaultProcedureId);
+    const procedureSelection = await ports.selectProcedures(query, researcher, candidates);
     const procedures = procedureSelection.selected;
     const base = { researcher, materials: materials.found, error: materials.error };
     // 폴백: 라우팅이 하나도 고르지 못했을 때만, 연결 목록에 있는 활성 기본 프로시저를 대신 붙인다(고른 것이 있으면 붙이지 않는다).
     const fallback = procedures.length === 0 ? linked.find((procedure) => procedure.id === researcher.defaultProcedureId && procedure.enabled) : undefined;
-    routing.procedures.push({ researcher: researcher.name, candidates: trace(linked, procedureSelection.scores), ...(fallback ? { fallback: "default" as const } : {}) });
+    routing.procedures.push({ researcher: researcher.name, candidates: trace(candidates, procedureSelection.scores), ...(fallback ? { fallback: "default" as const } : {}) });
     if (fallback) {
       pairs.push({ ...base, procedure: fallback });
       procedureRoutings.push(defaultProcedureRouting);

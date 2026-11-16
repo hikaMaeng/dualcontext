@@ -82,9 +82,10 @@ export function createSelectors(pool: pg.Pool, model: ModelClient, options: Sele
       };
     },
 
-    async selectProcedures(query: string, _researcher: Researcher, linked: Procedure[]): Promise<Selection<Procedure>> {
+    async selectProcedures(query: string, researcher: Researcher, linked: Procedure[]): Promise<Selection<Procedure>> {
       const config = await readConfig();
-      const candidates = linked.filter((procedure) => procedure.enabled);
+      // 기본 프로시저는 후보가 아니다(폴백으로만 붙는다). 범용 문구가 구체적 프로시저보다 앞서는 것을 막는다.
+      const candidates = linked.filter((procedure) => procedure.enabled && procedure.id !== researcher.defaultProcedureId);
       return runPipeline(config.procedure, candidates, {
         query,
         embedQuery: queryEmbedder(query),

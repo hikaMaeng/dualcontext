@@ -198,3 +198,13 @@ test("폴백 아님: 자료가 없어 skipped(no-material) 이면 기본 프로�
   assert.deepEqual(result.pairs.map((p) => `${p.procedure}/${p.procedureRouting}`), ["null/skipped(no-material)"]);
   assert.deepEqual(result.routing.procedures, []);
 });
+
+test("기본 프로시저는 라우팅 후보에서 빠진다(범용 문구가 구체적 프로시저를 앞서지 않게), 폴백으로만 붙는다", async () => {
+  let offered: number[] = [];
+  const result = await augmentQuery("환불", ports("batch", {
+    listResearchers: async () => withDefault(2),
+    selectProcedures: async (_q, _r, candidates) => { offered = candidates.map((p) => p.id); return { mode: "llm", selected: [] }; }
+  }));
+  assert.deepEqual(offered, [1]);
+  assert.deepEqual(result.pairs.map((p) => p.procedure), ["긴급"]);
+});
