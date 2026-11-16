@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "Carpeta del volumen (archivos de texto)",
   "researchers.keywords.label": "Palabras clave de enrutamiento (separadas por comas)",
   "researchers.procedures.label": "Procedimientos vinculados (en orden de selección)",
+  "researchers.default.procedure.label": "Procedimiento predeterminado",
+  "researchers.default.procedure.none.text": "Ninguno",
+  "researchers.default.procedure.hint.message": "Se adjunta en su lugar cuando el enrutamiento de procedimientos no elige ninguno (solo entre los procedimientos vinculados)",
   "researchers.pg.table.label": "Tabla",
   "researchers.pg.vector.label": "Columna de vector de dimensión completa",
   "researchers.pg.reduced.label": "Columna de vector reducido MRL (índice HNSW)",
@@ -231,5 +234,6 @@
   "runs.answer.empty.message": "Aún no se ha generado ninguna respuesta.",
   "runs.routing.empty.message": "Aún no hay registro de enrutamiento.",
   "runs.routing.procedure.label": "Registro de enrutamiento de procedimientos",
+  "runs.routing.fallback.message": "El enrutamiento de procedimientos no eligió ninguno, así que se adjuntó el procedimiento predeterminado",
   "runs.context.empty.message": "No se generó contexto."
 }

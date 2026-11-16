@@ -40,7 +40,7 @@ test("임베딩 점수는 모든 후보에 매겨져 점수순으로 나온다",
 });
 
 test("키워드가 하나도 맞지 않으면 선택하지 않는다(임의 폴백 금지)", () => {
-  const researchers = [{ id: 1, name: "a", description: "", keywords: ["환불"], enabled: true, type: "folder" as const, config: {}, procedureIds: [] }];
+  const researchers = [{ id: 1, name: "a", description: "", keywords: ["환불"], enabled: true, type: "folder" as const, config: {}, procedureIds: [], defaultProcedureId: null }];
   assert.deepEqual(routeResearchersByKeyword("전혀 다른 질문", researchers, 3), { mode: "keyword-none", selected: [] });
   assert.equal(routeResearchersByKeyword("환불 문의", researchers, 3).selected.length, 1);
 });

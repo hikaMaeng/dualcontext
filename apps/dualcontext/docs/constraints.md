@@ -67,7 +67,7 @@
 
 라우팅 방법(임베딩 · LLM)이 실패하면 키워드 일치로 되돌아간다. 되돌림은 결과의 `researcherRouting` · `procedureRouting` 에
 `embedding-failed(이유)->keyword...` 형태로 남고 시험 실행 화면에 보인다. LLM 라이터가 실패하면 컨텍스트 맨 앞에 실패 사실을 적고 기본 조립으로 대체한다.
-조사원 수집이 실패하거나 관련 자료를 찾지 못하면 그 사실이 컨텍스트의 「찾지 못한 것」에 들어간다(그런 조사원에는 프로시저를 붙이지 않는다).
+조사원 수집이 실패하거나 관련 자료를 찾지 못하면 그 사실이 컨텍스트의 「찾지 못한 것」에 들어간다(그런 조사원에는 프로시저를 붙이지 않는다). 프로시저 라우팅이 하나도 고르지 못했는데 조사원에 활성 기본 프로시저가 있으면 그것이 붙고 `procedureRouting` 은 `default` 로 남는다.
 
 ## 프런트
 
@@ -83,6 +83,7 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `role=status`, `data-testid="service-state"` | 런타임 상태 줄 |
 | `data-testid="researcher-item"`, `"procedure-item"`, `"writer-item"` | 목록 항목 |
 | `data-testid="routing-steps"`, `"routing-step"`, `"routing-individual"` | 시험 실행 · 실행 로그의 라우팅 단계별 기록과 개별 라우터 판정(`routing-individual` 의 `data-selected` 가 포함 여부). 옛 실행 기록에는 이 정보가 없어 나오지 않는다 |
+| `data-testid="researcher-default-procedure-select"`, `"researcher-default-procedure"` | 조사원 폼의 「기본 프로시저」 단일 선택(연결된 프로시저 + 「없음」만, 연결을 해제하면 기본도 지워진다)과 목록 항목의 기본 프로시저 표시(있을 때만) |
 | `data-testid="researcher-individual-router"` | 조사원 폼의 「개별 라우터 사용」 체크박스(켜면 `individual-steps` 편집기가 나온다) |
 | `data-testid="routing-state"`, `"logged-state"`, `"pair-item"`, `"augmented-context"` | 시험 실행 결과와 로그 링크 |
 | `data-testid="run-list"`, `"run-item"`(`data-run-id` · `data-status`), `"run-item-query"`, `"run-item-researchers"`, `"run-item-status"` | 실행 로그 목록과 2줄 항목(링크, `#runs/<id>`). 1줄 `일시 | 질의`, 2줄 선택된 조사원들. 두 줄 모두 한 줄 엘립시스이고 전체 내용은 `title` 로 노출 |
@@ -90,7 +91,7 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `role=search` `data-testid="run-filters"`, `"run-filters-hint"`, `"run-filter-researchers-select"`, `"run-filter-procedures-select"`, `"run-filter-researchers-chips"`, `"run-filter-procedures-chips"`, `"run-filter-chip"`(`data-name`), `"run-filter-clear"`, `"run-search-input"`, `"run-search-mode"` | 실행 로그 필터(조사원 · 프로시저 멀티 셀렉트와 칩, 서로 OR 이고 검색어와는 AND)와 검색(키워드 / 의미). 칩의 제거 버튼은 접근 가능한 이름 `<이름> 선택 해제` |
 | `data-testid="run-back"`, `"run-detail"`(`data-status`), `"run-query"`, `"run-meta"`, `"run-status"`, `"run-error"`, `"run-delete"`, `"run-loading"` | 실행 로그 뷰 상단 요약(질의 전체, 시각 · 상태 · 소요 시간 한 줄, 삭제) |
 | `role=tablist` / `tab` / `tabpanel`, `data-testid="run-tab-answer"`·`"run-tab-routing"`·`"run-tab-researchers"`·`"run-tab-context"`, `"run-panel-<탭>"` | 뷰 서브탭(좌우 화살표 · Home · End 로 이동, 이동하면 바로 선택). 활성 패널 하나만 그린다 |
-| `data-testid="run-routing"`, `"run-routing-none"`, `"run-routing-empty"`, `"run-procedure-routing"` | 라우팅 탭(조사원 라우팅 방법, 마땅한 조사원 없음, 기록 없음, 쌍별 프로시저 라우팅 기록). 단계 · 점수표는 `routing-steps` · `routing-scores` |
+| `data-testid="run-routing"`, `"run-routing-none"`, `"run-routing-empty"`, `"run-procedure-routing"`, `"run-procedure-fallback"`(`data-researcher`) | 라우팅 탭(조사원 라우팅 방법, 마땅한 조사원 없음, 기록 없음, 쌍별 프로시저 라우팅 기록, 기본 프로시저가 폴백으로 붙은 조사원 안내). 단계 · 점수표는 `routing-steps` · `routing-scores` |
 | `data-testid="run-pair"`, `"run-pairs-empty"` | 조사원 탭(선택된 쌍과 근거 자료) |
 | `data-testid="run-context"`(`data-format` = `markdown` 또는 `text`), `"run-context-empty"`, `"run-settings"` | 컨텍스트 탭. 마크다운 구문이 보이면 마크다운으로 렌더하고 아니면 원문 그대로. 실행 당시 설정 스냅샷은 컨텍스트가 어떻게 만들어졌는지의 근거라 같은 탭 아래에 둔다 |
 | `data-testid="run-answer-empty"`, `"answer-before"`, `"answer-after"` | 답변 탭 |

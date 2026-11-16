@@ -3,7 +3,7 @@ import test from "node:test";
 import type { Pair, Procedure, Researcher } from "../../common/index.js";
 import { mergeContexts, sourceLabel, webLast, writeContext } from "./index.js";
 
-const researcher = (id: number, name: string): Researcher => ({ id, name, description: "", keywords: [], enabled: true, type: "folder", config: {}, procedureIds: [] });
+const researcher = (id: number, name: string): Researcher => ({ id, name, description: "", keywords: [], enabled: true, type: "folder", config: {}, procedureIds: [], defaultProcedureId: null });
 const procedure = (id: number, name: string): Procedure => ({ id, name, appliesWhen: [], steps: ["첫째 본다", "둘째 비교한다"], impacts: ["영향"], outputFormat: "표", enabled: true });
 
 const docs = researcher(1, "사내문서");

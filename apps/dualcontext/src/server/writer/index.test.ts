@@ -4,7 +4,7 @@ import type { Pair, Researcher } from "dualcontext_domain/common";
 import { createWriter, describePairs } from "./index.js";
 import type { ModelClient } from "../model/index.js";
 
-const researcher = (id: number, name: string, type: Researcher["type"]): Researcher => ({ id, name, description: "설명", keywords: [], enabled: true, type, config: {}, procedureIds: [] });
+const researcher = (id: number, name: string, type: Researcher["type"]): Researcher => ({ id, name, description: "설명", keywords: [], enabled: true, type, config: {}, procedureIds: [], defaultProcedureId: null });
 const pair = (r: Researcher): Pair => ({ researcher: r, procedure: null, materials: [{ title: "제목", text: "본문" }] });
 
 test("LLM 라이터 입력에서 웹 검색 쌍은 머리에 성격이 밝혀지고, 큐레이션 쌍에는 붙지 않는다", () => {

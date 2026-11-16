@@ -5,8 +5,8 @@ import { routeProceduresByKeyword, routeResearchersByKeyword } from "../route/in
 import { writeContext } from "../write/index.js";
 import { augmentQuery, type AugmentPorts } from "./index.js";
 
-const researcher = (id: number, name: string, keywords: string[], procedureIds: number[]): Researcher => ({
-  id, name, description: "", keywords, enabled: true, type: "folder", config: {}, procedureIds
+const researcher = (id: number, name: string, keywords: string[], procedureIds: number[], defaultProcedureId: number | null = null): Researcher => ({
+  id, name, description: "", keywords, enabled: true, type: "folder", config: {}, procedureIds, defaultProcedureId
 });
 const procedure = (id: number, name: string, appliesWhen: string[]): Procedure => ({
   id, name, appliesWhen, steps: ["a"], impacts: ["b"], outputFormat: "c", enabled: true
@@ -147,4 +147,54 @@ test("라이터에는 웹 검색 쌍이 큐레이션 쌍 뒤에 가고, 결과�
   }));
   assert.deepEqual(seen, [["사내문서", "덕덕고"]]);
   assert.deepEqual(result.pairs.map((p) => p.researcher), ["덕덕고", "사내문서"]);
+});
+
+// --- 기본 프로시저 폴백 ---
+const none: AugmentPorts["selectProcedures"] = async () => ({ mode: "llm", selected: [] });
+const withDefault = (defaultId: number | null) => [researcher(1, "사내문서", ["환불"], [1, 2], defaultId), researchers[1]];
+
+test("폴백: 프로시저 라우팅이 0개를 고르면 활성 기본 프로시저가 붙고 procedureRouting 은 default, 기록에 fallback 이 남는다", async () => {
+  const result = await augmentQuery("환불", ports("batch", { listResearchers: async () => withDefault(2), selectProcedures: none }));
+  assert.deepEqual(result.pairs.map((p) => `${p.researcher}/${p.procedure}/${p.procedureRouting}`), ["사내문서/긴급/default"]);
+  assert.deepEqual(result.routing.procedures.map((entry) => `${entry.researcher}:${entry.fallback}`), ["사내문서:default"]);
+  assert.match(result.context, /긴급/); // 라이터에 프로시저가 실제로 전달된다
+});
+
+test("폴백 아님: 라우팅이 하나라도 골랐으면 기본 프로시저를 붙이지 않는다(라우터 모드 그대로, fallback 없음)", async () => {
+  const result = await augmentQuery("환불", ports("batch", {
+    listResearchers: async () => withDefault(2),
+    selectProcedures: async (_q, _r, candidates) => ({ mode: "llm", selected: candidates.filter((p) => p.id === 1) })
+  }));
+  assert.deepEqual(result.pairs.map((p) => `${p.procedure}/${p.procedureRouting}`), ["기본/llm"]);
+  assert.equal(result.routing.procedures[0].fallback, undefined);
+});
+
+test("폴백 아님: 기본 프로시저가 없으면 지금처럼 프로시저 없는 쌍이 된다", async () => {
+  const result = await augmentQuery("환불", ports("batch", { listResearchers: async () => withDefault(null), selectProcedures: none }));
+  assert.deepEqual(result.pairs.map((p) => `${p.procedure}/${p.procedureRouting}`), ["null/llm"]);
+  assert.equal(result.routing.procedures[0].fallback, undefined);
+});
+
+test("폴백 아님: 기본 프로시저가 비활성이거나 연결 목록에 없으면 붙이지 않는다", async () => {
+  const disabled = await augmentQuery("환불", ports("batch", {
+    listResearchers: async () => withDefault(2),
+    listProceduresOf: async () => [procedure(1, "기본", []), { ...procedure(2, "긴급", ["긴급"]), enabled: false }],
+    selectProcedures: none
+  }));
+  assert.deepEqual(disabled.pairs.map((p) => `${p.procedure}/${p.procedureRouting}`), ["null/llm"]);
+  const unlinked = await augmentQuery("환불", ports("batch", { listResearchers: async () => withDefault(7), selectProcedures: none }));
+  assert.deepEqual(unlinked.pairs.map((p) => `${p.procedure}/${p.procedureRouting}`), ["null/llm"]);
+  assert.equal(unlinked.routing.procedures[0].fallback, undefined);
+});
+
+test("폴백 아님: 자료가 없어 skipped(no-material) 이면 기본 프로시저가 있어도 붙이지 않고 프로시저 라우팅도 하지 않는다", async () => {
+  let routed = 0;
+  const result = await augmentQuery("환불", ports("batch", {
+    listResearchers: async () => withDefault(2),
+    collect: async () => [],
+    selectProcedures: async () => { routed += 1; return { mode: "llm", selected: [] }; }
+  }));
+  assert.equal(routed, 0);
+  assert.deepEqual(result.pairs.map((p) => `${p.procedure}/${p.procedureRouting}`), ["null/skipped(no-material)"]);
+  assert.deepEqual(result.routing.procedures, []);
 });

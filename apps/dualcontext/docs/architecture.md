@@ -17,7 +17,7 @@
 | `src/server/db` | 커넥션 풀과 상태 조회. | `db/index.ts` |
 | `src/front` | Vite React 관리자. `features/*` 폴더마다 화면과 `resource.ts`. 왼쪽 메뉴 셸은 `main.tsx`(해시의 첫 마디로 화면을 고른다). | `main.tsx` |
 | `src/front/features/runs` | 실행 로그. 폴더 단위: `route`(해시 `#runs`/`#runs/<id>` 해석), `query`(목록 조건 · 쪽 계산, 순수), `api`(목록 · 필터 · 삭제 호출과 쿼리스트링 구성), `format`, `status`, `list`(목록 화면 · `item` · `pager` · `filters`(`multi` · `search`)), `view`(뷰 화면 · `phase` · `summary` · `tabs`(`answer` · `routing` · `researchers` · `context`)). 폴더마다 자기 `resource.ts`. 탭 UI 는 `components/tabs`. | `features/runs/index.tsx` |
-| `docker/` | 이미지, 엔트리포인트, DB 초기화 SQL(`initdb/`, 크롤러 캐시 테이블은 `004_crawler.sql`, 실행 로그 검색 열 · 트리거 · 인덱스는 `005_runs_search.sql`). | `docker/Dockerfile` |
+| `docker/` | 이미지, 엔트리포인트, DB 초기화 SQL(`initdb/`, 크롤러 캐시 테이블은 `004_crawler.sql`, 실행 로그 검색 열 · 트리거 · 인덱스는 `005_runs_search.sql`, 조사원 기본 프로시저 열 · 외래키는 `006_researcher_default_procedure.sql`). | `docker/Dockerfile` |
 | `seed-data/` | 허깅페이스 데이터셋 적재 스크립트(호스트에서 실행). | `load-datasets.mjs` |
 
 ## 컨테이너 하나, 프로세스 둘, 볼륨 하나
@@ -30,7 +30,7 @@
 
 | 테이블 | 내용 |
 | --- | --- |
-| `researchers` | 조사원. `type` + `config(jsonb)`, 키워드, 라우팅 임베딩 캐시 |
+| `researchers` | 조사원. `type` + `config(jsonb)`, 키워드, 라우팅 임베딩 캐시, `default_procedure_id`(기본 프로시저, `procedures(id)` `ON DELETE SET NULL`) |
 | `procedures` | 프로시저(독립). 이름 유일 |
 | `researcher_procedures` | 조사원이 소유하는 프로시저 연결(순서 포함) |
 | `router_config` | 1행. `pipeline` jsonb 에 질의 분해와 1단계(조사원) · 2단계(프로시저)의 라우팅 단계 목록 전체(옛 단일 방법 열은 변환용으로만 남음) |

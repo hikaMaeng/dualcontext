@@ -3,7 +3,7 @@
 | Export | 용도 |
 | --- | --- |
 | `dualcontext_domain` | 공통 진입점(모델 타입). |
-| `dualcontext_domain/common` | 런타임 중립: `Researcher`(선택 필드 `router`: 개별 라우터, null 이면 전역), `Procedure`, `RouterConfig`, `WriterConfig`, `Material`, `Pair`, `AugmentResult`. |
+| `dualcontext_domain/common` | 런타임 중립: `Researcher`(`defaultProcedureId`: 프로시저 라우팅이 비었을 때 대신 붙는 기본 프로시저 id 또는 null, 선택 필드 `router`: 개별 라우터, null 이면 전역), `Procedure`, `RouterConfig`, `WriterConfig`, `Material`, `Pair`, `AugmentResult`. |
 | `dualcontext_domain/server` | 서버 전용: `augmentQuery`, 라우팅 규칙, `writeContext`, `mergeContexts`. |
 | `dualcontext_domain/front` | 프런트 전용(현재 비어 있음). |
 

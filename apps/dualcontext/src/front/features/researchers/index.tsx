@@ -18,6 +18,8 @@ type Form = {
   enabled: boolean;
   type: ResearcherType;
   procedureIds: number[];
+  /** 기본 프로시저 id(문자열, 빈 문자열 = 없음). 연결된 프로시저 안에서만 고른다. */
+  defaultProcedureId: string;
   topK: string;
   table: string;
   vectorColumn: string;
@@ -41,7 +43,7 @@ type Form = {
 };
 
 const blank: Form = {
-  id: null, name: "", description: "", keywords: "", enabled: true, type: "pgvector", procedureIds: [], topK: "3",
+  id: null, name: "", description: "", keywords: "", enabled: true, type: "pgvector", procedureIds: [], defaultProcedureId: "", topK: "3",
   table: "", vectorColumn: "embedding", reducedColumn: "", reducedDim: "", textColumn: "body", titleColumn: "title", path: "", cbSource: "git", cbUrl: "", cbRef: "", cbSubPath: "", cbTokenEnv: "", cbRefresh: "24", cbProjects: false, cbLimits: {}, crawler: blankCrawler, router: null
 };
 
@@ -49,7 +51,7 @@ function toForm(item: Researcher): Form {
   const c = item.config as Record<string, string | number | undefined>;
   return {
     id: item.id, name: item.name, description: item.description, keywords: item.keywords.join(", "), enabled: item.enabled,
-    type: item.type, procedureIds: item.procedureIds, topK: String(c.topK ?? 3),
+    type: item.type, procedureIds: item.procedureIds, defaultProcedureId: item.defaultProcedureId == null ? "" : String(item.defaultProcedureId), topK: String(c.topK ?? 3),
     table: String(c.table ?? ""), vectorColumn: String(c.vectorColumn ?? ""), reducedColumn: String(c.reducedColumn ?? ""),
     reducedDim: String(c.reducedDim ?? ""), textColumn: String(c.textColumn ?? ""), titleColumn: String(c.titleColumn ?? ""), path: String(c.path ?? ""), router: item.router ?? null,
     cbSource: c.source === "directory" ? "directory" : "git", cbUrl: String(c.url ?? ""), cbRef: String(c.ref ?? ""), cbSubPath: String(c.subPath ?? ""),
@@ -81,7 +83,7 @@ function toBody(form: Form) {
           };
   return {
     name: form.name, description: form.description, keywords: splitList(form.keywords, /,/), enabled: form.enabled,
-    type: form.type, config, procedureIds: form.procedureIds, router: form.router
+    type: form.type, config, procedureIds: form.procedureIds, defaultProcedureId: form.defaultProcedureId === "" || !form.procedureIds.includes(Number(form.defaultProcedureId)) ? null : Number(form.defaultProcedureId), router: form.router
   };
 }
 
@@ -106,7 +108,13 @@ export function ResearchersView({ t }: { t: Texts }) {
   useEffect(() => void load(), []);
 
   const set = <K extends keyof Form>(key: K, value: Form[K]) => setForm((current) => ({ ...current, [key]: value }));
-  const toggle = (id: number) => set("procedureIds", form.procedureIds.includes(id) ? form.procedureIds.filter((x) => x !== id) : [...form.procedureIds, id]);
+  /** 연결을 바꾸면 기본 프로시저 선택지도 따라간다: 연결이 해제된 프로시저가 기본으로 남지 않게 한다. */
+  const toggle = (id: number) =>
+    setForm((current) => {
+      const procedureIds = current.procedureIds.includes(id) ? current.procedureIds.filter((x) => x !== id) : [...current.procedureIds, id];
+      return { ...current, procedureIds, defaultProcedureId: procedureIds.includes(Number(current.defaultProcedureId)) ? current.defaultProcedureId : "" };
+    });
+  const defaultName = (item: Researcher) => procedures.find((procedure) => procedure.id === item.defaultProcedureId)?.name;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -147,6 +155,7 @@ export function ResearchersView({ t }: { t: Texts }) {
               <li key={item.id}>
                 <Button variant="ghost" size="sm" className="w-full" aria-current={form.id === item.id ? "page" : undefined} data-testid="researcher-item" onClick={() => setForm(toForm(item))}>
                   {item.name}
+                  {defaultName(item) && <span data-testid="researcher-default-procedure" className="ml-2 text-xs text-muted">{t[RSC.RESEARCHERS_DEFAULT_PROCEDURE_LABEL]}: {defaultName(item)}</span>}
                 </Button>
               </li>
             ))}
@@ -216,6 +225,15 @@ export function ResearchersView({ t }: { t: Texts }) {
                 </label>
               ))}
             </fieldset>
+            <Field label={t[RSC.RESEARCHERS_DEFAULT_PROCEDURE_LABEL]}>
+              <Select data-testid="researcher-default-procedure-select" value={form.defaultProcedureId} onChange={(e) => set("defaultProcedureId", e.target.value)}>
+                <option value="">{t[RSC.RESEARCHERS_DEFAULT_PROCEDURE_NONE_TEXT]}</option>
+                {procedures.filter((procedure) => form.procedureIds.includes(procedure.id)).map((procedure) => (
+                  <option key={procedure.id} value={String(procedure.id)}>{procedure.name}</option>
+                ))}
+              </Select>
+            </Field>
+            <p className="max-w-3xl text-sm text-muted">{t[RSC.RESEARCHERS_DEFAULT_PROCEDURE_HINT_MESSAGE]}</p>
             <fieldset className="grid gap-3 rounded-md border border-line p-3">
               <legend className="px-1 text-sm text-muted">{t[RSC.RESEARCHERS_ROUTER_LEGEND_LABEL]}</legend>
               <label className="flex items-center gap-2 text-sm">

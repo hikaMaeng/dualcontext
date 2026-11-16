@@ -28,6 +28,9 @@
   "researchers.type.folder.text": "Pasta do volume (arquivos de texto)",
   "researchers.keywords.label": "Palavras-chave de roteamento (separadas por vírgula)",
   "researchers.procedures.label": "Procedimentos vinculados (na ordem de seleção)",
+  "researchers.default.procedure.label": "Procedimento padrão",
+  "researchers.default.procedure.none.text": "Nenhum",
+  "researchers.default.procedure.hint.message": "Anexado no lugar quando o roteamento de procedimentos não escolhe nenhum (somente entre os procedimentos vinculados)",
   "researchers.pg.table.label": "Tabela",
   "researchers.pg.vector.label": "Coluna de vetor de dimensão completa",
   "researchers.pg.reduced.label": "Coluna de vetor reduzido MRL (índice HNSW)",
@@ -231,5 +234,6 @@
   "runs.answer.empty.message": "Ainda não foi produzida nenhuma resposta.",
   "runs.routing.empty.message": "Ainda não há registro de roteamento.",
   "runs.routing.procedure.label": "Registro de roteamento de procedimentos",
+  "runs.routing.fallback.message": "O roteamento de procedimentos não escolheu nenhum, então o procedimento padrão foi anexado",
   "runs.context.empty.message": "Nenhum contexto foi produzido."
 }

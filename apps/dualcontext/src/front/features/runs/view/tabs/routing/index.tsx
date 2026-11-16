@@ -28,6 +28,13 @@ export function RoutingPanel({ detail, phase, t }: PanelProps) {
               <li key={index}>{pair.researcher} / {pair.procedure ?? "-"}: {pair.procedureRouting}</li>
             ))}
           </ul>
+          {detail.routing?.procedures.some((entry) => entry.fallback) && (
+            <ul data-testid="run-procedure-fallback" className="grid gap-0.5 text-sm text-muted">
+              {detail.routing.procedures.filter((entry) => entry.fallback).map((entry) => (
+                <li key={entry.researcher} data-researcher={entry.researcher}>{entry.researcher}: {t[RSC.RUNS_ROUTING_FALLBACK_MESSAGE]}</li>
+              ))}
+            </ul>
+          )}
         </section>
       )}
     </>
