@@ -23,7 +23,7 @@ const common = {
 };
 
 const body = z.discriminatedUnion("type", [
-  z.object({ ...common, type: z.literal("duckduckgo"), config: z.object({ topK: topK.default(5) }) }),
+  z.object({ ...common, type: z.literal("duckduckgo"), config: z.object({ topK: topK.default(5), rewrite: z.boolean().optional() }) }),
   z.object({
     ...common,
     type: z.literal("pgvector"),
