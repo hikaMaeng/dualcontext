@@ -167,6 +167,25 @@ export type AugmentResult = {
   writer: { mode: WriterMode; calls: number };
 };
 
+/** 실행 로그 목록의 한 줄. 선택된 조사원 · 프로시저는 실행 기록의 pairs 에서 뽑은 이름이다(중복 제거, 선택 순서 유지). */
+export type RunListItem = {
+  id: number;
+  createdAt: string;
+  query: string;
+  status: "running" | "ok" | "error";
+  durationMs: number;
+  researchers: string[];
+  procedures: string[];
+  /** 검색어(q)가 있을 때만: 질의가 맞은 방식과 점수(키워드는 fts 순위, 의미는 코사인 유사도). */
+  match?: { by: "keyword" | "semantic"; score: number };
+};
+
+/** GET /runs 의 응답. 쪽번호는 1부터. */
+export type RunListPage = { items: RunListItem[]; total: number; page: number; pageSize: number };
+
+/** GET /runs/filters 의 응답: 목록 필터에 쓸 수 있는 이름들(실행 기록에 실제로 나온 것만, 가나다순). */
+export type RunFilterOptions = { researchers: string[]; procedures: string[] };
+
 export const serviceDomain = Object.freeze({
   service: "dualcontext",
   packageName: "dualcontext_domain"

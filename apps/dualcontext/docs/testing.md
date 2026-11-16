@@ -11,6 +11,8 @@ npm run test --workspaces
 * `src/server/collect/codebase/codebase.test.ts`: URL · SSRF 대역 · DNS 재바인딩 · ref · 하위 경로 검증, 클론 인자(토큰이 argv 에 없음 · 환경 격리 · 가림), 스캔(심볼릭 링크 · 비밀 파일 · 상한), 구조 인덱스(심볼 · import · 호출), 검색(호출 이웃 보강), 볼륨 폴더 소스 경로 탈출 거부.
 * 코드베이스 실측(자동 테스트 아님): `collectCodebase` 를 공개 레포(expressjs/cors, pallets/flask `src/flask`)로 실제 클론 · 인덱싱 · 질의해 본 기록은 `test/20261115/codebase-researcher_report.md`.
 * `src/server/collect/crawler/crawler.test.ts`: SSRF(IPv4/IPv6 차단 대역, 내부 호스트 이름, 스킴·포트·사용자 정보, 이름이 내부 주소로 풀림), robots.txt(그룹 선택, 최장 규칙, 와일드카드, Crawl-delay), 설정 상한과 지문, 링크 정규화, 청크, 랭킹, 갱신 판단, 크롤(깊이·페이지 수·중복·도메인·간격·시간 상한·robots 오류·내부 주소 리다이렉트), 크롤러 응답 변환.
+* `src/server/admin/runs/list/list.test.ts` · `src/server/admin/runs/router.test.ts`: 목록 파라미터 검증, 쿼리 빌더(필터 OR · 종류 사이 AND · 검색어 AND, 쪽 offset, 사용자 값은 전부 `$n` 파라미터), `listRuns`(total · page · match, 임베딩 실패는 `EmbeddingUnavailable`), 임베딩 저장 · 백필 상한, 라우터(400 · 503 · `/runs/filters` 순서). 가짜 pool · 가짜 모델.
+* `src/server/admin/runs/list/db.test.ts`: **실제 PostgreSQL**(pgvector + textsearch_ko) 필요. `DUALCONTEXT_TEST_DATABASE_URL` 이 있을 때만 돌고 없으면 7건이 건너뛰어진다. 임시 스키마(`dc_runs_test_<pid>`)에 `initdb/*.sql` 을 적용하고 끝나면 지우므로 가리킨 DB 의 기존 테이블은 건드리지 않는다. 005 멱등, 이름 추출, 갱신 쿼리의 트리거 반영, 필터 OR/AND · total, 한국어/영어 FTS, 의미 검색 순위 · 최소 유사도 · 모델/차원 불일치 제외. 이미지에 DB 가 있으므로 `docker run --entrypoint docker-entrypoint.sh -e POSTGRES_PASSWORD=x -p 127.0.0.1:55432:5432 <이미지> postgres` 로 임시 DB 를 띄워 돌린다.
 * `packages/dualcontext_domain/src/server/augment/index.test.ts`: 라우팅, 폴백, 프로시저 상위 개수, 쌍별 라이터 호출 수, 수집 실패 표시.
 * `packages/dualcontext_domain/src/server/route/index.test.ts`: 코사인 상위 K, LLM 답 파싱.
 
