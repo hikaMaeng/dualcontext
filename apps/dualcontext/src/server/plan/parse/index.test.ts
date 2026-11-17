@@ -67,3 +67,14 @@ test("후보 순회: 잡설 속 다른 모양의 JSON 을 건너뛰고 기대 �
   assert.deepEqual(extractJson("a [1] b {\"k\":2}", (value) => !Array.isArray(value)), { k: 2 });
   assert.throws(() => parseAnalyze("[1,2] 만 있다"), PlanParseError);
 });
+
+test("빠진 여는 중괄호 복구: 둘째 이후 객체의 `{` 를 빠뜨린 실측 응답을 항목으로 해석한다", () => {
+  const dropped = '{"items":[{"name":"a","description":"A"},"name":"b","description":"B"},"name":"c","description":"C"}]}';
+  const quoted = '{"items":[{"name":"a","description":"A"},"{"name":"b","description":"B"}]}';
+  assert.deepEqual(parseAnalyze(dropped), [{ name: "a", description: "A" }, { name: "b", description: "B" }, { name: "c", description: "C" }]);
+  assert.deepEqual(parseAnalyze(quoted), [{ name: "a", description: "A" }, { name: "b", description: "B" }]);
+  assert.deepEqual(parsePrerequisites(dropped, 2), [{ name: "a", description: "A" }, { name: "b", description: "B" }]);
+  // 정상 JSON 은 건드리지 않는다: name 이 아닌 키가 뒤따르는 객체 · 복구해도 안 풀리는 응답은 그대로 던진다.
+  assert.deepEqual(parseAnalyze('{"items":[{"name":"a","description":"A","meta":{"x":1},"name2":"z"}]}'), [{ name: "a", description: "A" }]);
+  assert.throws(() => parseAnalyze('{"items":[{"name":"a"},"name":"b"'), PlanParseError);
+});

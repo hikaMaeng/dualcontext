@@ -55,12 +55,26 @@ test("prerequisites · dedupe: 아이템 · 기존 목록 · 번호가 프롬프
   assert.match(prompts[1], /i1: y — Y/);
 });
 
-test("모델 호출 실패 · 해석 실패는 던진다(플래너가 격리한다)", async () => {
-  const { deps } = fakeDeps([new Error("서버 다운"), "JSON 아님", "{}"]);
+test("모델 호출 실패 · 해석 실패는 재시도 끝에 던진다(플래너가 격리한다)", async () => {
+  const again = (answer: string | Error) => Array.from({ length: callAttempts }, () => answer);
+  const { deps } = fakeDeps([...again(new Error("서버 다운")), ...again("JSON 아님"), ...again("{}")]);
   const ports = createPlanPorts(deps, undefined, defaultPlanConfig());
   await assert.rejects(ports.analyze("q"), /서버 다운/);
   await assert.rejects(ports.analyze("q"), /JSON/);
   await assert.rejects(ports.evaluate("q", "c", "a"), /JSON/);
+});
+
+test("analyze · prerequisites · dedupe: 해석에 실패하면 다시 불러 두 번째 응답을 쓴다", async () => {
+  const { deps, prompts } = fakeDeps([
+    "JSON 아님", '{"items":[{"name":"a","description":"A"}]}',
+    "{}", '{"needs":[{"name":"n","description":"N"}]}',
+    "[]", '{"groups":[[0,1]],"existing":{}}'
+  ]);
+  const ports = createPlanPorts(deps, undefined, defaultPlanConfig());
+  assert.deepEqual(await ports.analyze("q"), [{ name: "a", description: "A" }]);
+  assert.deepEqual((await ports.prerequisites("q", { name: "x", description: "X" }, [])).map((need) => need.name), ["n"]);
+  assert.deepEqual(await ports.dedupe("q", [{ name: "a", description: "A" }, { name: "b", description: "B" }], []), { groups: [[0, 1]], existing: {} });
+  assert.equal(prompts.length, 6);
 });
 
 test("build: 아이템 질의(이름: 설명)와 사전 컨텍스트로 기존 경로를 부르고, 쌍 요약으로 바꾸며 원본을 기록한다", async () => {

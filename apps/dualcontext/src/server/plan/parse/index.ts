@@ -85,9 +85,29 @@ function keepValid<T>(values: unknown, schema: z.ZodType<T>, max: number): T[] {
   return kept;
 }
 
-/** 객체의 key 배열, 또는 맨 배열 자체. 그런 후보가 없으면 던진다. */
+/**
+ * 일부 모델이 배열의 둘째 이후 객체에서 여는 중괄호를 빠뜨린다(`...},"name":"x",...` · `...},"{"name":"x",...`).
+ * 같은 입력엔 같은 출력이 나와 재시도로 풀리지 않으므로, 정상 해석이 실패했을 때만 `{` 를 되살려 한 번 더 해석한다.
+ * 키가 `name` 인 객체 시작 자리만 고친다: 정상 JSON 에는 적용하지 않는다(실패 뒤 대체 경로).
+ */
+export function restoreObjectOpeners(text: string): string {
+  return text.replace(/\}\s*,\s*(?:"\{)?"(?=name"\s*:)/g, '},{"');
+}
+
+/** 객체의 key 배열, 또는 맨 배열 자체. 그런 후보가 없으면 던진다(빠진 `{` 를 되살려도 없을 때). */
 function listOf(text: string, key: string): unknown[] {
-  const value = extractJson(text, listShape(key));
+  let value: unknown;
+  try {
+    value = extractJson(text, listShape(key));
+  } catch (error) {
+    const repaired = restoreObjectOpeners(text);
+    if (repaired === text) throw error;
+    try {
+      value = extractJson(repaired, listShape(key));
+    } catch {
+      throw error;
+    }
+  }
   return Array.isArray(value) ? value : ((value as Record<string, unknown[]>)[key]);
 }
 
