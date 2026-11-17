@@ -38,7 +38,7 @@ export async function buildItems(
         const started = now();
         const provided = providedItems(graph, item);
         try {
-          const built = await ports.build(query, { name: item.name, description: item.description }, providedFor(graph, item));
+          const built = await ports.build(query, { name: item.name, description: item.description }, providedFor(graph, item), { round: record?.round ?? 0, item: item.id, provided: providedItems(graph, item).map((need) => need.id) });
           item.context = typeof built?.context === "string" ? built.context : "";
           item.pairs = Array.isArray(built?.pairs) ? built.pairs : [];
           item.status = item.context.trim() === "" ? "empty" : "built";

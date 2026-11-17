@@ -4,10 +4,11 @@ import { RunList } from "./list";
 import { initialQuery, type ListQuery } from "./query";
 import { RSC } from "./resource";
 import { useRunsRoute } from "./route/use-runs-route";
+import { NodeScreen } from "./view/node-screen";
 import { RunView } from "./view";
 
 /**
- * 실행 로그. 목록(`#runs`)과 뷰(`#runs/<id>`)는 분리된 화면이고 해시로 오가므로 브라우저 뒤로가기가 동작한다.
+ * 실행 로그. 목록(`#runs`) · 뷰(`#runs/<id>`) · 노드 하나만 보는 화면(`#runs/<id>/node/<키>`)은 분리된 화면이고 해시로 오가므로 브라우저 뒤로가기가 동작한다.
  * 목록 조회 조건(필터 · 검색 · 쪽)은 이 컴포넌트가 들고 있어, 뷰에서 「목록으로」 돌아와도 직전 상태 그대로다.
  */
 export function RunsView({ t }: { t: Texts }) {
@@ -17,7 +18,13 @@ export function RunsView({ t }: { t: Texts }) {
   return (
     <section aria-labelledby="page-title" className="grid gap-4">
       <h1 id="page-title" className="text-2xl font-semibold">{t[RSC.RUNS_TITLE_TEXT]}</h1>
-      {route.kind === "view" ? <RunView key={route.id} id={route.id} t={t} /> : <RunList query={query} onQuery={setQuery} t={t} />}
+      {route.kind === "node" ? (
+        <NodeScreen key={`${route.id}:${route.key}`} id={route.id} nodeKey={route.key} t={t} />
+      ) : route.kind === "view" ? (
+        <RunView key={route.id} id={route.id} t={t} />
+      ) : (
+        <RunList query={query} onQuery={setQuery} t={t} />
+      )}
     </section>
   );
 }

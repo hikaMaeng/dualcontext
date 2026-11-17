@@ -1,5 +1,7 @@
 import type { Answer, AugmentPair, AugmentResult, ContextMode, ContextPlanConfig, PlanTrace, WriterMode } from "dualcontext_domain/common";
 import { planContext, type PlanOptions, type PlanProgress } from "dualcontext_domain/server";
+import { runNodeKey } from "dualcontext_domain/common";
+import { recordModel, type NodeSink } from "../plan/calls/index.js";
 import { readPlanConfig } from "../plan/config/index.js";
 import { buildKey, createPlanPorts, type BaseAugment } from "../plan/ports/index.js";
 import { augment, type Deps } from "./base/index.js";
@@ -15,6 +17,8 @@ export type RunAugmentOptions = {
   onProgress?: (event: PlanProgress) => Promise<void> | void;
   /** 계획 단계마다 부분 trace 를 건넨다(계획 모드만). 받는 쪽은 호출 안에서 바로 직렬화한다. */
   onTrace?: (trace: PlanTrace) => void;
+  /** 노드 문서 조각(모델 호출 · 아이템 증강 상세)을 받는다. classic 이면 classic 노드 하나, 계획 모드면 analyze · item · dedupe · answer · evaluate 노드. 받는 쪽이 같은 키를 합친다. */
+  onNode?: NodeSink;
 };
 
 export type RunAugmentOutcome = {
@@ -61,10 +65,18 @@ export function planResult(context: string, trace: PlanTrace, builds: Map<string
 export async function runAugment(deps: Deps, query: string, options: RunAugmentOptions = {}, engine: RunAugmentEngine = realEngine): Promise<RunAugmentOutcome> {
   const stored = options.config ?? (options.mode === "classic" ? null : await readPlanConfig(deps.pool));
   const mode = options.mode ?? stored?.mode ?? "classic";
-  if (mode === "classic" || !stored) return { result: await engine.augment(deps, query, options.writerId), plan: null };
+  if (mode === "classic" || !stored) {
+    // classic: 증강 한 번의 모델 호출(라우팅 · 프로시저 · 라이터)을 classic 노드로 남긴다. 라우팅 · 쌍 · 컨텍스트는 실행 행에 있다.
+    const rec = recordModel(deps.model);
+    try {
+      return { result: await engine.augment({ ...deps, model: rec.model }, query, options.writerId), plan: null };
+    } finally {
+      options.onNode?.(runNodeKey.classic, { calls: rec.calls() });
+    }
+  }
 
   const config: ContextPlanConfig = { ...stored, mode };
-  const ports = createPlanPorts(deps, options.writerId, config, engine.augment);
+  const ports = createPlanPorts(deps, options.writerId, config, engine.augment, options.onNode);
   const { context, trace } = await engine.planContext(query, { config, ports, ...(options.onProgress ? { onProgress: options.onProgress } : {}), ...(options.onTrace ? { onTrace: options.onTrace } : {}) });
   const result = planResult(context, trace, ports.record.builds);
   const last = ports.record.lastAnswer;

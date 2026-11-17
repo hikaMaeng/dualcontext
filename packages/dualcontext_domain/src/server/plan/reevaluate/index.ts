@@ -65,7 +65,7 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
     await progress("answer", `round ${round}`);
     const answerStarted = now();
     try {
-      record.answer.text = await ports.answer(query, context);
+      record.answer.text = await ports.answer(query, context, { round });
       lastAnswer = record.answer.text;
     } catch (error) {
       record.answer.error = message(error);
@@ -77,7 +77,7 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
     await progress("evaluate", `round ${round}`);
     const evaluateStarted = now();
     try {
-      record.evaluation = judge(await ports.evaluate(query, context, record.answer.text), limits);
+      record.evaluation = judge(await ports.evaluate(query, context, record.answer.text, { round }), limits);
       rec.add({ kind: "evaluate", round, ms: now() - evaluateStarted, score: record.evaluation.score, pass: record.evaluation.pass, missing: record.evaluation.missing.length });
     } catch (error) {
       record.evaluationError = message(error);

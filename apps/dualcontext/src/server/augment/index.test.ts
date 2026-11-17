@@ -114,3 +114,31 @@ test("options.config 를 주면 저장 설정을 읽지 않고 그 설정(모드
   assert.equal(read, false);
   assert.equal(seenMode, "decompose/1");
 });
+
+test("onNode: classic 은 증강 한 번의 모델 호출을 classic 노드로, 계획 모드는 analyze · item 노드로 내보낸다", async () => {
+  const sent: { key: string; patch: Record<string, any> }[] = [];
+  const engineClassic: RunAugmentEngine = {
+    augment: async (d) => { await d.model.chat("라우팅 프롬프트"); return classic; },
+    planContext: neverPlan
+  };
+  await runAugment(deps(undefined, ["응답"]).deps, "질의", {}, engineClassic);
+  const none = await runAugment(deps(undefined, ["응답"]).deps, "질의", { onNode: (key, patch) => sent.push({ key, patch }) }, engineClassic);
+  assert.equal(none.result, classic);
+  assert.deepEqual(sent.map((entry) => entry.key), ["classic"]);
+  assert.equal(sent[0].patch.calls[0].prompt, "라우팅 프롬프트");
+  assert.equal(sent[0].patch.calls[0].response, "응답");
+
+  sent.length = 0;
+  const engine: RunAugmentEngine = {
+    planContext,
+    augment: async (inner, query) => { await inner.model.chat(`라이터:${query}`); return { ...classic, context: `[${query}]` }; }
+  };
+  const withSink = await runAugment(deps({ ...defaultPlanConfig(), mode: "decompose", dedupe: "name", maxLevels: 2 }, ['{"items":[{"name":"환불 처리","description":"절차"}]}', '{"needs":[]}', "x"]).deps, "q", { onNode: (key, patch) => sent.push({ key, patch }) }, engine);
+  assert.ok(withSink.plan);
+  const keys = sent.map((entry) => entry.key);
+  assert.ok(keys.includes("analyze") && keys.includes("item:i1"));
+  const item = sent.filter((entry) => entry.key === "item:i1").reduce((all, entry) => ({ ...all, ...entry.patch }), {} as Record<string, any>);
+  assert.equal(item.calls[0].prompt, "라이터:환불 처리: 절차");
+  assert.ok(item.prerequisitesCalls.length === 1);
+  assert.equal(item.augment.context, "[환불 처리: 절차]");
+});

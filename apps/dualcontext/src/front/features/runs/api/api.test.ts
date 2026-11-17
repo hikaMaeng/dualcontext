@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 import { initialQuery } from "../query";
-import { deleteRun, listRuns, loadFilterOptions } from "./index";
+import { deleteRun, listRuns, loadFilterOptions, loadNode } from "./index";
 import { buildListPath } from "./path";
 
 const realFetch = globalThis.fetch;
@@ -53,4 +53,14 @@ test("필터 선택지와 삭제 경로", async () => {
   const deleted = fakeFetch(null, 204);
   await deleteRun(227);
   assert.deepEqual(deleted[0], { url: "/api/admin/runs/227", method: "DELETE" });
+});
+
+test("loadNode 는 키를 인코딩해 읽고 404 는 null, 그 밖의 실패는 던진다", async () => {
+  const calls = fakeFetch({ key: "item:i3", calls: [], at: "t" });
+  assert.deepEqual(await loadNode(240, "item:i3"), { key: "item:i3", calls: [], at: "t" });
+  assert.equal(calls[0].url, "/api/admin/runs/240/nodes/item%3Ai3");
+  fakeFetch({ error: "x" }, 404);
+  assert.equal(await loadNode(240, "item:zz"), null);
+  fakeFetch({ error: "x" }, 500);
+  await assert.rejects(loadNode(240, "analyze"), /500/);
 });

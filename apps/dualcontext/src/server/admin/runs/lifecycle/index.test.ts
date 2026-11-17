@@ -142,3 +142,41 @@ test("createTraceSaver: 쓰는 동안 들어온 push 는 잃지 않고 가장 �
   await saver.settle();
   assert.equal(JSON.parse(written.at(-1) as string).n, 4, "실패 뒤에도 계속 쓴다");
 });
+
+test("노드 기록: 계획 · classic 실행의 onNode 조각이 augment_run_nodes 에 쓰이고 최종 답변 호출이 answer:before · after 노드로 남는다", async () => {
+  const { deps, calls } = fake({ ...defaultPlanConfig(), mode: "classic" });
+  const engine: RunAugmentEngine = {
+    augment: async (d) => { await d.model.chat("라우팅"); return classic; },
+    planContext: async () => { throw new Error("쓰지 않는다"); }
+  };
+  const { done } = await startRun(deps, "질의", undefined, {}, engine);
+  const outcome = await done;
+  assert.equal(outcome.error, null);
+  const nodeWrites = calls.filter((call) => /insert into augment_run_nodes/.test(call.text));
+  const keys = nodeWrites.map((call) => String(call.values[1]));
+  assert.ok(keys.includes("classic"));
+  assert.ok(keys.includes("answer:before") && keys.includes("answer:after"));
+  const classicDoc = JSON.parse(String(nodeWrites.find((call) => call.values[1] === "classic")?.values[2]));
+  assert.equal(classicDoc.calls[0].prompt, "라우팅");
+  const before = JSON.parse(String(nodeWrites.find((call) => call.values[1] === "answer:before")?.values[2]));
+  assert.match(before.calls[0].prompt, /질의/);
+  assert.equal(before.calls[0].purpose, "answer");
+  const final = calls.findIndex((call) => /set status = \$2/.test(call.text));
+  assert.ok(nodeWrites.every((call) => calls.indexOf(call) < final), "노드 쓰기는 실행이 끝났다고 기록하기 전에 모두 끝난다");
+});
+
+test("노드 기록: 계획의 마지막 답을 재사용하면(answerAfter) answer:after 노드는 만들지 않는다", async () => {
+  const { deps, calls } = fake({ ...defaultPlanConfig(), mode: "reevaluate" });
+  const engine: RunAugmentEngine = {
+    augment: async () => classic,
+    planContext: async (query, options) => {
+      await options.ports.answer(query, "최종");
+      return { context: "최종", trace };
+    }
+  };
+  const { done } = await startRun(deps, "질의", undefined, {}, engine);
+  await done;
+  const keys = calls.filter((call) => /insert into augment_run_nodes/.test(call.text)).map((call) => String(call.values[1]));
+  assert.ok(keys.includes("answer:before"));
+  assert.equal(keys.includes("answer:after"), false);
+});

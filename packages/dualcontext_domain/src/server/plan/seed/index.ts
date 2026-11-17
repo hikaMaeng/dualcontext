@@ -34,7 +34,7 @@ export async function seedTopItems(
 ): Promise<SeedResult> {
   const startedAt = rec?.elapsed() ?? 0;
   const candidates = cleanDrafts(drafts);
-  const { groups, method } = await dedupeCandidates(query, candidates, graph, config, ports);
+  const { groups, method } = await dedupeCandidates(query, candidates, graph, config, ports, { round: at.round });
   const result: SeedResult = { created: [], promoted: [], rebuild: [], dropped: 0 };
   for (const group of groups) {
     if (group.existingId) {

@@ -9,7 +9,7 @@ import { reevaluateLoop, type RunState } from "./reevaluate/index.js";
 import { seedTopItems } from "./seed/index.js";
 import { createRecorder } from "./steps/index.js";
 
-export type { ItemBuild, PlanOptions, PlanPorts, PlanProgress, Provided } from "./ports.js";
+export type { ItemBuild, PlanCallRef, PlanOptions, PlanPorts, PlanProgress, Provided } from "./ports.js";
 
 /**
  * 컨텍스트 계획기: 질의 분석 → 사전 의존성 단계 루프(DAG) → 종단점부터 웨이브 build → top 아이템 조립.
@@ -58,7 +58,7 @@ export async function planContext(query: string, options: PlanOptions): Promise<
   const analyzeStarted = rec.elapsed();
   let drafts: Awaited<ReturnType<typeof ports.analyze>>;
   try {
-    drafts = await ports.analyze(query);
+    drafts = await ports.analyze(query, { round: 0 });
   } catch (error) {
     // 질의 분석 실패는 그대로 던진다(실행 로그가 오류로 닫는다). 그 전에 부분 trace 에 남겨 어디서 멈췄는지 보이게 한다.
     rec.add({ kind: "analyze", round: 0, ms: rec.elapsed() - analyzeStarted, drafts: [], error: error instanceof Error ? error.message : String(error) });

@@ -35,7 +35,7 @@ export async function expandDependencies(
       current.map(async (item) => {
         const startedAt = rec?.elapsed() ?? 0;
         try {
-          const drafts = cleanDrafts(await ports.prerequisites(query, { name: item.name, description: item.description }, known)).slice(0, config.maxNeedsPerItem);
+          const drafts = cleanDrafts(await ports.prerequisites(query, { name: item.name, description: item.description }, known, { round: at.round, item: item.id, level })).slice(0, config.maxNeedsPerItem);
           rec?.add({ kind: "prerequisites", round: at.round, ms: rec.elapsed() - startedAt, level, item: item.id, drafts });
           return drafts;
         } catch (error) {
@@ -57,7 +57,7 @@ export async function expandDependencies(
     });
 
     const dedupeStarted = rec?.elapsed() ?? 0;
-    const { groups, method } = await dedupeCandidates(query, candidates, graph, config, ports);
+    const { groups, method } = await dedupeCandidates(query, candidates, graph, config, ports, { round: at.round, level });
     const next: PlanItem[] = [];
     const groupLog: { members: number[]; target: string | null; existing: boolean }[] = [];
     let linked = 0;

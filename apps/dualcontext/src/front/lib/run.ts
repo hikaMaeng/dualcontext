@@ -38,6 +38,11 @@ export type RunDetail = {
   plan?: PlanTrace | null;
   /** 계획 진행 단계. 계획 모드 실행이 진행 중일 때 단계마다 갱신된다. classic · 옛 실행은 null(또는 없음). */
   planProgress?: RunPlanProgress | null;
+  /**
+   * 이 실행에 저장된 노드 상세의 키(`runNodeKey` 규칙: classic · analyze · item:<id> · answer:<r> · evaluate:<r> · dedupe:<r>:<level|seed> …).
+   * 상세 본문은 크므로 여기 없고 `GET /runs/:id/nodes/:key` 로 노드를 고를 때 읽는다. 옛 실행은 없다(또는 빈 배열).
+   */
+  nodes?: string[];
 };
 
 const pollMs = 3000;

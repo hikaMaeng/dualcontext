@@ -1,6 +1,7 @@
 import express from "express";
 import type { Deps } from "../../augment/index.js";
 import { bus, readRun } from "./lifecycle/index.js";
+import { readNode, validNodeKey } from "./nodes/index.js";
 import { EmbeddingUnavailable, listRuns } from "./list/index.js";
 import { readFilterOptions } from "./list/filters/index.js";
 import { parseListParams } from "./list/params/index.js";
@@ -33,6 +34,16 @@ export function runsRouter(deps: Deps) {
     const detail = await readRun(deps.pool, Number(request.params.id));
     if (!detail) return void response.status(404).json({ error: "not found" });
     response.json(detail);
+  });
+
+  // 노드 상세(프롬프트 · 라우팅 · 조사원 · 사전 컨텍스트). 키는 URL 인코딩된 노드 키(`item:i3` 의 ':' 포함). 아직 만들어지지 않았으면 404.
+  router.get("/runs/:id/nodes/:key", async (request, response) => {
+    const id = Number(request.params.id);
+    const key = request.params.key;
+    if (!Number.isInteger(id) || !validNodeKey(key)) return void response.status(400).json({ error: "invalid key" });
+    const node = await readNode(deps.pool, id, key);
+    if (!node) return void response.status(404).json({ error: "not found" });
+    response.json(node);
   });
 
   // 실시간용(SSE): 상태가 바뀔 때마다 상세 행 전체를 보내고, 끝나면 스트림을 닫는다.

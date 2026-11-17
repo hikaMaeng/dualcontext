@@ -423,3 +423,25 @@ test("onTrace: 단계마다 부분 trace(stop=null)를 건네고 마지막 trace
   assert.ok(snapshots.every((s, i) => i === 0 || s.steps >= snapshots[i - 1].steps));
   assert.ok(snapshots.some((s) => s.rounds === 1), "진행 중인 라운드도 보인다");
 });
+
+test("ports 의 ref: build 는 라운드 · 아이템 · 건넨 사전 아이템 id 를, prerequisites 는 단계를 받는다", async () => {
+  const { ports, now } = fake({ analyze: ["a"], prereq: { a: ["p"] }, evaluations: [evalOf(50, ["m"]), evalOf(95)] });
+  const refs: { kind: string; ref: unknown }[] = [];
+  const wrapped: PlanPorts = {
+    ...ports,
+    analyze: (q, ref) => { refs.push({ kind: "analyze", ref }); return ports.analyze(q, ref); },
+    prerequisites: (q, item, known, ref) => { refs.push({ kind: `pre:${item.name}`, ref }); return ports.prerequisites(q, item, known, ref); },
+    build: (q, item, provided, ref) => { refs.push({ kind: `build:${item.name}`, ref }); return ports.build(q, item, provided, ref); },
+    answer: (q, c, ref) => { refs.push({ kind: "answer", ref }); return ports.answer(q, c, ref); },
+    evaluate: (q, c, a, ref) => { refs.push({ kind: "evaluate", ref }); return ports.evaluate(q, c, a, ref); }
+  };
+  await planContext("q", { config: config({ mode: "reevaluate" }), ports: wrapped, now });
+  const at = (kind: string) => refs.filter((r) => r.kind === kind).map((r) => r.ref);
+  assert.deepEqual(at("analyze"), [{ round: 0 }]);
+  assert.deepEqual(at("pre:a"), [{ round: 0, item: "i1", level: 2 }]);
+  assert.deepEqual(at("build:a"), [{ round: 0, item: "i1", provided: ["i2"] }]);
+  assert.deepEqual(at("build:p"), [{ round: 0, item: "i2", provided: [] }]);
+  assert.deepEqual(at("build:m"), [{ round: 1, item: "i3", provided: [] }]);
+  assert.deepEqual(at("answer"), [{ round: 0 }, { round: 1 }]);
+  assert.deepEqual(at("evaluate"), [{ round: 0 }, { round: 1 }]);
+});

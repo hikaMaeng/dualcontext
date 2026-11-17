@@ -1,12 +1,14 @@
 import { EventEmitter } from "node:events";
 import type pg from "pg";
-import type { Answers, AugmentResult, ContextMode, ContextPlanConfig, PlanTrace } from "dualcontext_domain/common";
+import { runNodeKey, type Answers, AugmentResult, ContextMode, ContextPlanConfig, PlanTrace } from "dualcontext_domain/common";
 import type { PlanProgress } from "dualcontext_domain/server";
 import { answerPrompts, generateAnswers } from "../../../answer/index.js";
 import { runAugment, type Deps, type RunAugmentEngine } from "../../../augment/index.js";
 import { applyPlanOverride, readPlanConfig, type PlanOverride } from "../../../plan/config/index.js";
 import { readRouterConfig } from "../../../routing/config/index.js";
 import { loadWriter } from "../../../writer/index.js";
+import { recordModel } from "../../../plan/calls/index.js";
+import { createNodeSaver } from "../nodes/index.js";
 import { embedRunQuery } from "../embedding/index.js";
 
 /** 보관 상한. 이보다 오래된 로그는 새 로그를 쓸 때 지운다. */
@@ -17,7 +19,8 @@ export const bus = new EventEmitter();
 bus.setMaxListeners(0);
 
 const detailColumns = `id, created_at as "createdAt", query, status, stage, error, duration_ms as "durationMs",
-  researcher_routing as "researcherRouting", routing, settings, pairs, context, answers, plan, plan_progress as "planProgress"`;
+  researcher_routing as "researcherRouting", routing, settings, pairs, context, answers, plan, plan_progress as "planProgress",
+  coalesce((select array_agg(n.key order by n.key) from augment_run_nodes n where n.run_id = augment_runs.id), '{}') as "nodes"`;
 
 export async function readRun(pool: pg.Pool, id: number) {
   const { rows } = await pool.query(`select ${detailColumns} from augment_runs where id = $1`, [id]);
@@ -106,30 +109,37 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
   let answers: Answers | null = null;
   let error: string | null = null;
   const saver = createTraceSaver(deps, runId);
+  const nodes = createNodeSaver(deps.pool, runId, () => publish(deps.pool, runId));
   try {
-    const outcome = await runAugment(deps, query, { writerId, config, onProgress: (event) => recordProgress(deps, runId, event), onTrace: (trace) => saver.push(trace) }, engine);
+    const outcome = await runAugment(deps, query, { writerId, config, onProgress: (event) => recordProgress(deps, runId, event), onTrace: (trace) => saver.push(trace), onNode: nodes.push }, engine);
     result = outcome.result;
     plan = outcome.plan;
     await saver.settle();
+    await nodes.settle();
     await deps.pool.query(
       `update augment_runs set researcher_routing = $2, pairs = $3, context = $4, routing = $5, plan = $6, stage = 'answering', answers = '{}'::jsonb where id = $1`,
       [runId, result.researcherRouting, JSON.stringify(result.pairs), result.context, JSON.stringify(result.routing), plan === null ? null : JSON.stringify(plan)]
     );
     await publish(deps.pool, runId);
     // 증강한 컨텍스트로 최종 답변까지 받는다. 비교를 위해 증강 전(질의만) 답변도 함께 만들고, 끝나는 대로 기록한다.
+    // 답변마다 따로 감싸 두 호출이 섞이지 않게 한다. 계획의 마지막 답을 재사용했거나 컨텍스트가 비어 모델을 부르지 않은 쪽은 calls 가 없어 노드를 남기지 않는다.
+    const recorders = { before: recordModel(deps.model, "answer"), after: recordModel(deps.model, "answer") };
     answers = await generateAnswers(deps.model, query, result.context, async (which, answer) => {
+      const calls = recorders[which].calls();
+      if (calls.length > 0) nodes.push(runNodeKey.finalAnswer(which), { calls });
       await deps.pool.query(
         `update augment_runs set answers = coalesce(answers, '{}'::jsonb) || jsonb_build_object($2::text, $3::jsonb) where id = $1`,
         [runId, which, JSON.stringify(answer)]
       );
       await publish(deps.pool, runId);
-    }, outcome.answerAfter);
+    }, outcome.answerAfter, { before: recorders.before.model, after: recorders.after.model });
   } catch (caught) {
     error = caught instanceof Error ? caught.message : String(caught);
   }
 
   try {
     await saver.settle();
+    await nodes.settle();
     await deps.pool.query(`update augment_runs set status = $2, stage = 'done', error = $3, duration_ms = $4 where id = $1`, [
       runId, error ? "error" : "ok", error, Date.now() - started
     ]);

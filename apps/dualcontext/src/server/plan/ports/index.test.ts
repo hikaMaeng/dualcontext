@@ -102,7 +102,7 @@ test("evaluate: 질의 · 컨텍스트 · 답변을 채우고, 부족 항목은 
 });
 
 test("evaluate: missing 이 없는 평가({\"score\":100})는 형식 오류로 던진다(빈 부족 목록으로 통과시키지 않는다)", async () => {
-  const { deps } = fakeDeps(['{"score":100}']);
+  const { deps } = fakeDeps(['{"score":100}', '{"score":100}']);
   await assert.rejects(createPlanPorts(deps, undefined, defaultPlanConfig()).evaluate("q", "c", "a"), /missing/);
 });
 
@@ -148,4 +148,110 @@ test("build: 사전 컨텍스트는 중첩 섹션을 빼고 maxProvidedChars 로
   const omitted = Number(/이하 (\d+)자 생략/.exec(given?.[0].context ?? "")?.[1]);
   assert.equal(omitted, long.length - 500);
   assert.equal(given?.[1].context, "# 참고 자료\n\n## 조사원: 위\n\n위 자료");
+});
+
+type Sent = { key: string; patch: Record<string, any> };
+
+test("onNode: 포트마다 규칙의 키로 호출 기록을 내보내고(analyze · item 사전 요구 · dedupe · answer · evaluate), 반환값은 그대로다", async () => {
+  const { deps } = fakeDeps([
+    '{"items":[{"name":"a","description":"A"}]}',
+    '{"needs":[{"name":"p","description":"P"}]}',
+    '{"groups":[],"existing":{}}',
+    "답변",
+    '{"score":90,"reason":"ok","missing":[]}'
+  ]);
+  const sent: Sent[] = [];
+  const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key, patch) => sent.push({ key, patch }));
+  assert.equal((await ports.analyze("q", { round: 0 }))[0].name, "a");
+  assert.equal((await ports.prerequisites("q", { name: "a", description: "A" }, [], { round: 0, item: "i1", level: 2 }))[0].name, "p");
+  await ports.dedupe("q", [{ name: "p", description: "P" }], [], { round: 0, level: 2 });
+  assert.equal(await ports.answer("q", "ctx", { round: 1 }), "답변");
+  assert.equal((await ports.evaluate("q", "ctx", "답변", { round: 1 })).score, 90);
+  assert.deepEqual(sent.map((entry) => entry.key), ["analyze", "item:i1", "dedupe:0:2", "answer:1", "evaluate:1"]);
+  assert.equal(sent[0].patch.calls[0].purpose, "analyze");
+  assert.match(sent[0].patch.calls[0].prompt, /q/);
+  assert.equal(sent[1].patch.prerequisitesCalls[0].purpose, "prerequisites");
+  assert.equal(sent[2].patch.calls[0].purpose, "dedupe");
+  assert.equal(sent[3].patch.calls[0].response, "답변");
+  assert.equal(sent[4].patch.calls[0].purpose, "evaluate");
+});
+
+test("onNode: dedupe 는 level 이 없으면 seed 키, ref 가 없으면 노드를 남기지 않는다", async () => {
+  const { deps } = fakeDeps(['{"groups":[],"existing":{}}', '{"groups":[],"existing":{}}']);
+  const sent: string[] = [];
+  const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key) => sent.push(key));
+  await ports.dedupe("q", [{ name: "x", description: "" }], [], { round: 2 });
+  await ports.dedupe("q", [{ name: "x", description: "" }], []);
+  assert.deepEqual(sent, ["dedupe:2:seed"]);
+});
+
+test("onNode: 모델 호출이 실패해도 그 호출(오류 포함)을 노드에 남기고 그대로 던진다", async () => {
+  const { deps } = fakeDeps([new Error("서버 다운"), new Error("서버 다운")]);
+  const sent: Sent[] = [];
+  const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key, patch) => sent.push({ key, patch }));
+  await assert.rejects(ports.evaluate("q", "c", "a", { round: 0 }), /서버 다운/);
+  assert.equal(sent[0].key, "evaluate:0");
+  assert.equal(sent[0].patch.calls.length, 2, "재시도까지 두 번 기록된다");
+  assert.equal(sent[0].patch.calls[0].error, "서버 다운");
+  assert.equal(sent[0].patch.calls[0].response, null);
+});
+
+test("onNode: build 는 item 키에 그 아이템 증강이 부른 호출 · 건넨 사전 컨텍스트(원문/보낸 길이) · 증강 결과를 담고, 아이템끼리 호출이 섞이지 않는다", async () => {
+  const { deps } = fakeDeps([]);
+  const sent: Sent[] = [];
+  const base: BaseAugment = async (d, query) => {
+    await d.model.chat(`라우팅:${query}`);
+    return result(`ctx:${query}`);
+  };
+  const config = { ...defaultPlanConfig(), maxProvidedChars: 500 };
+  const ports = createPlanPorts(deps, undefined, config, base, (key, patch) => sent.push({ key, patch }));
+  const long = "가".repeat(700);
+  const built = await Promise.all([
+    ports.build("q", { name: "a", description: "A" }, [{ name: "선행", context: long }], { round: 0, item: "i1", provided: ["i9"] }),
+    ports.build("q", { name: "b", description: "B" }, [], { round: 0, item: "i2", provided: [] })
+  ]);
+  assert.equal(built[0].context, "ctx:a: A", "반환값은 그대로");
+  const one = sent.find((entry) => entry.key === "item:i1")!.patch;
+  assert.deepEqual(one.calls.map((call: { prompt: string }) => call.prompt), ["라우팅:a: A"]);
+  assert.equal(one.provided[0].item, "i9");
+  assert.equal(one.provided[0].chars, 700);
+  assert.ok(one.provided[0].sent < 700 && one.provided[0].text.includes("생략"));
+  assert.equal(one.augment.context, "ctx:a: A");
+  assert.equal(one.augment.pairs[0].materials.length, 1, "자료 포함 원본");
+  const two = sent.find((entry) => entry.key === "item:i2")!.patch;
+  assert.deepEqual(two.calls.map((call: { prompt: string }) => call.prompt), ["라우팅:b: B"]);
+});
+
+test("onNode: build 가 던지면 그때까지의 호출 · 사전 컨텍스트 · 오류를 남기고 던진다", async () => {
+  const { deps } = fakeDeps([]);
+  const sent: Sent[] = [];
+  const base: BaseAugment = async (d) => {
+    await d.model.chat("라우팅");
+    throw new Error("수집 실패");
+  };
+  const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), base, (key, patch) => sent.push({ key, patch }));
+  await assert.rejects(ports.build("q", { name: "a", description: "" }, [], { round: 0, item: "i1", provided: [] }), /수집 실패/);
+  assert.equal(sent[0].patch.error, "수집 실패");
+  assert.equal(sent[0].patch.calls.length, 1);
+  assert.equal(sent[0].patch.augment, undefined);
+});
+
+test("answer · evaluate: 첫 호출이 실패해도 한 번 더 시도하고, 두 번 다 실패하면 던진다. 시도마다 노드 호출 기록에 남는다", async () => {
+  const sent: Record<string, { calls: { response: string | null; error?: string }[] }> = {};
+  const { deps, prompts } = fakeDeps([new Error("chat produced no data for 180s"), "두 번째 답"]);
+  const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key, patch) => { sent[key] = patch as never; });
+  assert.equal(await ports.answer("q", "ctx", { round: 0 }), "두 번째 답");
+  assert.equal(prompts.length, 2);
+  assert.equal(sent["answer:0"].calls.length, 2);
+  assert.match(sent["answer:0"].calls[0].error ?? "", /no data for 180s/);
+
+  const evalJson = '{"score":80,"reason":"ok","missing":[]}';
+  const second = fakeDeps(["이건 JSON 이 아니다", evalJson]);
+  const evaluated = await createPlanPorts(second.deps, undefined, defaultPlanConfig()).evaluate("q", "ctx", "a", { round: 0 });
+  assert.equal(evaluated.score, 80);
+  assert.equal(second.prompts.length, 2);
+
+  const failing = fakeDeps([new Error("a"), new Error("b")]);
+  await assert.rejects(createPlanPorts(failing.deps, undefined, defaultPlanConfig()).answer("q", "ctx", { round: 0 }), /b/);
+  assert.equal(failing.prompts.length, 2);
 });

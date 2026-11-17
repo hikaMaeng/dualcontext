@@ -1,6 +1,6 @@
 import type { ContextPlanConfig, ItemDraft } from "../../../common/index.js";
 import { findByName, normalizeName, type PlanGraph } from "../graph/index.js";
-import type { PlanPorts } from "../ports.js";
+import type { PlanCallRef, PlanPorts } from "../ports.js";
 
 /** 중복 정리 결과의 묶음 하나. members 는 candidates 인덱스(오름차순), existingId 가 있으면 그 기존 아이템과 같다. */
 export type CandidateGroup = { members: number[]; draft: ItemDraft; existingId?: string };
@@ -26,7 +26,8 @@ export async function dedupeCandidates(
   candidates: ItemDraft[],
   graph: PlanGraph,
   config: Pick<ContextPlanConfig, "dedupe">,
-  ports: Pick<PlanPorts, "dedupe">
+  ports: Pick<PlanPorts, "dedupe">,
+  ref?: PlanCallRef
 ): Promise<DedupeResult> {
   const n = candidates.length;
   if (n === 0) return { groups: [], method: config.dedupe };
@@ -46,7 +47,8 @@ export async function dedupeCandidates(
       const answer = await ports.dedupe(
         query,
         candidates,
-        graph.items.map((item) => ({ id: item.id, name: item.name, description: item.description }))
+        graph.items.map((item) => ({ id: item.id, name: item.name, description: item.description })),
+        ref
       );
       const valid = (i: unknown): i is number => Number.isInteger(i) && (i as number) >= 0 && (i as number) < n;
       for (const group of answer?.groups ?? []) {

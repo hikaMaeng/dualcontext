@@ -42,7 +42,9 @@ export async function generateAnswers(
   query: string,
   context: string,
   onAnswer?: (which: keyof Answers, answer: Answer) => Promise<void> | void,
-  preparedAfter?: Answer
+  preparedAfter?: Answer,
+  /** 답변마다 다른 모델 클라이언트를 쓰고 싶을 때(실행 로그가 호출을 답변별로 기록한다). 없으면 model 하나로 둘 다 부른다. */
+  models?: { before: ModelClient; after: ModelClient }
 ): Promise<Answers> {
   // 마땅한 조사원이 없어 컨텍스트가 비면 증강 후 답변은 증강 전 답변과 같은 입력이다. 모델을 한 번 더 부르지 않는다.
   const skipAfter = context.trim() === "";
@@ -52,12 +54,12 @@ export async function generateAnswers(
     return answer;
   };
   const [before, after] = await Promise.all([
-    ask(model, fill(answerPrompts.before, { query })).then((answer) => record("before", answer)),
+    ask(models?.before ?? model, fill(answerPrompts.before, { query })).then((answer) => record("before", answer)),
     (skipAfter
       ? Promise.resolve<Answer>({ text: null, error: null, ms: 0, skipped: true })
       : preparedAfter
         ? Promise.resolve<Answer>(preparedAfter)
-        : ask(model, fill(answerPrompts.after, { query, context }))
+        : ask(models?.after ?? model, fill(answerPrompts.after, { query, context }))
     ).then((answer) => record("after", answer))
   ]);
   return { before, after };
