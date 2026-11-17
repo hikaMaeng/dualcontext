@@ -118,6 +118,7 @@
   "common.routing.scores.label": "조사원 라우팅 점수(유사도)",
   "common.routing.selected.status": "선택",
   "common.routing.excluded.status": "제외",
+  "common.routing.excluded.toggle": "제외된 조사원 점수 보기",
   "common.routing.none.message": "이 질의에 마땅한 조사원이 없어 컨텍스트를 공급하지 않았습니다.",
   "router.split.heading.text": "질의 분해",
   "router.split.hint.message": "여러 분야를 한 번에 묻는 질의를 하위 질문으로 나눠, 통째 질의와 하위 질문을 각각 라우팅한 합집합을 조사원으로 씁니다. 「없음」이면 나누지 않고, 「규칙」은 문장 끝과 의문·요청 어미 뒤 쉼표에서 나누며, 「LLM」은 LLM 이 나눕니다(실패하면 규칙으로 대신).",

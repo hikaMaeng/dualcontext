@@ -118,6 +118,7 @@
   "common.routing.scores.label": "调查员路由分数(相似度)",
   "common.routing.selected.status": "已选",
   "common.routing.excluded.status": "已排除",
+  "common.routing.excluded.toggle": "查看已排除调查员的分数",
   "common.routing.none.message": "没有适合此查询的调查员,因此未提供上下文。",
   "router.split.heading.text": "查询拆分",
   "router.split.hint.message": "同时询问多个领域的查询会被拆成子问题，对整句查询和各子问题分别路由并取并集。「无」不拆分；「规则」在句末以及疑问或请求结尾后的逗号处拆分；「LLM」由 LLM 拆分（失败时改用规则）。",

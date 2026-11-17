@@ -21,10 +21,22 @@ function ScoreList({ scores, t, testId }: { scores: RoutingScore[]; t: Texts; te
  */
 export function RoutingScores({ routing, t }: { routing: RoutingTrace | null | undefined; t: Texts }) {
   if (!routing || routing.researchers.length === 0) return null;
+  const selected = routing.researchers.filter((entry) => entry.selected);
+  const excluded = routing.researchers.filter((entry) => !entry.selected);
   return (
     <section aria-label={t[RSC.COMMON_ROUTING_SCORES_LABEL]} className="grid gap-2" data-testid="routing-scores">
       <h3 className="text-sm font-semibold text-muted">{t[RSC.COMMON_ROUTING_SCORES_LABEL]}</h3>
-      <ScoreList scores={routing.researchers} t={t} testId="routing-scores-researchers" />
+      {selected.length > 0 ? <ScoreList scores={selected} t={t} testId="routing-scores-researchers" /> : null}
+      {excluded.length > 0 ? (
+        <details data-testid="routing-scores-excluded-group" className="text-sm">
+          <summary className="cursor-pointer text-muted">
+            {t[RSC.COMMON_ROUTING_EXCLUDED_TOGGLE]} ({excluded.length})
+          </summary>
+          <div className="mt-1">
+            <ScoreList scores={excluded} t={t} testId="routing-scores-excluded" />
+          </div>
+        </details>
+      ) : null}
     </section>
   );
 }

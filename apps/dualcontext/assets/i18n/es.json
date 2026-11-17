@@ -118,6 +118,7 @@
   "common.routing.scores.label": "Puntuaciones de enrutamiento de investigadores (similitud)",
   "common.routing.selected.status": "elegido",
   "common.routing.excluded.status": "excluido",
+  "common.routing.excluded.toggle": "Ver puntuaciones de investigadores excluidos",
   "common.routing.none.message": "Ningún investigador es adecuado para esta consulta, así que no se aportó contexto.",
   "router.split.heading.text": "División de la consulta",
   "router.split.hint.message": "Una consulta que pregunta por varios ámbitos a la vez se divide en subpreguntas; se enruta la consulta completa y cada subpregunta y se usa la unión. «Ninguno» no divide, «Regla» divide al final de las frases y en las comas tras terminaciones de pregunta o petición, y «LLM» deja que el LLM la divida (si falla, se usa la regla).",

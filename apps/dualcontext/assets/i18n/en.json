@@ -118,6 +118,7 @@
   "common.routing.scores.label": "Researcher routing scores (similarity)",
   "common.routing.selected.status": "chosen",
   "common.routing.excluded.status": "excluded",
+  "common.routing.excluded.toggle": "Show excluded researcher scores",
   "common.routing.none.message": "No researcher is suitable for this query, so no context was supplied.",
   "router.split.heading.text": "Query splitting",
   "router.split.hint.message": "A query that asks about several fields at once is split into sub-questions; the whole query and each sub-question are routed and the union is used. None does not split, Rule splits at sentence ends and at commas after question or request endings, and LLM lets the LLM split it (falling back to the rule if that fails).",

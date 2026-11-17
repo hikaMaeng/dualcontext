@@ -118,6 +118,7 @@
   "common.routing.scores.label": "Pontuações de roteamento de investigadores (similaridade)",
   "common.routing.selected.status": "escolhido",
   "common.routing.excluded.status": "excluído",
+  "common.routing.excluded.toggle": "Ver pontuações dos investigadores excluídos",
   "common.routing.none.message": "Nenhum investigador é adequado a esta consulta, então nenhum contexto foi fornecido.",
   "router.split.heading.text": "Divisão da consulta",
   "router.split.hint.message": "Uma consulta que pergunta sobre vários domínios de uma vez é dividida em subperguntas; a consulta inteira e cada subpergunta são roteadas e usa-se a união. «Nenhum» não divide, «Regra» divide no fim das frases e nas vírgulas após terminações de pergunta ou pedido, e «LLM» deixa o LLM dividir (se falhar, usa-se a regra).",

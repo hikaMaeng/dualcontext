@@ -118,6 +118,7 @@
   "common.routing.scores.label": "Scores de routage des enquêteurs (similarité)",
   "common.routing.selected.status": "retenu",
   "common.routing.excluded.status": "écarté",
+  "common.routing.excluded.toggle": "Afficher les scores des enquêteurs écartés",
   "common.routing.none.message": "Aucun enquêteur ne convient à cette requête, aucun contexte n'a donc été fourni.",
   "router.split.heading.text": "Découpage de la requête",
   "router.split.hint.message": "Une requête qui interroge plusieurs domaines à la fois est découpée en sous-questions ; la requête entière et chaque sous-question sont routées et l'union est utilisée. « Aucun » ne découpe pas, « Règle » découpe en fin de phrase et aux virgules suivant une terminaison de question ou de demande, et « LLM » laisse le LLM découper (règle en cas d'échec).",
