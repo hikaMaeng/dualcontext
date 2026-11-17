@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "Antes / después del aumento",
   "runs.node.answer.none.message": "Sin respuesta.",
   "runs.node.answer.fromplan.message": "Se usó la respuesta de la última ronda de reevaluación como respuesta final (mismo prompt y contexto).",
+  "runs.node.answer.retried.message": "La respuesta de esta ronda falló, pero la respuesta final se regeneró con el mismo contexto y se completó. Consulta el nodo de respuesta final.",
   "runs.node.evaluate.judgement.label": "Veredicto",
   "runs.node.evaluate.score.label": "Puntuación",
   "runs.node.evaluate.pass.text": "Aprobado",

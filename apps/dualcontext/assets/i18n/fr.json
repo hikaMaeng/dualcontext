@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "Avant / après augmentation",
   "runs.node.answer.none.message": "Aucune réponse.",
   "runs.node.answer.fromplan.message": "La réponse du dernier tour de réévaluation a servi de réponse finale (même prompt, même contexte).",
+  "runs.node.answer.retried.message": "La réponse de ce tour a échoué, mais la réponse finale a été régénérée avec le même contexte et terminée. Voir le nœud de réponse finale.",
   "runs.node.evaluate.judgement.label": "Verdict",
   "runs.node.evaluate.score.label": "Score",
   "runs.node.evaluate.pass.text": "Réussi",

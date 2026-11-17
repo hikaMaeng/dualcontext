@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "Before / after augmentation",
   "runs.node.answer.none.message": "No answer.",
   "runs.node.answer.fromplan.message": "The last reevaluation round's answer was used as the final answer (same prompt, same context).",
+  "runs.node.answer.retried.message": "This round's answer failed, but the final answer was regenerated with the same context and completed. See the final answer node.",
   "runs.node.evaluate.judgement.label": "Verdict",
   "runs.node.evaluate.score.label": "Score",
   "runs.node.evaluate.pass.text": "Passed",

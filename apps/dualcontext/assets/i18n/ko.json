@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "증강 전 · 후 비교",
   "runs.node.answer.none.message": "답변이 없습니다.",
   "runs.node.answer.fromplan.message": "재평가 마지막 라운드의 답변을 그대로 최종 답변으로 썼습니다(같은 프롬프트 · 같은 컨텍스트).",
+  "runs.node.answer.retried.message": "이 라운드의 답변은 실패했지만, 최종 답변은 같은 컨텍스트로 다시 생성해 완료했습니다. 최종 답변 노드를 보세요.",
   "runs.node.evaluate.judgement.label": "판정",
   "runs.node.evaluate.score.label": "점수",
   "runs.node.evaluate.pass.text": "통과",

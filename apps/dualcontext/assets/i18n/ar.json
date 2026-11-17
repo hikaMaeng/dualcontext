@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "قبل / بعد التعزيز",
   "runs.node.answer.none.message": "لا توجد إجابة.",
   "runs.node.answer.fromplan.message": "اعتُمدت إجابة آخر جولة إعادة تقييم كإجابة نهائية (نفس الطلب ونفس السياق).",
+  "runs.node.answer.retried.message": "فشلت إجابة هذه الجولة، لكن أُعيد توليد الإجابة النهائية بنفس السياق واكتملت. راجع عقدة الإجابة النهائية.",
   "runs.node.evaluate.judgement.label": "الحكم",
   "runs.node.evaluate.score.label": "الدرجة",
   "runs.node.evaluate.pass.text": "نجح",

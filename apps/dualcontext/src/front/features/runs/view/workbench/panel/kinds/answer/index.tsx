@@ -25,6 +25,9 @@ export function AnswerBody({ run, node, doc, running, t }: KindProps) {
     : node.kind === "final-after" ? [...steps].reverse().find((step): step is Extract<PlanStep, { kind: "assemble" }> => step.kind === "assemble") : undefined;
   const context = node.kind === "answer" ? undefined : node.kind === "final-after" ? run.context : undefined;
   const showCompare = node.final === true;
+  // 라운드 답변이 실패하면 재사용할 수 없어 최종 답변을 따로 다시 만든다. 그 최종 답변이 성공했으면 실패 표시가 혼란스럽지 않게 안내한다.
+  const after = run.answers?.after;
+  const finalRegenerated = Boolean(after && "text" in after && after.text && !after.error && !("fromPlan" in after && after.fromPlan));
   return (
     <>
       {assemble && (
@@ -37,6 +40,9 @@ export function AnswerBody({ run, node, doc, running, t }: KindProps) {
       )}
       <Section title={t[RSC.RUNS_NODE_ANSWER_TEXT_LABEL]} testId="run-node-answer-text">
         {error && <p role="alert" className="text-danger">{t[COMMON.COMMON_ANSWER_FAILED_ALERT]}: {error}</p>}
+        {error && node.kind === "answer" && finalRegenerated && (
+          <p data-testid="run-node-answer-retried" role="status" className="text-sm text-muted">{t[RSC.RUNS_NODE_ANSWER_RETRIED_MESSAGE]}</p>
+        )}
         {text !== null && text !== undefined && (
           <div data-testid="run-node-answer-body" className="max-h-96 overflow-auto break-words rounded-md border border-line bg-sidebar p-3 leading-6 group-data-[expanded=true]/panel:max-h-[75vh]"><MarkdownText text={text} /></div>
         )}

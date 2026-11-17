@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "संवर्धन से पहले / बाद",
   "runs.node.answer.none.message": "कोई उत्तर नहीं।",
   "runs.node.answer.fromplan.message": "पुनर्मूल्यांकन के अंतिम राउंड का उत्तर ही अंतिम उत्तर माना गया (वही प्रॉम्प्ट, वही संदर्भ)।",
+  "runs.node.answer.retried.message": "इस राउंड का उत्तर विफल रहा, लेकिन अंतिम उत्तर उसी संदर्भ से दोबारा बनाकर पूरा किया गया। अंतिम उत्तर नोड देखें।",
   "runs.node.evaluate.judgement.label": "निर्णय",
   "runs.node.evaluate.score.label": "स्कोर",
   "runs.node.evaluate.pass.text": "उत्तीर्ण",

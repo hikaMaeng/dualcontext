@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "Antes / depois do aumento",
   "runs.node.answer.none.message": "Sem resposta.",
   "runs.node.answer.fromplan.message": "A resposta da última rodada de reavaliação foi usada como final (mesmo prompt e contexto).",
+  "runs.node.answer.retried.message": "A resposta desta rodada falhou, mas a resposta final foi gerada novamente com o mesmo contexto e concluída. Veja o nó da resposta final.",
   "runs.node.evaluate.judgement.label": "Veredito",
   "runs.node.evaluate.score.label": "Pontuação",
   "runs.node.evaluate.pass.text": "Aprovado",

@@ -468,6 +468,7 @@
   "runs.node.answer.compare.label": "增强前后对比",
   "runs.node.answer.none.message": "没有回答。",
   "runs.node.answer.fromplan.message": "直接采用重评估最后一轮的回答作为最终回答（相同提示词、相同上下文）。",
+  "runs.node.answer.retried.message": "本轮回答失败，但最终回答已用相同上下文重新生成并完成。请查看最终回答节点。",
   "runs.node.evaluate.judgement.label": "判定",
   "runs.node.evaluate.score.label": "分数",
   "runs.node.evaluate.pass.text": "通过",
