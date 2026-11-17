@@ -32,9 +32,10 @@ const sweeps = 4;
  * - 없는 노드를 가리키는 간선 · 자기 참조 · 중복은 뺀다. 순환은 되돌아오는 간선을 끊고 층을 계산한다(방어). 층을 거스르는 간선은 그리지 않는다.
  * - 층 안 순서는 바리센터(이웃 순서의 평균) 스윕으로 간선 교차를 줄인다: 앞 노드 기준, 뒤 노드 기준을 번갈아 sweeps 번.
  * - 각 층은 가장 큰 층에 맞춰 가운데 정렬한다(가로면 세로 가운데, 세로면 가로 가운데).
+ * hidden 간선은 층 계산과 순서에는 쓰지만 그리지 않는다(다른 방식으로 그리는 간선의 배치 제약).
  * 입력 노드 순서가 같은 층 안의 처음 순서이므로, 호출자는 중요한 노드를 앞에 둔다.
  */
-export function layoutGraph<K extends string>(ids: string[], edges: { from: string; to: string; kind: K }[], orientation: Orientation = "horizontal"): Layout<K> {
+export function layoutGraph<K extends string>(ids: string[], edges: { from: string; to: string; kind: K; hidden?: boolean }[], orientation: Orientation = "horizontal"): Layout<K> {
   const known = new Set(ids);
   const incoming = new Map<string, string[]>();
   for (const id of ids) incoming.set(id, []);
@@ -115,7 +116,7 @@ export function layoutGraph<K extends string>(ids: string[], edges: { from: stri
     const from = at.get(edge.from);
     const to = at.get(edge.to);
     const dedupe = `${edge.from}>${edge.to}`;
-    if (!from || !to || from.col >= to.col || seen.has(dedupe)) continue; // 순환으로 끊긴 간선(같은/앞쪽 층)은 그리지 않는다.
+    if (edge.hidden || !from || !to || from.col >= to.col || seen.has(dedupe)) continue; // 순환으로 끊긴 간선(같은/앞쪽 층)은 그리지 않는다.
     seen.add(dedupe);
     if (vertical) {
       const x1 = from.x + from.w / 2;
@@ -157,4 +158,68 @@ export function groupFrames(layout: Pick<Layout, "nodes">, groups: { n: number; 
     frames.push({ n: group.n, x: left - frameMetrics.pad, y: top - frameMetrics.pad - frameMetrics.header, w: right - left + frameMetrics.pad * 2, h: bottom - top + frameMetrics.pad * 2 + frameMetrics.header });
   }
   return frames;
+}
+
+type Arrow = { from: string; to: string; kind: string };
+
+/**
+ * 캔버스용 배치 간선으로 바꾼다. 한 분류 그래프 안에서는 "의존하는 쪽이 위, 사전이 아래"가 되도록 needs 를 뒤집는다(층이 곧 의존 깊이).
+ * 다른 그래프 사이의 needs(먼저 만든 아이템 → 나중에 만든 아이템)는 시간 방향 그대로 둔다.
+ * feed(조립)는 그리지 않고(hidden) 층 제약으로만 쓴다: 답변은 아이템이 속한 분류 그래프의 모든 노드 아래에 놓인다. 그리기는 feedPaths 가 한다.
+ */
+export function arrangeEdges<E extends Arrow>(edges: E[], groups: { n: number; nodeIds: string[] }[]): (E & { hidden?: boolean })[] {
+  const groupOf = new Map<string, { n: number; nodeIds: string[] }>();
+  for (const group of groups) for (const id of group.nodeIds) groupOf.set(id, group);
+  const out: (E & { hidden?: boolean })[] = [];
+  const hidden = new Set<string>();
+  for (const edge of edges) {
+    const own = groupOf.get(edge.from);
+    if (edge.kind === "needs" && own && own === groupOf.get(edge.to)) out.push({ ...edge, from: edge.to, to: edge.from });
+    else if (edge.kind === "feed" && own) {
+      for (const member of own.nodeIds) {
+        const key = `${member}>${edge.to}`;
+        if (!hidden.has(key)) {
+          hidden.add(key);
+          out.push({ ...edge, from: member, hidden: true });
+        }
+      }
+    } else out.push(edge);
+  }
+  return out;
+}
+
+/** 분류 그래프 틀에서 답변으로 가는 조립 간선: 같은 틀 · 같은 답변으로 가는 feed 는 한 줄로 합친다(members = 그 답변을 만든 틀 안의 아이템). */
+export type FeedPath = { group: number; to: string; members: string[]; path: string };
+
+export function feedPaths(layout: Pick<Layout, "nodes">, frames: GroupFrame[], feeds: Arrow[], groups: { n: number; nodeIds: string[] }[], orientation: Orientation): FeedPath[] {
+  const at = new Map(layout.nodes.map((node) => [node.id, node]));
+  const out: FeedPath[] = [];
+  for (const group of groups) {
+    const frame = frames.find((entry) => entry.n === group.n);
+    if (!frame) continue;
+    const mine = feeds.filter((feed) => feed.kind === "feed" && group.nodeIds.includes(feed.from));
+    for (const to of [...new Set(mine.map((feed) => feed.to))]) {
+      const target = at.get(to);
+      if (!target) continue;
+      const members = mine.filter((feed) => feed.to === to).map((feed) => feed.from);
+      if (orientation === "vertical") {
+        const x1 = frame.x + frame.w / 2;
+        const y1 = frame.y + frame.h;
+        const x2 = target.x + target.w / 2;
+        const y2 = target.y;
+        if (y2 <= y1) continue;
+        const bend = Math.max(18, (y2 - y1) / 2);
+        out.push({ group: group.n, to, members, path: `M${x1},${y1} C${x1},${y1 + bend} ${x2},${y2 - bend} ${x2},${y2}` });
+      } else {
+        const x1 = frame.x + frame.w;
+        const y1 = frame.y + frame.h / 2;
+        const x2 = target.x;
+        const y2 = target.y + target.h / 2;
+        if (x2 <= x1) continue;
+        const bend = Math.max(24, (x2 - x1) / 2);
+        out.push({ group: group.n, to, members, path: `M${x1},${y1} C${x1 + bend},${y1} ${x2 - bend},${y2} ${x2},${y2}` });
+      }
+    }
+  }
+  return out;
 }

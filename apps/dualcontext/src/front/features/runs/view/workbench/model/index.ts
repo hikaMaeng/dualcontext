@@ -17,9 +17,9 @@ import type { RunStatus } from "../../../../../lib/run";
  *
  * 간선(from → to, 시간 · 데이터 흐름 방향)
  * - flow    질의 → 질의 분해, 질의 → 증강 전 답변, classic → 최종 답변, 답변 → 평가
- * - needs   사전 아이템 → 그것을 필요로 하는 아이템
- * - derive  질의 분해 → 처음 계획의 시작 아이템, 평가 r → 보강 r+1 의 시작 아이템(시작 아이템 = 같은 라운드 아이템을 사전으로 필요로 하지 않는 것)
- * - feed    조립에 든 1차 아이템 → 답변
+ * - needs   사전 아이템 → 그것을 필요로 하는 아이템(데이터 방향. 캔버스는 같은 분류 그래프 안에서는 의존하는 쪽을 위에 두고 사전을 아래에 그린다)
+ * - derive  질의 분해 → 처음 계획의 최상위 아이템, 평가 r → 보강 r+1 의 최상위 아이템(최상위 = 같은 라운드의 다른 아이템이 사전으로 필요로 하지 않는 것 = 질의 분해 · 평가 요구가 직접 낳은 것)
+ * - feed    조립에 든 1차 아이템 → 답변(캔버스는 그 아이템이 속한 분류 그래프 틀에서 답변으로 잇는다: 답변은 분류 그래프의 컨텍스트로 증강된다)
  *
  * 분류 그래프(group) = 아이템을 낳은 원점별 묶음: 1 = 질의 분해(라운드 0 아이템), 그 뒤는 평가가 요구해 라운드 k 에 만든 아이템(k = 1, 2 …).
  */
@@ -77,10 +77,11 @@ type Step<K extends PlanStep["kind"]> = Extract<PlanStep, { kind: K }>;
 
 const itemKey = runNodeKey.item;
 
-/** 그래프의 시작 아이템: 같은 라운드의 다른 아이템을 사전으로 필요로 하지 않는 것(질의 분해 · 평가가 직접 낳은 쪽으로 이어진다). */
+/** 분류 그래프의 최상위 아이템: 같은 라운드의 다른 아이템이 사전으로 필요로 하지 않는 것(질의 분해 · 평가가 직접 낳은 쪽). 사전들은 그 아래로 이어진다. */
 function entryItems(items: PlanItem[], round: number): PlanItem[] {
-  const inRound = new Set(items.filter((item) => item.round === round).map((item) => item.id));
-  return items.filter((item) => item.round === round && !(item.needs ?? []).some((need) => inRound.has(need)));
+  const inRound = items.filter((item) => item.round === round);
+  const needed = new Set(inRound.flatMap((item) => item.needs ?? []));
+  return inRound.filter((item) => !needed.has(item.id));
 }
 
 const itemState = (item: PlanItem, running: boolean): NodeState =>

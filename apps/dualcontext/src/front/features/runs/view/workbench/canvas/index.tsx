@@ -3,7 +3,7 @@ import { Minus, Plus } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import type { Texts } from "../../../../../i18n";
 import { cn } from "../../../../../lib/utils";
-import { defaultOrientation, frameMetrics, groupFrames, layoutGraph, type Orientation } from "../layout";
+import { arrangeEdges, defaultOrientation, feedPaths, frameMetrics, groupFrames, layoutGraph, type Orientation } from "../layout";
 import { neighborsOf, type EdgeKind, type RunGraph } from "../model";
 import { groupTitle, nodeAriaLabel, nodeText, stateMark } from "./labels";
 import { CanvasNode } from "./node";
@@ -28,7 +28,7 @@ const zoomStep = 0.15;
 
 /**
  * 실행 전체를 한 장으로 보는 그래프(SVG): 질의 → 질의 분해 → 분류 그래프(컨텍스트 아이템 DAG) → 답변 → 평가 → 보강 그래프 → … → 최종 답변.
- * 층 순서가 시간 순서이고 방향은 가로(왼쪽→오른쪽) · 세로(위→아래)를 고를 수 있다(고르지 않으면 층이 많은 깊은 그래프는 세로).
+ * 층 순서가 시간 순서이고(분류 그래프 안에서는 질의 분해가 낳은 최상위 아이템이 맨 위, 그것이 의존하는 아이템이 아래. 답변은 그 틀 전체의 컨텍스트로 증강되므로 틀 아래에서 이어진다) 방향은 가로(왼쪽→오른쪽) · 세로(위→아래)를 고를 수 있다(고르지 않으면 층이 많은 깊은 그래프는 세로).
  * 분류 그래프마다 틀을 그려 도출 사유(질의 분해 · 평가 r)와 걸린 시간을 머리에 적는다. 노드를 고르면(클릭 · Enter · Space) 이웃과 간선이 강조되고
  * 상세는 오른쪽 패널이 보인다. 확대 · 축소 · 맞춤과 가로 · 세로 전환이 있고, 넘치면 스크롤한다(캔버스는 문서 방향과 무관하게 ltr).
  */
@@ -36,10 +36,20 @@ export function RunCanvas({ graph, query, selectedId, onSelect, t }: Props) {
   const [chosen, setChosen] = useState<Orientation | null>(null);
   const [zoom, setZoom] = useState<number | "fit">(1);
   const ids = useMemo(() => graph.nodes.map((node) => node.id), [graph.nodes]);
-  const natural = useMemo(() => layoutGraph(ids, graph.edges), [ids, graph.edges]);
+  const arranged = useMemo(() => arrangeEdges(graph.edges, graph.groups), [graph.edges, graph.groups]);
+  const natural = useMemo(() => layoutGraph(ids, arranged), [ids, arranged]);
   const orientation = chosen ?? defaultOrientation(natural);
-  const layout = useMemo(() => (orientation === "horizontal" ? natural : layoutGraph(ids, graph.edges, orientation)), [ids, graph.edges, natural, orientation]);
+  const layout = useMemo(() => (orientation === "horizontal" ? natural : layoutGraph(ids, arranged, orientation)), [ids, arranged, natural, orientation]);
   const frames = useMemo(() => groupFrames(layout, graph.groups), [layout, graph.groups]);
+  const feeds = useMemo(() => feedPaths(layout, frames, graph.edges, graph.groups, orientation), [layout, frames, graph.edges, graph.groups, orientation]);
+  // 그려지는 간선: 배치 간선(조립 제외) + 분류 그래프 틀에서 답변으로 가는 조립 간선. touches = 이 선이 이어 주는 노드(고르면 강조).
+  const drawn = useMemo(
+    () => [
+      ...layout.edges.map((edge) => ({ key: `${edge.from}>${edge.to}`, path: edge.path, from: edge.from, to: edge.to, kind: edge.kind as EdgeKind, touches: [edge.from, edge.to] })),
+      ...feeds.map((feed) => ({ key: `group-${feed.group}>${feed.to}`, path: feed.path, from: `group-${feed.group}`, to: feed.to, kind: "feed" as EdgeKind, touches: [feed.to, ...feed.members] }))
+    ],
+    [layout.edges, feeds]
+  );
   const byId = useMemo(() => new Map(graph.nodes.map((node) => [node.id, node])), [graph.nodes]);
   const near = selectedId ? neighborsOf(graph, selectedId) : null;
   const related = new Set(selectedId && near ? [selectedId, ...near.inputs.map((n) => n.id), ...near.outputs.map((n) => n.id)] : []);
@@ -92,7 +102,7 @@ export function RunCanvas({ graph, query, selectedId, onSelect, t }: Props) {
           data-testid="run-canvas-svg"
           data-orientation={orientation}
           data-nodes={layout.nodes.length}
-          data-edges={layout.edges.length}
+          data-edges={drawn.length}
           className="block max-w-none"
         >
           <defs>
@@ -109,12 +119,12 @@ export function RunCanvas({ graph, query, selectedId, onSelect, t }: Props) {
               </g>
             );
           })}
-          {layout.edges.map((edge) => {
-            const active = selectedId !== null && (edge.from === selectedId || edge.to === selectedId);
-            const look = edgeLook[edge.kind as EdgeKind];
+          {drawn.map((edge) => {
+            const active = selectedId !== null && edge.touches.includes(selectedId);
+            const look = edgeLook[edge.kind];
             return (
               <path
-                key={`${edge.from}>${edge.to}`}
+                key={edge.key}
                 d={edge.path}
                 fill="none"
                 data-testid="run-canvas-edge"

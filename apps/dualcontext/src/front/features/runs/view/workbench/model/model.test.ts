@@ -60,9 +60,9 @@ const decomposed = (): GraphInput => input({
   })
 });
 
-test("decompose: 질의 분해 → (시작 아이템) → needs 로 이어지고 1차 아이템 → 최종 답변, 분류 그래프 1 하나", () => {
+test("decompose: 질의 분해 → (최상위 아이템) → needs 로 이어지고 1차 아이템 → 최종 답변, 분류 그래프 1 하나", () => {
   const graph = buildRunGraph(decomposed());
-  assert.deepEqual(edgesOf(graph, "derive"), ["analyze>item:i3", "analyze>item:i4"]);
+  assert.deepEqual(edgesOf(graph, "derive"), ["analyze>item:i1"], "최상위 = 다른 아이템이 사전으로 필요로 하지 않는 i1");
   assert.deepEqual(edgesOf(graph, "needs"), ["item:i2>item:i1", "item:i3>item:i1", "item:i4>item:i2"]);
   assert.deepEqual(edgesOf(graph, "feed"), ["item:i1>answer:after"]);
   assert.equal(graph.groups.length, 1);
@@ -111,10 +111,10 @@ const reevaluated = (afterOver: Partial<Answers["after"]> = { fromPlan: true }):
   answers: answers(afterOver)
 });
 
-test("reevaluate: 라운드마다 답변 · 평가 노드, 평가 r → 보강 r+1 의 시작 아이템(derive), 그룹이 라운드별로 나뉜다", () => {
+test("reevaluate: 라운드마다 답변 · 평가 노드, 평가 r → 보강 r+1 의 최상위 아이템(derive), 그룹이 라운드별로 나뉜다", () => {
   const graph = buildRunGraph(reevaluated());
   assert.deepEqual(graph.nodes.filter((node) => node.kind === "answer" || node.kind === "evaluate").map((node) => node.id), ["answer:0", "evaluate:0", "answer:1", "evaluate:1", "answer:2", "evaluate:2"]);
-  assert.deepEqual(edgesOf(graph, "derive"), ["analyze>item:i1", "evaluate:0>item:i3", "evaluate:1>item:i4"], "i2 는 같은 라운드의 i3 을 필요로 해 시작 아이템이 아니다");
+  assert.deepEqual(edgesOf(graph, "derive"), ["analyze>item:i1", "evaluate:0>item:i2", "evaluate:1>item:i4"], "i3 은 같은 라운드의 i2 가 필요로 해 최상위가 아니다");
   assert.deepEqual(graph.groups.map((group) => [group.n, group.reason, group.nodeIds]), [
     [1, { type: "decompose" }, ["item:i1"]],
     [2, { type: "evaluation", round: 0 }, ["item:i2", "item:i3"]],
@@ -194,7 +194,7 @@ test("가리키는 아이템이 없는 needs · 중복 간선은 만들지 않�
 test("neighborsOf 는 들어오는 · 나가는 이웃을 돌려준다", () => {
   const graph = buildRunGraph(decomposed());
   const around = neighborsOf(graph, "item:i1");
-  assert.deepEqual(around.inputs.map((node) => node.id).sort(), ["item:i2", "item:i3"]);
+  assert.deepEqual(around.inputs.map((node) => node.id).sort(), ["analyze", "item:i2", "item:i3"], "질의 분해가 낳은 최상위 + 사전 아이템");
   assert.deepEqual(around.outputs.map((node) => node.id), ["answer:after"]);
   assert.deepEqual(neighborsOf(graph, "nope"), { inputs: [], outputs: [] });
 });

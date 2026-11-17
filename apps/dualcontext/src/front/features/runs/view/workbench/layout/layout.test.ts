@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { defaultOrientation, frameMetrics, groupFrames, layoutGraph, metrics, verticalFrom } from "./index";
+import { arrangeEdges, defaultOrientation, feedPaths, frameMetrics, groupFrames, layoutGraph, metrics, verticalFrom } from "./index";
 
 const e = (from: string, to: string, kind = "needs") => ({ from, to, kind });
 const colOf = (ids: string[], edges: ReturnType<typeof e>[]) => Object.fromEntries(layoutGraph(ids, edges).nodes.map((n) => [n.id, n.col]));
@@ -93,4 +93,45 @@ test("분류 그래프 틀: 소속 노드를 감싸고 머리 높이만큼 위�
   assert.equal(frames[0].x, at.a.x - frameMetrics.pad);
   assert.equal(frames[0].y, at.a.y - frameMetrics.pad - frameMetrics.header);
   assert.equal(frames[0].y + frames[0].h, at.b.y + at.b.h + frameMetrics.pad);
+});
+
+// 질의 분해(analyze) → 최상위 t1 · t2, t1 → 사전 p1 → 사전 p2(깊이 3), 답변 a 는 두 최상위에서 조립. needs 는 데이터 방향(사전 → 의존하는 쪽).
+const groupIds = ["analyze", "item:t1", "item:t2", "item:p1", "item:p2", "answer"];
+const groups = [{ n: 1, nodeIds: ["item:t1", "item:t2", "item:p1", "item:p2"] }];
+const raw = [
+  e("analyze", "item:t1", "derive"), e("analyze", "item:t2", "derive"),
+  e("item:p1", "item:t1"), e("item:p2", "item:p1"), e("item:p1", "item:t2"),
+  e("item:t1", "answer", "feed"), e("item:t2", "answer", "feed")
+];
+
+test("arrangeEdges: 같은 분류 그래프 안의 needs 는 뒤집혀 최상위가 위, 사전이 아래 층이 된다", () => {
+  const layout = layoutGraph(groupIds, arrangeEdges(raw, groups));
+  const col = Object.fromEntries(layout.nodes.map((n) => [n.id, n.col]));
+  assert.ok(col["item:t1"] < col["item:p1"] && col["item:p1"] < col["item:p2"], "t1 → p1 → p2 로 내려간다");
+  assert.equal(col["item:t1"], col["item:t2"], "분해가 직접 낳은 최상위 아이템은 같은 층");
+  assert.equal(col["item:t1"], col.analyze + 1);
+  assert.ok(col.answer > col["item:p2"], "답변은 분류 그래프 전체 아래");
+  assert.ok(!layout.edges.some((edge) => edge.kind === "feed"), "feed 는 배치 간선으로 그리지 않는다");
+  assert.deepEqual(layout.edges.filter((edge) => edge.kind === "needs").map((edge) => `${edge.from}>${edge.to}`).sort(), ["item:t1>item:p1", "item:t2>item:p1", "item:p1>item:p2"].sort());
+});
+
+test("arrangeEdges: 다른 분류 그래프 사이의 needs 는 시간 방향 그대로다", () => {
+  const two = [{ n: 1, nodeIds: ["a"] }, { n: 2, nodeIds: ["b"] }];
+  assert.deepEqual(arrangeEdges([e("a", "b")], two), [e("a", "b")]);
+});
+
+test("feedPaths: 분류 그래프 틀 아래 가운데에서 답변 위로 한 줄(같은 답변은 합침), 가로면 틀 오른쪽에서 답변 왼쪽으로", () => {
+  for (const orientation of ["vertical", "horizontal"] as const) {
+    const layout = layoutGraph(groupIds, arrangeEdges(raw, groups), orientation);
+    const frames = groupFrames(layout, groups);
+    const paths = feedPaths(layout, frames, raw, groups, orientation);
+    assert.equal(paths.length, 1);
+    assert.deepEqual(paths[0].members, ["item:t1", "item:t2"]);
+    assert.equal(paths[0].to, "answer");
+    const frame = frames[0];
+    const answer = layout.nodes.find((n) => n.id === "answer");
+    assert.ok(answer);
+    assert.ok(paths[0].path.startsWith(orientation === "vertical" ? `M${frame.x + frame.w / 2},${frame.y + frame.h} ` : `M${frame.x + frame.w},${frame.y + frame.h / 2} `));
+    assert.ok(paths[0].path.endsWith(orientation === "vertical" ? `${answer.x + answer.w / 2},${answer.y}` : `${answer.x},${answer.y + answer.h / 2}`));
+  }
 });
