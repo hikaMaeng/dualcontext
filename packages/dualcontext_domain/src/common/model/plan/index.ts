@@ -101,7 +101,63 @@ export type PlanStop =
   | "evaluation-failed" // 평가 호출 실패(응답 형식 오류 포함)
   | "answer-failed"; // 답변 생성 실패
 
-/** 계획 실행 결과(실행 로그 plan 열에 그대로 저장한다). */
+/**
+ * 계획이 밟은 단계 하나. 시간 순서대로 `PlanTrace.steps` 에 쌓이고 실행 로그의 「진행 기록」이 그대로 그린다.
+ * 공통 필드: seq(1부터), round(0=처음 계획, n=재평가 n번째 보강), at(계획 시작 후 이 단계가 끝난 시각, ms), ms(이 단계 소요).
+ * 아이템은 PlanItem.id 로 가리킨다. 이름 · 설명 초안은 아이템이 되기 전 후보라 값으로 담는다.
+ */
+export type PlanStepBase = { seq: number; round: number; at: number; ms: number };
+
+/** 중복 정리 방법(dedupe 설정과 같다. llm-fallback-name 은 모델 호출이 실패해 이름 정규화로 되돌아간 경우). */
+export type PlanDedupeMethod = "name" | "llm" | "llm-fallback-name";
+
+export type PlanStep =
+  /** 질의를 분석해 핵심 컨텍스트 후보를 뽑았다(처음 계획에서만). */
+  | (PlanStepBase & { kind: "analyze"; drafts: ItemDraft[]; error?: string })
+  /** top 아이템 후보(질의 분석 결과 또는 평가가 요구한 부족 컨텍스트)를 그래프에 넣었다. */
+  | (PlanStepBase & {
+      kind: "seed";
+      source: "query" | "evaluation";
+      method: PlanDedupeMethod;
+      candidates: ItemDraft[];
+      /** 새로 만든 top 아이템 id. */
+      created: string[];
+      /** 기존 비top 아이템을 top 으로 올린 것. */
+      promoted: string[];
+      /** 컨텍스트가 없어 다시 만들기로 한 기존 아이템. */
+      rebuild: string[];
+      /** 이미 있는 top 아이템과 같거나 상한에 걸려 버린 후보 수. */
+      dropped: number;
+    })
+  /** 아이템 하나의 사전 요구를 분석했다(level = 이 아이템이 속한 단계 + 1 이 만들어낼 단계). */
+  | (PlanStepBase & { kind: "prerequisites"; level: number; item: string; drafts: ItemDraft[]; error?: string })
+  /** 한 단계의 사전 요구 후보 전체를 중복 정리했다. */
+  | (PlanStepBase & {
+      kind: "dedupe";
+      level: number;
+      method: PlanDedupeMethod;
+      /** owner = 이 후보를 낸 아이템 id. */
+      candidates: { name: string; owner: string }[];
+      /** 묶음: members = candidates 인덱스, target = 합쳐진 아이템 id(상한에 걸려 만들지 못했으면 null), existing = 기존 아이템에 합쳐졌는가. */
+      groups: { members: number[]; target: string | null; existing: boolean }[];
+    })
+  /** 아이템 하나의 컨텍스트를 만들었다. wave 는 그 라운드의 웨이브 번호(1부터). */
+  | (PlanStepBase & {
+      kind: "build";
+      wave: number;
+      item: string;
+      status: ItemStatus;
+      /** 사전 컨텍스트로 건넨 아이템(건넨 원문 길이, 앱이 maxProvidedChars 로 자르기 전). */
+      provided: { item: string; chars: number }[];
+      contextChars: number;
+      error?: string;
+    })
+  /** top 아이템 컨텍스트를 조립했다(답변에 쓴 컨텍스트). */
+  | (PlanStepBase & { kind: "assemble"; items: string[]; chars: number })
+  | (PlanStepBase & { kind: "answer"; chars: number; error?: string })
+  | (PlanStepBase & { kind: "evaluate"; score: number; pass: boolean; missing: number; error?: string });
+
+/** 계획 실행 결과(실행 로그 plan 열에 저장한다). 진행 중에는 그 시점까지의 부분 결과가 저장되고 stop 은 null 이다. */
 export type PlanTrace = {
   mode: Exclude<ContextMode, "classic">;
   /** 실행에 쓴 설정(프롬프트 제외 — 스냅샷에는 별도로 남는다). */
@@ -120,7 +176,10 @@ export type PlanTrace = {
   /** 컨텍스트 생성 순서(같은 묶음은 병렬): 아이템 id 배열의 배열. */
   waves: string[][];
   rounds: PlanRound[];
-  stop: PlanStop;
+  /** 시간순 단계 기록. 이 필드가 생기기 전의 실행은 없다. */
+  steps?: PlanStep[];
+  /** 멈춘 이유. null 이면 아직 진행 중(부분 결과). */
+  stop: PlanStop | null;
   /** 마지막 답변(reevaluate 모드에서만). */
   answer?: string;
   ms: number;

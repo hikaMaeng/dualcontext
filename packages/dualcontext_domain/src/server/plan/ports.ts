@@ -1,4 +1,4 @@
-import type { ContextPlanConfig, ItemDraft, PlanEvaluation, PlanItem } from "../../common/index.js";
+import type { ContextPlanConfig, ItemDraft, PlanEvaluation, PlanItem, PlanTrace } from "../../common/index.js";
 
 /** 아이템 컨텍스트 생성 결과. context 가 빈 문자열이면 조사원이 없거나 자료가 없어 비었다는 뜻이다. */
 export type ItemBuild = {
@@ -29,7 +29,17 @@ export type PlanPorts = {
   evaluate: (query: string, context: string, answer: string) => Promise<Omit<PlanEvaluation, "pass">>;
 };
 
-export type PlanOptions = { config: ContextPlanConfig; ports: PlanPorts; now?: () => number; onProgress?: (event: PlanProgress) => Promise<void> | void };
+export type PlanOptions = {
+  config: ContextPlanConfig;
+  ports: PlanPorts;
+  now?: () => number;
+  onProgress?: (event: PlanProgress) => Promise<void> | void;
+  /**
+   * 단계 기록이 늘 때마다(그리고 진행 알림마다) 그 시점의 부분 trace(stop=null)를 건넨다. 값은 계획이 계속 고치는 객체를 가리키므로
+   * 받는 쪽은 호출 안에서 바로 직렬화해야 한다(나중에 읽으면 더 진행된 상태가 보인다). 던져도 계획은 멈추지 않는다.
+   */
+  onTrace?: (trace: PlanTrace) => void;
+};
 
 /** 진행 알림(실행 로그가 단계별로 기록한다). trace 는 그 시점의 부분 결과다. */
 export type PlanProgress = { stage: "analyze" | "dependencies" | "build" | "answer" | "evaluate" | "reinforce" | "done"; detail?: string };

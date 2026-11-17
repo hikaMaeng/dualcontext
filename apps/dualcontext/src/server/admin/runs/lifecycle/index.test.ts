@@ -5,7 +5,7 @@ import type { AugmentResult, PlanTrace } from "dualcontext_domain/common";
 import type { Deps, RunAugmentEngine } from "../../../augment/index.js";
 import { defaultPlanConfig } from "../../../plan/config/index.js";
 import { defaultRouterConfig } from "../../../routing/config/index.js";
-import { startRun } from "./index.js";
+import { createTraceSaver, startRun } from "./index.js";
 
 const classic: AugmentResult = {
   context: "기본 컨텍스트",
@@ -89,4 +89,56 @@ test("계획 실행에서 플래너가 던지면(analyze 실패) 실행은 error
   assert.equal(outcome.error, "analyze 실패");
   const final = calls.find((call) => /set status = \$2/.test(call.text));
   assert.deepEqual(final?.values.slice(1, 3), ["error", "analyze 실패"]);
+});
+
+test("부분 trace: 단계마다 plan 열에 쓰이고 끝난 뒤의 최종 trace 가 마지막에 쓰인다(부분이 최종을 덮지 않는다)", async () => {
+  const { deps, calls } = fake(defaultPlanConfig());
+  const partial = (n: number) => ({ ...trace, stop: null, steps: Array.from({ length: n }, (_, i) => ({ seq: i + 1 })) }) as unknown as PlanTrace;
+  const engine: RunAugmentEngine = {
+    augment: async () => classic,
+    planContext: async (_query, options) => {
+      options.onTrace?.(partial(1));
+      options.onTrace?.(partial(2));
+      options.onTrace?.(partial(3));
+      return { context: "최종", trace };
+    }
+  };
+  const { done } = await startRun(deps, "질의", undefined, { mode: "decompose" }, engine);
+  await done;
+  const planWrites = calls.filter((call) => /^update augment_runs set plan = \$2 where id = \$1$/.test(call.text));
+  assert.ok(planWrites.length >= 1 && planWrites.length <= 3, "쓰기는 최신 것으로 합쳐질 수 있다");
+  assert.equal(JSON.parse(String(planWrites.at(-1)?.values[1])).steps.length, 3, "마지막 부분 기록은 가장 최근 단계까지");
+  const order = calls.map((call) => (/^update augment_runs set plan = \$2/.test(call.text) ? "partial" : /stage = 'answering'/.test(call.text) ? "final" : null)).filter(Boolean);
+  assert.equal(order.at(-1), "final", "최종 trace 쓰기가 부분 쓰기보다 뒤");
+});
+
+test("createTraceSaver: 쓰는 동안 들어온 push 는 잃지 않고 가장 최근 것으로 이어 쓰며, 쓰기 실패는 던지지 않는다", async () => {
+  const written: string[] = [];
+  let release: () => void = () => undefined;
+  let first = true;
+  const pool = {
+    query: async (text: string, values: unknown[] = []) => {
+      if (/^update augment_runs set plan/.test(text)) {
+        if (first) {
+          first = false;
+          await new Promise<void>((resolve) => { release = resolve; });
+        }
+        written.push(String(values[1]));
+        if (written.length === 2) throw new Error("쓰기 실패");
+        return { rows: [], rowCount: 1 };
+      }
+      return { rows: [{ id: 1 }], rowCount: 1 };
+    }
+  } as unknown as pg.Pool;
+  const saver = createTraceSaver({ pool } as unknown as Deps, 1);
+  const at = (n: number) => ({ n }) as unknown as PlanTrace;
+  saver.push(at(1));
+  saver.push(at(2));
+  saver.push(at(3));
+  release();
+  await saver.settle();
+  assert.deepEqual(written.map((json) => JSON.parse(json).n), [1, 3], "대기 중 push 는 최신(3)만 이어 쓴다");
+  saver.push(at(4));
+  await saver.settle();
+  assert.equal(JSON.parse(written.at(-1) as string).n, 4, "실패 뒤에도 계속 쓴다");
 });

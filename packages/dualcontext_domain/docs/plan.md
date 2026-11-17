@@ -53,6 +53,26 @@
 
 `ContextPlanConfig.maxProvidedChars`(500~20000)는 앱 어댑터의 `ports.build` 가 `provided` 각 컨텍스트를 앞부분만 자를 때 쓴다. 플래너는 `provided` 를 자르지 않고 그대로 건네며, 실행 기록을 위해 `trace.limits.maxProvidedChars` 에만 싣는다.
 
+## steps
+
+`trace.steps` 는 계획이 밟은 단계의 시간순 기록이다(`PlanStep`, 계약은 `common/model/plan`). 기록기(`steps/createRecorder`)가 `seq`(1부터) · `at`(계획 시작 후 이 단계가 끝난 ms)를 채우고 각 단계가 `round` · `ms` 와 종류별 필드를 낸다.
+
+| kind | 누가 남기나 | 담는 것 |
+| --- | --- | --- |
+| `analyze` | `planContext` | 질의 분석이 뽑은 후보(실패하면 `error` 를 남기고 그대로 던진다) |
+| `seed` | `seedTopItems` | 후보 · 중복 정리 방법 · 새로 만든 / 올린 / 다시 만들 아이템 id · 버린 수. `source` = 처음 `query`, 보강 라운드는 `evaluation` |
+| `prerequisites` | `expandDependencies` | 아이템 하나의 사전 요구 분석 결과(자른 뒤) 또는 `error`(사전 요구 없이 진행) |
+| `dedupe` | `expandDependencies` | 한 단계 후보 전체(`owner` = 낸 아이템)와 묶음(`target` id · 기존 아이템에 합쳤는지, 상한으로 못 만들면 `target=null`) |
+| `build` | `buildItems` | 웨이브 번호 · 상태 · 건넨 사전 아이템과 원문 길이(앱이 `maxProvidedChars` 로 자르기 전) · 컨텍스트 길이 · `error` |
+| `assemble` | 라운드 시작 · decompose 끝 | 조립에 든 1차 아이템 id · 길이 |
+| `answer` · `evaluate` | `reevaluateLoop` | 답변 길이 / 점수 · 통과 · 부족 개수(이름 · 이유는 `rounds[]`) 또는 `error` |
+
+`steps` 는 `rounds` · `items` 와 중복이 아니라 **순서와 근거**다: 어느 단계에서 어떤 후보가 나와 무엇에 합쳐졌는지(`dedupe.groups`), 아이템이 어떤 사전 컨텍스트를 받았는지(`build.provided`)는 다른 필드에서 복원되지 않는다. 단계 수는 아이템 수 · 라운드 수에 비례한다(아이템당 `prerequisites` · `build` 한 건, 단계 · 라운드당 소수).
+
+### 부분 trace
+
+`options.onTrace(trace)` 는 단계가 기록될 때마다 그 시점의 부분 trace(`stop=null`, `rounds` 는 진행 중인 라운드 포함)를 건넨다. 건네는 객체는 계획이 계속 고치는 그래프이므로 **받는 쪽은 호출 안에서 바로 직렬화**해야 한다(앱은 `createTraceSaver` 가 그렇게 한다). 던져도 계획은 계속된다. 질의 분석이 실패해 던질 때도 그 전에 `analyze` 오류 단계가 부분 trace 로 나간다.
+
 ## 진행 알림
 
 `options.onProgress` 순서: `analyze`, `dependencies`, 웨이브마다 `build`, 라운드마다 `answer` · `evaluate`(· `reinforce` · `dependencies` · `build`), 끝으로 `done`(detail=stop). 알림이 던져도 계획은 계속된다.

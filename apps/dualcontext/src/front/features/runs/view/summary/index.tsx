@@ -6,6 +6,7 @@ import { formatSeconds, formatWhen } from "../../format";
 import { RSC as SHARED } from "../../resource";
 import { statusText } from "../../status";
 import type { RunPhase } from "../phase";
+import { RunExecutionPlan } from "./execution";
 import { RSC } from "./resource";
 
 type Props = { detail: RunDetail; phase: RunPhase; onRemove: () => void; t: Texts };
@@ -28,6 +29,7 @@ export function RunSummary({ detail, phase, onRemove, t }: Props) {
         <span className="sr-only">{t[SHARED.RUNS_QUERY_LABEL]}</span>
         <p data-testid="run-query" className="whitespace-pre-wrap break-words text-base leading-7">{detail.query}</p>
       </div>
+      <RunExecutionPlan settings={detail.settings} tracedMode={detail.plan?.mode ?? null} t={t} />
       <p data-testid="run-meta" className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
         <span>{t[SHARED.RUNS_TIME_LABEL]}: <time dateTime={detail.createdAt}>{formatWhen(detail.createdAt)}</time></span>
         <span>

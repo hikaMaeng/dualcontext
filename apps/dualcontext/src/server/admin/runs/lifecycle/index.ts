@@ -52,12 +52,50 @@ type Outcome = { result: AugmentResult | null; plan: PlanTrace | null; answers: 
 export type RunPlanChoice = { mode?: ContextMode; override?: PlanOverride };
 
 /**
- * 계획 진행 기록(plan_progress). 플래너의 진행 알림에는 부분 trace 가 없어 단계 이름만 남긴다. 끝나면 plan 열에 trace 전체가 실린다.
+ * 계획 진행 기록(plan_progress). 플래너의 진행 알림에는 단계 이름만 있다. 부분 trace 는 createTraceSaver 가 plan 열에 따로 쓰고, 끝나면 trace 전체가 실린다.
  * 기록 실패는 실행을 멈추지 않는다(플래너도 진행 알림 실패를 무시한다).
  */
 async function recordProgress(deps: Deps, runId: number, event: PlanProgress) {
   await deps.pool.query(`update augment_runs set plan_progress = $2 where id = $1`, [runId, JSON.stringify({ ...event, at: new Date().toISOString() })]);
   await publish(deps.pool, runId);
+}
+
+/**
+ * 계획의 부분 trace 저장기. 단계마다 push 하면 가장 최근 것만 남겨 한 번에 하나씩 plan 열에 쓴다(느린 DB 가 쓰기를 쌓지 않게).
+ * 직렬화는 push 안에서 바로 한다: 계획이 같은 객체를 계속 고치기 때문이다. 쓰기 실패는 실행을 멈추지 않는다.
+ * settle 은 진행 중인 쓰기가 끝날 때까지 기다린다 — 최종 trace 를 쓰기 전에 불러 부분 trace 가 최종을 덮지 않게 한다.
+ * 키: runId(실행 하나당 저장기 하나). 수명: execute 한 번. 상한: 대기는 최신 문자열 하나. 비우는 쪽: pump 가 쓰고 나면 null.
+ */
+export function createTraceSaver(deps: Deps, runId: number) {
+  let latest: string | null = null;
+  let pumping: Promise<void> | null = null;
+  const pump = async () => {
+    while (latest !== null) {
+      const json = latest;
+      latest = null;
+      try {
+        await deps.pool.query(`update augment_runs set plan = $2 where id = $1`, [runId, json]);
+        await publish(deps.pool, runId);
+      } catch {
+        // 부분 기록 실패는 건너뛴다. 다음 단계 또는 최종 기록이 다시 쓴다.
+      }
+    }
+  };
+  const start = () => {
+    pumping = pump().finally(() => {
+      pumping = null;
+      if (latest !== null) start();
+    });
+  };
+  return {
+    push(trace: PlanTrace) {
+      latest = JSON.stringify(trace);
+      if (pumping === null) start();
+    },
+    async settle() {
+      while (pumping !== null) await pumping;
+    }
+  };
 }
 
 /** 백그라운드 작업 본체. 단계마다 행을 고치고 방송한다. 절대 거부(reject)되지 않는다. */
@@ -67,10 +105,12 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
   let plan: PlanTrace | null = null;
   let answers: Answers | null = null;
   let error: string | null = null;
+  const saver = createTraceSaver(deps, runId);
   try {
-    const outcome = await runAugment(deps, query, { writerId, config, onProgress: (event) => recordProgress(deps, runId, event) }, engine);
+    const outcome = await runAugment(deps, query, { writerId, config, onProgress: (event) => recordProgress(deps, runId, event), onTrace: (trace) => saver.push(trace) }, engine);
     result = outcome.result;
     plan = outcome.plan;
+    await saver.settle();
     await deps.pool.query(
       `update augment_runs set researcher_routing = $2, pairs = $3, context = $4, routing = $5, plan = $6, stage = 'answering', answers = '{}'::jsonb where id = $1`,
       [runId, result.researcherRouting, JSON.stringify(result.pairs), result.context, JSON.stringify(result.routing), plan === null ? null : JSON.stringify(plan)]
@@ -89,6 +129,7 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
   }
 
   try {
+    await saver.settle();
     await deps.pool.query(`update augment_runs set status = $2, stage = 'done', error = $3, duration_ms = $4 where id = $1`, [
       runId, error ? "error" : "ok", error, Date.now() - started
     ]);

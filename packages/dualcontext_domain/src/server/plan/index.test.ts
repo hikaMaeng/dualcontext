@@ -340,3 +340,86 @@ test("사전 요구 분석 실패는 trace.levels[].failed 에 남는다(첫 계
     { level: 2, analyzed: 1, candidates: 0, created: 0, linked: 0, failed: [{ item: "i2", error: "m 분석 실패" }] }
   ]);
 });
+
+test("steps: 분석 → seed → 사전 요구 → 중복 정리 → build(웨이브 · 건넨 사전 컨텍스트) → 조립 → 답변 → 평가 → 보강 순서로 기록된다", async () => {
+  const { ports, now } = fake({
+    analyze: ["환불", "교환"],
+    prereq: { 환불: ["고객 등급"], 교환: ["고객-등급"], m: ["고객 등급"] },
+    evaluations: [evalOf(60, ["m"]), evalOf(95)]
+  });
+  const { trace } = await planContext("q", { config: config({ mode: "reevaluate" }), ports, now });
+  const steps = trace.steps ?? [];
+  assert.deepEqual(steps.map((s) => s.seq), steps.map((_, i) => i + 1), "seq 는 1부터 이어진다");
+  assert.ok(steps.every((s, i) => i === 0 || s.at >= steps[i - 1].at), "at 은 줄지 않는다");
+  const kinds = steps.map((s) => `${s.round}:${s.kind}`);
+  assert.deepEqual(kinds, [
+    "0:analyze", "0:seed",
+    "0:prerequisites", "0:prerequisites", "0:dedupe", "0:prerequisites",
+    "0:build", "0:build", "0:build",
+    "0:assemble", "0:answer", "0:evaluate",
+    "1:seed", "1:prerequisites", "1:dedupe", "1:build",
+    "1:assemble", "1:answer", "1:evaluate"
+  ]);
+  const analyze = steps[0];
+  assert.equal(analyze.kind === "analyze" && analyze.drafts.map((d) => d.name).join(), "환불,교환");
+  const seed = steps[1];
+  assert.ok(seed.kind === "seed" && seed.source === "query" && seed.method === "name" && seed.created.join() === "i1,i2");
+  const dedupe = steps.find((s) => s.kind === "dedupe" && s.round === 0);
+  assert.ok(dedupe && dedupe.kind === "dedupe");
+  assert.deepEqual(dedupe.candidates, [{ name: "고객 등급", owner: "i1" }, { name: "고객-등급", owner: "i2" }]);
+  assert.deepEqual(dedupe.groups, [{ members: [0, 1], target: "i3", existing: false }]);
+  const builds = steps.filter((s) => s.kind === "build");
+  const refund = builds.find((s) => s.kind === "build" && s.item === "i1");
+  assert.ok(refund && refund.kind === "build");
+  assert.deepEqual(refund.provided, [{ item: "i3", chars: "ctx:고객 등급".length }]);
+  assert.equal(refund.wave, 2, "사전 아이템 다음 웨이브");
+  const reinforce = steps.find((s) => s.kind === "seed" && s.round === 1);
+  assert.ok(reinforce && reinforce.kind === "seed" && reinforce.source === "evaluation");
+  const reinforcedDedupe = steps.find((s) => s.kind === "dedupe" && s.round === 1);
+  assert.ok(reinforcedDedupe && reinforcedDedupe.kind === "dedupe");
+  assert.deepEqual(reinforcedDedupe.groups, [{ members: [0], target: "i3", existing: true }], "보강이 기존 아이템에 연결된 것도 남는다");
+  const evaluate = steps.filter((s) => s.kind === "evaluate");
+  assert.deepEqual(evaluate.map((s) => s.kind === "evaluate" && [s.score, s.pass, s.missing]), [[60, false, 1], [95, true, 0]]);
+});
+
+test("steps: 실패한 사전 요구 분석 · build 오류도 단계에 남고, decompose 는 조립 단계로 끝난다", async () => {
+  const { ports, now } = fake({ analyze: ["a", "b"], failPrereq: ["a"], failBuild: ["b"] });
+  const { trace } = await planContext("q", { config: config(), ports, now });
+  const steps = trace.steps ?? [];
+  const failedPrereq = steps.find((s) => s.kind === "prerequisites" && s.error !== undefined);
+  assert.ok(failedPrereq && failedPrereq.kind === "prerequisites");
+  assert.equal(failedPrereq.item, "i1");
+  assert.deepEqual(failedPrereq.drafts, []);
+  const failedBuild = steps.find((s) => s.kind === "build" && s.item === "i2");
+  assert.ok(failedBuild && failedBuild.kind === "build");
+  assert.equal(failedBuild.status, "error");
+  assert.equal(failedBuild.error, "b 실패");
+  assert.equal(steps.at(-1)?.kind, "assemble");
+});
+
+test("steps: 질의 분석이 실패하면 오류 단계를 부분 trace 에 남기고 그대로 던진다", async () => {
+  const { ports, now } = fake({ analyze: new Error("모델 응답 없음") });
+  const seen: string[] = [];
+  await assert.rejects(planContext("q", { config: config(), ports, now, onTrace: (t) => seen.push(JSON.stringify(t.steps)) }), /모델 응답 없음/);
+  assert.equal(seen.length, 1);
+  assert.match(seen[0], /"kind":"analyze".*"error":"모델 응답 없음"/);
+});
+
+test("onTrace: 단계마다 부분 trace(stop=null)를 건네고 마지막 trace 와 같은 steps 를 가리킨다. 던져도 계획은 계속된다", async () => {
+  const { ports, now } = fake({ analyze: ["a"], prereq: { a: ["p"] }, evaluations: [evalOf(90)] });
+  const snapshots: { stop: string | null; steps: number; rounds: number; items: number }[] = [];
+  let thrown = 0;
+  const { trace } = await planContext("q", {
+    config: config({ mode: "reevaluate" }), ports, now,
+    onTrace: (t) => {
+      snapshots.push({ stop: t.stop, steps: t.steps?.length ?? 0, rounds: t.rounds.length, items: t.items.length });
+      thrown += 1;
+      if (thrown === 2) throw new Error("저장 실패");
+    }
+  });
+  assert.equal(trace.stop, "passed");
+  assert.ok(snapshots.length >= trace.steps!.length, "단계마다 한 번 이상");
+  assert.ok(snapshots.every((s) => s.stop === null), "진행 중에는 stop=null");
+  assert.ok(snapshots.every((s, i) => i === 0 || s.steps >= snapshots[i - 1].steps));
+  assert.ok(snapshots.some((s) => s.rounds === 1), "진행 중인 라운드도 보인다");
+});

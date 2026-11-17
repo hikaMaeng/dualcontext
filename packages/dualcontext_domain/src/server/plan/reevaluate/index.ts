@@ -5,6 +5,7 @@ import { expandDependencies, type LevelLog } from "../dependencies/index.js";
 import type { PlanGraph } from "../graph/index.js";
 import type { PlanPorts, PlanProgress } from "../ports.js";
 import { seedTopItems } from "../seed/index.js";
+import type { StepRecorder } from "../steps/index.js";
 
 /** 재평가 루프가 이어 쓰는 계획 상태. waves · levels 는 첫 계획 것에 이어 붙인다. */
 export type RunState = {
@@ -15,6 +16,9 @@ export type RunState = {
   progress: (stage: PlanProgress["stage"], detail?: string) => Promise<void>;
   waves: string[][];
   levels: LevelLog[];
+  /** 라운드 기록. 루프가 push 하므로 부분 trace 에서도 진행 중인 라운드가 보인다. */
+  rounds: PlanRound[];
+  rec: StepRecorder;
 };
 
 const message = (error: unknown) => (error instanceof Error ? error.message : String(error));
@@ -48,15 +52,15 @@ export function judge(evaluation: Omit<PlanEvaluation, "pass">, limits: ContextP
  * see docs/plan.md#reevaluate
  */
 export async function reevaluateLoop(query: string, state: RunState): Promise<{ rounds: PlanRound[]; stop: PlanStop; answer?: string }> {
-  const { graph, config, ports, now, progress } = state;
+  const { graph, config, ports, now, progress, rec, rounds } = state;
   const limits = config.reevaluate;
-  const rounds: PlanRound[] = [];
   let lastAnswer: string | undefined;
 
   for (let round = 0; ; round += 1) {
     const context = assembleContext(graph.items);
     const record: PlanRound = { round, contextChars: context.length, answer: { text: null, error: null, ms: 0 }, evaluation: null, addedItemIds: [] };
     rounds.push(record);
+    rec.add({ kind: "assemble", round, ms: 0, items: graph.items.filter((item) => item.top && item.status === "built").map((item) => item.id), chars: context.length });
 
     await progress("answer", `round ${round}`);
     const answerStarted = now();
@@ -67,13 +71,17 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
       record.answer.error = message(error);
     }
     record.answer.ms = now() - answerStarted;
+    rec.add({ kind: "answer", round, ms: record.answer.ms, chars: record.answer.text?.length ?? 0, ...(record.answer.error ? { error: record.answer.error } : {}) });
     if (record.answer.text === null) return { rounds, stop: "answer-failed", answer: lastAnswer };
 
     await progress("evaluate", `round ${round}`);
+    const evaluateStarted = now();
     try {
       record.evaluation = judge(await ports.evaluate(query, context, record.answer.text), limits);
+      rec.add({ kind: "evaluate", round, ms: now() - evaluateStarted, score: record.evaluation.score, pass: record.evaluation.pass, missing: record.evaluation.missing.length });
     } catch (error) {
       record.evaluationError = message(error);
+      rec.add({ kind: "evaluate", round, ms: now() - evaluateStarted, score: 0, pass: false, missing: 0, error: record.evaluationError });
       return { rounds, stop: "evaluation-failed", answer: lastAnswer };
     }
 
@@ -86,7 +94,7 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
     const drafts = evaluation.missing.map(({ name, description }) => ({ name, description }));
     // 보강 예산: config.maxItems 는 최초 계획의 상한이다. 라운드마다 시작 시점 아이템 수에서 새로 계산한다.
     const roundConfig = { ...config, maxItems: roundItemBudget(graph.items.length, config) };
-    const seeded = await seedTopItems(query, drafts, graph, { round: round + 1, maxCreate: limits.maxNewItems }, roundConfig, ports);
+    const seeded = await seedTopItems(query, drafts, graph, { round: round + 1, maxCreate: limits.maxNewItems }, roundConfig, ports, rec);
     if (seeded.created.length === 0 && seeded.promoted.length === 0 && seeded.rebuild.length === 0) {
       return { rounds, stop: "no-new-items", answer: lastAnswer };
     }
@@ -94,7 +102,7 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
     const toBuild: string[] = [];
     if (seeded.created.length > 0) {
       await progress("dependencies", `round ${round + 1}`);
-      const expanded = await expandDependencies(query, graph, seeded.created, { round: round + 1 }, roundConfig, ports);
+      const expanded = await expandDependencies(query, graph, seeded.created, { round: round + 1 }, roundConfig, ports, rec);
       state.levels.push(...expanded.levels);
       record.addedItemIds = [...seeded.created, ...expanded.created].map((item) => item.id);
       toBuild.push(...record.addedItemIds);
@@ -109,7 +117,8 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
     }
     if (toBuild.length > 0) {
       const waves = await buildItems(query, graph, toBuild, ports, now, (wave, i) =>
-        progress("build", `round ${round + 1} wave ${i + 1}: ${wave.join(",")}`)
+        progress("build", `round ${round + 1} wave ${i + 1}: ${wave.join(",")}`),
+        { rec, round: round + 1 }
       );
       state.waves.push(...waves);
     }

@@ -2,6 +2,7 @@ import type { ContextPlanConfig, ItemDraft, PlanItem } from "../../../common/ind
 import { cleanDrafts, dedupeCandidates } from "../dedupe/index.js";
 import { addItem, type PlanGraph } from "../graph/index.js";
 import type { PlanPorts } from "../ports.js";
+import type { StepRecorder } from "../steps/index.js";
 
 export type SeedResult = {
   /** 새로 만든 top 아이템. */
@@ -19,6 +20,7 @@ export type SeedResult = {
  * 중복은 합치고, 기존 아이템과 같으면 새로 만들지 않는다(비top 이면 top 으로 승격).
  * 같은 기존 아이템이 status error/empty 면 rebuild 로 돌려준다(첫 계획에서는 기존 아이템이 없어 비어 있다).
  * 새 아이템은 maxCreate 개와 config.maxItems 전체 상한을 넘지 않는다.
+ * rec 가 있으면 seed 단계를 기록한다(후보 · 만든 / 올린 / 다시 만들 아이템 · 버린 수 · 중복 정리 방법).
  * see docs/plan.md#seed
  */
 export async function seedTopItems(
@@ -27,10 +29,12 @@ export async function seedTopItems(
   graph: PlanGraph,
   at: { round: number; maxCreate: number },
   config: Pick<ContextPlanConfig, "dedupe" | "maxItems">,
-  ports: Pick<PlanPorts, "dedupe">
+  ports: Pick<PlanPorts, "dedupe">,
+  rec?: StepRecorder
 ): Promise<SeedResult> {
+  const startedAt = rec?.elapsed() ?? 0;
   const candidates = cleanDrafts(drafts);
-  const { groups } = await dedupeCandidates(query, candidates, graph, config, ports);
+  const { groups, method } = await dedupeCandidates(query, candidates, graph, config, ports);
   const result: SeedResult = { created: [], promoted: [], rebuild: [], dropped: 0 };
   for (const group of groups) {
     if (group.existingId) {
@@ -49,5 +53,17 @@ export async function seedTopItems(
     }
     result.created.push(addItem(graph, group.draft, { level: 1, top: true, round: at.round }));
   }
+  rec?.add({
+    kind: "seed",
+    round: at.round,
+    ms: rec.elapsed() - startedAt,
+    source: at.round === 0 ? "query" : "evaluation",
+    method,
+    candidates,
+    created: result.created.map((item) => item.id),
+    promoted: result.promoted.map((item) => item.id),
+    rebuild: result.rebuild.map((item) => item.id),
+    dropped: result.dropped
+  });
   return result;
 }

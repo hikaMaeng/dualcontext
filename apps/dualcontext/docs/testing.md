@@ -22,7 +22,7 @@ npm run test --workspaces
 * `src/server/plan/ports/index.test.ts`: build 가 다듬은 사전 컨텍스트(중첩 제거 · 자르기)를 넘김. 가짜 모델로 포트 어댑터(프롬프트 자리표시자, 상한, 실패는 던짐, build 의 아이템 질의 · provided 전달 · 원본 기록, answer 프롬프트, 평가 부족 항목을 자르지 않음, 구분자 무력화 · 주입 문자열이 데이터 구간을 닫지 못함, 기본 프롬프트의 구분자 · 안내 · 편향 문구 없음).
 * `src/server/augment/index.test.ts`: `runAugment` 모드 분기(classic 은 기존 결과 그대로 · plan null, mode override, 실제 도메인 플래너 + 가짜 모델의 decompose, analyze 실패는 던짐, reevaluate 답변 재사용 조건), `planResult` 평탄화.
 * `src/server/admin/plan/index.test.ts`: `GET/PUT /plan/config`(400 시 저장 안 함), `GET /plan/defaults` 모양, `POST /augment` 의 `mode` · `plan` 검증 400.
-* `src/server/admin/runs/lifecycle/index.test.ts`: 가짜 pool 로 시험 실행(스냅샷 `settings.plan`, `plan` 열 저장, `plan_progress` 기록, override 가 저장 설정을 바꾸지 않음, 재사용한 증강 후 답변, 플래너 실패는 error).
+* `src/server/admin/runs/lifecycle/index.test.ts`: 가짜 pool 로 시험 실행(부분 trace 저장 · 최종이 부분을 덮지 않는 순서 · `createTraceSaver` 의 대기 중 push 병합과 쓰기 실패 무시, 스냅샷 `settings.plan`, `plan` 열 저장, `plan_progress` 기록, override 가 저장 설정을 바꾸지 않음, 재사용한 증강 후 답변, 플래너 실패는 error).
 * `src/server/writer/index.test.ts`: 사전 컨텍스트가 없으면 프롬프트가 이전과 같고, 있으면 `{{provided}}` / 첫 `{{query}}` 뒤 / 끝에 들어가며 LLM 실패 대체 조립에도 남는다.
 * `packages/dualcontext_domain/src/server/augment/index.test.ts`: 라우팅, 폴백, 프로시저 상위 개수, 쌍별 라이터 호출 수, 수집 실패 표시, 사전 컨텍스트(라이터에만 전달 · 빈 배열이면 기존 호출과 같음).
 * `packages/dualcontext_domain/src/server/route/index.test.ts`: 코사인 상위 K, LLM 답 파싱.
