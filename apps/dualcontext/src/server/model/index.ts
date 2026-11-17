@@ -7,8 +7,8 @@ import { createLimiter, retryOverloaded } from "./limit/index.js";
 // undici 의 헤더 대기 기본값(300초)은 느린 서버에서 `fetch failed` 가 되므로 호출 전용 Agent 로 늘린다.
 const patient = new Agent({ headersTimeout: 900_000, bodyTimeout: 900_000 });
 
-/** 채팅 호출 제어 기본값: 유휴 180초(토큰이 3분간 하나도 안 오면 멈춘 것), 총 1시간(안전장치), 동시 3건, 503·429 는 4회까지 재시도(2·4·8초 백오프). */
-export const defaultChatControl = { idleMs: 180_000, totalMs: 3_600_000, maxConcurrent: 3, attempts: 4, retryBaseMs: 2_000 };
+/** 채팅 호출 제어 기본값: 유휴 600초(토큰이 10분간 하나도 안 오면 멈춘 것. 로컬 모델은 긴 컨텍스트에서 첫 토큰이 수 분 걸리고 한 서버를 여럿이 나눠 쓰면 대기까지 더해져 180초에서 실제로 반복해 끊겼다), 총 1시간(안전장치), 동시 3건, 503·429 는 4회까지 재시도(2·4·8초 백오프). */
+export const defaultChatControl = { idleMs: 600_000, totalMs: 3_600_000, maxConcurrent: 3, attempts: 4, retryBaseMs: 2_000 };
 export type ChatControl = typeof defaultChatControl;
 
 export type Endpoint = { baseUrl: string; model: string; apiKey: string };

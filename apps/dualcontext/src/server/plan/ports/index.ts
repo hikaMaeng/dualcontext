@@ -36,10 +36,11 @@ const fill = (template: string, values: Record<string, string>) => template.repl
 
 /** 계획 프롬프트를 채운다. 값은 모두 구분자를 무력화한 뒤 넣는다(템플릿 자체의 구분자는 그대로). */
 /**
- * 답변 · 평가 호출의 재시도 횟수(총 시도). 컨텍스트가 길면 모델 서버가 첫 토큰을 늦게 줘 유휴 시간 제한(기본 180초)에 걸려 실패하는 일이 실측으로 반복됐다
+ * 답변 · 평가 호출의 재시도 횟수(retries = 3, 총 시도 4). 컨텍스트가 길면 모델 서버가 첫 토큰을 늦게 줘 유휴 시간 제한(그때 기본 180초, 지금은 600초)에 걸려 실패하는 일이 실측으로 반복됐다
  * (run 238 · 240 · 242 가 첫 답변에서 answer-failed). 한 번 더 시도하면 그 사이 서버 큐가 풀려 성공하는 경우가 있다. 시도마다 호출 기록(calls)에 남는다.
  */
-export const callAttempts = 2;
+export const retries = 3;
+export const callAttempts = 1 + retries;
 
 async function withAttempts<T>(run: () => Promise<T>, attempts: number = callAttempts): Promise<T> {
   let last: unknown;
