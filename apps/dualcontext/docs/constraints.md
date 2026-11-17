@@ -82,7 +82,9 @@ UI 는 shadcn/ui 스타일 컴포넌트, Tailwind, Radix 를 쓴다(셀렉트는
 | `nav[aria-label]` 안의 버튼, `aria-current="page"` | 왼쪽 메뉴와 현재 화면 |
 | `role=main`, `role=heading` level 1 (`#page-title`) | 본문, 화면 제목 |
 | `role=status`, `data-testid="service-state"` | 런타임 상태 줄 |
-| `data-testid="researcher-item"`, `"procedure-item"`, `"writer-item"` | 목록 항목 |
+| `data-testid="researcher-item"`(`<a href="#researchers/<id>">`, `data-researcher-id` · `data-enabled`), `"procedure-item"`, `"writer-item"` | 목록 항목. 조사원 항목은 2줄(1줄 이름 · 개별 라우터 · 비활성 · 유형, 2줄 출처 · 프로시저 수 · 기본 프로시저 · 키워드)이고 각 줄은 한 줄로 잘리며 전체는 `title`. 하위 `researcher-item-name` · `-type` · `-detail` · `-router` · `-disabled` |
+| `data-testid="researcher-filters"`, `"researcher-filter-q"`(검색 `type=search`), `"researcher-filter-type"`, `"-enabled"`, `"-procedure"`, `"-default"`, `"-router"`, `"-sort"`, `"researcher-filter-clear"` | 조사원 목록의 검색 폼. 조건은 AND, 검색어는 공백으로 나눈 낱말이 모두 이름 · 설명 · 키워드 · 출처에 들어야 한다. 바꾸면 1쪽으로 돌아간다 |
+| `data-testid="researcher-total"`, `"researcher-list"`, `"researcher-list-empty"`, `"researcher-pager"`(`-prev` · `-next` · `-position`), `"researcher-new"`, `"researcher-back"`, `"researcher-view"`, `"researcher-notfound"` | 조사원 목록 총 개수(걸러지면 `맞는 수 / 전체 수`), 목록, 빈 상태, 20개 단위 페이징, 새로 만들기 링크, 뷰의 목록으로 링크 · 뷰 · 없는 id 안내 |
 | `data-testid="routing-steps"`, `"routing-step"`, `"routing-individual"` | 시험 실행 · 실행 로그의 라우팅 단계별 기록과 개별 라우터 판정(`routing-individual` 의 `data-selected` 가 포함 여부). 옛 실행 기록에는 이 정보가 없어 나오지 않는다 |
 | `data-testid="researcher-default-procedure-select"`, `"researcher-default-procedure"` | 조사원 폼의 「기본 프로시저」 단일 선택(연결된 프로시저 + 「없음」만, 연결을 해제하면 기본도 지워진다)과 목록 항목의 기본 프로시저 표시(있을 때만) |
 | `data-testid="researcher-individual-router"` | 조사원 폼의 「개별 라우터 사용」 체크박스(켜면 `individual-steps` 편집기가 나온다) |
