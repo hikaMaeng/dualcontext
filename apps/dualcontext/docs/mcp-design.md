@@ -43,21 +43,30 @@
 * 한도(단계 수 · 아이템 수 · 통과 점수 등)는 관리자 「계획 설정」 값을 그대로 쓴다. `effort` 가 바꾸는 것은 모드와 `maxRounds` 뿐이다.
 * 시간은 위로 갈수록 늘어난다: `light` 는 한 번의 증강, `middle` 은 분석 + 아이템마다 증강(수 배), `high`·`xhigh` 는 거기에 답변 · 평가 호출이 라운드마다 더해진다. 수치는 측정하지 않았다.
 
-호스트가 읽는 도구 설명(도구 · 인자 설명문, 영문으로 둔다). 구조와 같은 순서로 쓴다: 무엇을 주는가(컨텍스트, 답변 아님) → 입력 두 개 → effort 단계 → 응답 읽는 법.
+호스트가 읽는 도구 설명(도구 · 인자 설명문, 영문으로 둔다). 순서: 무엇을 주는가(컨텍스트, 답변 아님) → 부를지 말지 → 호출 규칙 → effort 단계별 「언제 쓰는가」. 단계 선택은 **질문의 모양**(주제가 몇 개인가 · 틀리면 얼마나 곤란한가)으로만 판단하게 쓴다: 응답을 보고 판단하라고 하면 약한 호스트는 못 따른다. 서버가 effort 를 자동으로 올리지는 않는다(사용자 결정). 올리는 일은 설명문 지침으로 호스트가 한다.
 
 ```
 description:
-  Returns background context to ground your answer to a query. It returns context only, never an answer:
-  you write the answer yourself from it. Call it for questions that need specialist, private or recent material;
-  skip it for general knowledge. If the reply starts with coverage=none, do not retry; answer from your own knowledge.
+  Returns background context for answering a question from specialist, private or recent material.
+  It returns context only, never an answer: write the answer yourself from it.
+  Call it when the question needs such material; skip it for general knowledge and small talk.
+  Rules: (1) Pass the user's question as asked; do not rewrite it into keywords. (2) Call once per question.
+  If the context is thin, do NOT call again with a rephrased query at the same effort: call once more with a higher
+  effort, or answer with what you have and say what is missing. (3) If the reply starts with coverage=none, do not retry;
+  answer from your own knowledge.
 inputSchema:
   query:  The user's question, as asked.
-  effort: (optional, default light) How hard to look. light = one lookup. middle = the question has several parts.
-          high = also checks the gathered context for gaps and fills them. xhigh = only if a high reply said next: effort=xhigh.
-          Higher is slower.
+  effort: Optional, default light. Pick by the shape of the question, not by guesswork about the answer:
+    light  - ONE topic, ONE fact/definition/figure/short how-to.        e.g. "What is the retirement pay eligibility?"
+    middle - The question holds TWO OR MORE separate topics or targets (joined by "and", "vs", "each", "both"),
+             or asks for a comparison.                                   e.g. "Eligibility for severance AND the complaint procedure if unpaid"
+    high   - A mistake would cost the user (law, money, health, security) or the answer needs steps that depend on
+             each other; the gathered context is also checked for gaps and the gaps filled.
+    xhigh  - Only when a high reply said next: effort=xhigh, or the user asks for an exhaustive investigation.
+  Each step up is slower (light: seconds to tens of seconds; xhigh: minutes). Do not start above light without a reason above.
 ```
 
-설명문에 「리플렉션」 · 「분해」 같은 내부 용어는 쓰지 않고 효과로만 쓴다. 설명문 글자 수는 위 정도(약 900자 이내)를 넘기지 않는다.
+설명문에 「리플렉션」 · 「분해」 같은 내부 용어는 쓰지 않고 효과로만 쓴다. 글자 수는 위 정도(약 1,700자)를 넘기지 않는다(도구 설명이 길면 약한 호스트가 앞부분만 본다는 가정이라, 규칙 3개를 맨 위에 둔다 — 이 가정은 검증하지 않았다).
 
 ## 응답 봉투
 
@@ -135,9 +144,9 @@ next: -
 
 함의(가설, 미검증):
 
-* 선택 인자 `effort` 를 모델이 올려 줄 것이라는 기대는 약하다. 설명문 · `next:` 응답은 모델이 읽어야만 효과가 있다.
+* 선택 인자 `effort` 를 모델이 올려 줄 것이라는 기대는 약하다. 그래서 설명문이 단계 선택 기준을 명시해야 하고, 그 효과는 구현 후 로그(호출 횟수 · 고른 단계 · 질의 변형)로 확인한다.
 * 반복 호출은 호출마다 증강 전체(수십 초)를 다시 쓴다. 지금은 MCP 호출이 실행 로그에 `MCP` 뱃지로 남으므로(구현됨) **같은 질문 하나에 몇 번 부르는지 · 질의가 어떻게 바뀌는지**를 로그로 셀 수 있다.
-* 서버가 알아서 올리는 안(결정 대기 5): MCP stdio 프로세스는 연결 하나당 하나라 프로세스 안 최근 호출 기록이 곧 한 호스트 세션이다. 최근 호출과 질의가 비슷한(임베딩 유사도) 재호출이면 `effort` 를 한 단계씩 자동으로 올린다. 임계값은 쌓인 로그로 정해야 하며 지금 값이 없다.
+* 서버가 `effort` 를 자동으로 올리는 안은 **채택하지 않는다**(사용자 결정). 대신 도구 설명에 단계별 「언제 쓰는가」와 「질문당 한 번 · 얇으면 같은 단계로 질의만 바꿔 다시 부르지 말고 단계를 올린다」 규칙을 넣는다(위 「effort」).
 
 ## 결정 대기
 
@@ -145,4 +154,3 @@ next: -
 2. `middle` 이상의 총 예산 기본값(초).
 3. 「max 2단 · 4단」을 리플렉션(답변 · 평가) 총 횟수로 확정했다(`maxRounds` 1 · 3). 보강 횟수 기준이었다면 2 · 4 로 바꾼다.
 4. (해결) MCP 호출은 `augment_runs` 에 남긴다. `effort` · `coverage` 를 기록할 열은 `effort` 구현 때 더한다.
-5. 호스트가 `effort` 를 안 올리는 경우를 위해 서버가 유사 재호출을 감지해 자동으로 올릴 것인가(위 「실측」). 올린다면 `effort` 인자는 선택 힌트로 남기고, 기본 단계 · 올림 사다리 · 유사도 임계값을 로그로 정한다.
