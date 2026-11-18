@@ -2,6 +2,7 @@ import { Button } from "../../../../components/ui/button";
 import type { Texts } from "../../../../i18n";
 import type { RunDetail } from "../../../../lib/run";
 import { RSC as ROOT } from "../../../../resource";
+import { effortText } from "../../effort";
 import { formatSeconds, formatWhen } from "../../format";
 import { RSC as SHARED } from "../../resource";
 import { statusText } from "../../status";
@@ -24,6 +25,9 @@ export function RunSummary({ detail, phase, onRemove, t }: Props) {
           <span>{t[RSC.RUNS_DETAIL_HEADING_TEXT]} #{detail.id}</span>
           {detail.source === "mcp" && (
             <span data-testid="run-source" data-source="mcp" className="rounded border border-line px-1.5 text-xs font-semibold text-muted">{t[SHARED.RUNS_SOURCE_MCP_BADGE]}</span>
+          )}
+          {detail.effort && (
+            <span data-testid="run-effort" data-effort={detail.effort} className="text-xs font-normal text-muted">{effortText(detail.effort, t)}</span>
           )}
         </h2>
         {!phase.running && (

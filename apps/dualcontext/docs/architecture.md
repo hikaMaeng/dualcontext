@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | `src/server/index.ts` | 진입. 기본값을 시드한 뒤 `--stdio` 면 MCP stdio, 아니면 HTTP(헬스 + 관리자 + 프런트). | `src/server/index.ts` |
 | `src/server/app.ts` | Express 앱. `/health`, `/api/admin`, 정적 서빙. | `createApp` |
-| `src/server/mcp` | MCP 서버. 도구 `augment_context` 하나. | `mcp/tools/augment` |
+| `src/server/mcp` | MCP 서버. 도구 `augment_context` 하나. 입력 `query` + 선택 `effort`, 응답은 고정 머리 + 컨텍스트. `augment/effort`(effort → 모드 · `maxRounds`), `augment/envelope`(응답 머리 · coverage · 오류 한 줄). | `mcp/tools/augment`, `mcp/tools/augment/effort`, `mcp/tools/augment/envelope` |
 | `src/server/augment` | 증강 진입점 `runAugment`(MCP 와 시험 실행이 공유): 모드가 `classic` 이면 `base/` 의 한 번의 기본 증강(도메인 `augmentQuery` 에 저장소 · 라우팅 · 수집 · 라이터 포트를 채운다), 계획 모드면 도메인 `planContext` 를 부르고 결과를 `AugmentResult` 로 바꾼다(`planResult`). `base/` 를 따로 둔 것은 계획기 어댑터가 이것을 가져가 순환 import 를 피하려는 것이다. | `augment/index.ts#runAugment`, `augment/base/index.ts#augment` |
 | `src/server/plan` | 컨텍스트 계획기의 앱 어댑터. `prompts/`(기본 프롬프트 4종, JSON 응답 스키마 · 데이터 구분자 포함, `legacy/` 는 옛 기본값 = 저장 행 승격 비교 기준), `parse/`(기대 스키마에 맞는 JSON 후보 선택 · 항목 검증 · 길이 상한 · 점수 클램프 · 평가 형식 오류는 던짐), `ports/`(`createPlanPorts`: 채팅 모델 · 답변 프롬프트 · 기본 증강으로 `PlanPorts` 를 채우고 아이템별 원본 결과를 기록), `provided/`(사전 컨텍스트의 중첩 섹션 제거 · 길이 상한), `config/`(설정 스키마 · 기본값 · `plan_config` 읽기/쓰기 · 실행 한 번 override). 플래너 자체는 도메인(`dualcontext_domain/server#planContext`). | `plan/ports/index.ts#createPlanPorts` |
 | `src/server/routing` | 라우터 설정대로 질의를 나누고 조사원/프로시저를 고른다. 하위 폴더: `config`(설정 스키마 · 기본값 · 옛 설정 변환 · 프롬프트), `pipeline`(단계 파이프라인 실행), `steps/{embedding,keyword,llm}`(단계 종류별 구현), `split`(질의 분해). 임베딩 캐시. 개별 라우터가 있는 조사원은 전역 후보에서 빼고 각자의 단계 파이프라인으로 따로 판정한 뒤 합친다(`selectResearchers`). | `routing/index.ts` |

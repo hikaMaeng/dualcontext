@@ -1,6 +1,6 @@
-# MCP 인터페이스 설계안 (제안 · 미구현)
+# MCP 인터페이스 설계 (effort · 응답 머리 · 실행 로그 구현됨)
 
-현재 계약(`api.md` 「MCP」)을 대체하려는 안이다. 코드는 바뀌지 않았다. 결정이 필요한 항목은 맨 아래 「결정 대기」.
+구현된 계약은 `api.md` 「MCP」다. 이 문서는 그 설계 이유와 아직 열린 결정(맨 아래)을 남긴다. 아래 「현재 사실」 표는 **설계 시점(구현 전)** 의 코드 상태다.
 
 ## 현재 사실 (코드에서 확인)
 
@@ -43,30 +43,14 @@
 * 한도(단계 수 · 아이템 수 · 통과 점수 등)는 관리자 「계획 설정」 값을 그대로 쓴다. `effort` 가 바꾸는 것은 모드와 `maxRounds` 뿐이다.
 * 시간은 위로 갈수록 늘어난다: `light` 는 한 번의 증강, `middle` 은 분석 + 아이템마다 증강(수 배), `high`·`xhigh` 는 거기에 답변 · 평가 호출이 라운드마다 더해진다. 수치는 측정하지 않았다.
 
-호스트가 읽는 도구 설명(도구 · 인자 설명문, 영문으로 둔다). 순서: 무엇을 주는가(컨텍스트, 답변 아님) → 부를지 말지 → 호출 규칙 → effort 단계별 「언제 쓰는가」. 단계 선택은 **질문의 모양**(주제가 몇 개인가 · 틀리면 얼마나 곤란한가)으로만 판단하게 쓴다: 응답을 보고 판단하라고 하면 약한 호스트는 못 따른다. 서버가 effort 를 자동으로 올리지는 않는다(사용자 결정). 올리는 일은 설명문 지침으로 호스트가 한다.
+호스트가 읽는 도구 설명은 `src/server/mcp/tools/augment/index.ts` 의 `description`(도구) · `inputSchema` 설명(인자)이 원본이다(영문). 쓴 원칙:
 
-```
-description:
-  Returns background context for answering a question from specialist, private or recent material.
-  It returns context only, never an answer: write the answer yourself from it.
-  Call it when the question needs such material; skip it for general knowledge and small talk.
-  Rules: (1) Pass the user's question as asked; do not rewrite it into keywords. (2) Call once per question.
-  If the context is thin, do NOT call again with a rephrased query at the same effort: call once more with a higher
-  effort, or answer with what you have and say what is missing. (3) If the reply starts with coverage=none, do not retry;
-  answer from your own knowledge.
-inputSchema:
-  query:  The user's question, as asked.
-  effort: Optional, default light. Pick by the shape of the question, not by guesswork about the answer:
-    light  - ONE topic, ONE fact/definition/figure/short how-to.        e.g. "What is the retirement pay eligibility?"
-    middle - The question holds TWO OR MORE separate topics or targets (joined by "and", "vs", "each", "both"),
-             or asks for a comparison.                                   e.g. "Eligibility for severance AND the complaint procedure if unpaid"
-    high   - A mistake would cost the user (law, money, health, security) or the answer needs steps that depend on
-             each other; the gathered context is also checked for gaps and the gaps filled.
-    xhigh  - Only when a high reply said next: effort=xhigh, or the user asks for an exhaustive investigation.
-  Each step up is slower (light: seconds to tens of seconds; xhigh: minutes). Do not start above light without a reason above.
-```
-
-설명문에 「리플렉션」 · 「분해」 같은 내부 용어는 쓰지 않고 효과로만 쓴다. 글자 수는 위 정도(약 1,700자)를 넘기지 않는다(도구 설명이 길면 약한 호스트가 앞부분만 본다는 가정이라, 규칙 3개를 맨 위에 둔다 — 이 가정은 검증하지 않았다).
+* 순서: 무엇을 주는가(컨텍스트, 답변 아님) → 언제 쓰는가 → 호출 단위 · 반복 규칙 → `coverage=none` 규칙 → 인자.
+* **호출 단위는 「질문」이 아니라 「정보 필요」다.** 「질문당 한 번」처럼 쓰면 한 번에 끝나는 원샷 도구로 읽혀 사용 범위를 오해하게 만든다. 한 질문이 여러 필요를 가지면 필요마다 부를 수 있다. 막는 것은 **같은 필요를 같은 `effort` 에서 질의만 바꿔 되풀이하는 것**뿐이다(얇으면 `effort` 를 올리거나 가진 것으로 답한다).
+* **`effort` 는 「서버가 어느 수준의 정보를 만들어 주는가」로 설명한다**(사용자 결정): `light` = 질의가 말 그대로 묻는 것에 대한 정보, `middle` = 질의에 숨은 복합 정보(질의 분해), `high` = 질의에 적합한지 내부에서 검증해 빈틈을 채운 정보, `xhigh` = 더 강화된 검증 · 고도화된 정보. 「이런 모양의 질문이면 이 단계」식 판단 규칙은 두지 않는다 — 호스트가 답에 필요한 정보 수준을 스스로 고르게 하고, 모르면 `light`.
+* **예시를 싣지 않는다**(사용자 결정). 예시 문장이 있으면 모델이 그 문장 꼴만 같은 단계로 따라 고른다.
+* 서버가 `effort` 를 자동으로 올리지 않는다(사용자 결정). 올리는 일은 설명문 지침으로 호스트가 한다.
+* 「리플렉션」 · 「분해」 같은 내부 용어는 쓰지 않고 효과로만 쓴다. 설명문이 길면 약한 호스트가 앞부분만 본다는 가정으로 규칙을 앞에 둔다(검증하지 않은 가정).
 
 ## 응답 봉투
 

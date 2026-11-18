@@ -5,8 +5,8 @@
 
 ## MCP 계약
 
-* 도구는 **하나**: `augment_context`. 인자는 원래 질의(`query`) 하나뿐이다.
-* 응답은 질의를 증강한 컨텍스트 텍스트다.
+* 도구는 **하나**: `augment_context`. 인자는 질의(`query`)와 선택 `effort`(`light` 기본 · `middle` · `high` · `xhigh`) 뿐이다.
+* 응답은 고정 머리(수행 단계 · 충분 여부) + 질의를 증강한 컨텍스트 텍스트다. 답변은 돌려주지 않는다.
 * 기본 전송은 stdio. 서비스 자체는 Docker 컨테이너 하나에서 돈다(Node + PostgreSQL/pgvector).
 
 ## 내부 동작

@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
 import type pg from "pg";
-import { runNodeKey, type Answers, AugmentResult, ContextMode, ContextPlanConfig, PlanTrace, type RunSource } from "dualcontext_domain/common";
+import { runNodeKey, type Answers, AugmentResult, ContextMode, ContextPlanConfig, PlanTrace, type McpEffort, type RunSource } from "dualcontext_domain/common";
 import type { PlanProgress } from "dualcontext_domain/server";
 import { answerPrompts, generateAnswers } from "../../../answer/index.js";
 import { runAugment, type Deps, type RunAugmentEngine } from "../../../augment/index.js";
@@ -18,7 +18,7 @@ const keepLatest = 500;
 export const bus = new EventEmitter();
 bus.setMaxListeners(0);
 
-const detailColumns = `id, created_at as "createdAt", query, source, status, stage, error, duration_ms as "durationMs",
+const detailColumns = `id, created_at as "createdAt", query, source, effort, status, stage, error, duration_ms as "durationMs",
   researcher_routing as "researcherRouting", routing, settings, pairs, context, answers, plan, plan_progress as "planProgress",
   coalesce((select array_agg(n.key order by n.key) from augment_run_nodes n where n.run_id = augment_runs.id), '{}') as "nodes"`;
 
@@ -151,18 +151,22 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
   return { result, plan, answers, error };
 }
 
+/** 실행의 출처. effort 는 MCP 호출이 고른 단계(시험 실행은 없음). */
+export type RunOrigin = { source: RunSource; effort?: McpEffort };
+
 /**
  * 시험 실행을 시작한다. 행을 running 으로 만들고 작업을 백그라운드로 보낸 뒤 바로 runId 를 돌려준다.
  * done 을 기다리면 예전 동기 호출처럼 끝까지 기다릴 수 있다.
  * choice 가 없으면 저장된 계획 설정(모드 포함) 그대로다. engine 은 테스트용이다.
- * source 는 실행의 출처(시험 실행 test · MCP 호출 mcp). mcp 는 최종 답변을 만들지 않는다.
+ * origin.source 는 실행의 출처(시험 실행 test · MCP 호출 mcp). mcp 는 최종 답변을 만들지 않는다.
  */
-export async function startRun(deps: Deps, query: string, writerId?: number, choice: RunPlanChoice = {}, engine?: RunAugmentEngine, source: RunSource = "test") {
+export async function startRun(deps: Deps, query: string, writerId?: number, choice: RunPlanChoice = {}, engine?: RunAugmentEngine, origin: RunOrigin = { source: "test" }) {
+  const { source } = origin;
   const plan = applyPlanOverride(await readPlanConfig(deps.pool), choice.mode, choice.override);
   const settings = await snapshot(deps, plan, writerId);
   const { rows } = await deps.pool.query<{ id: number }>(
-    `insert into augment_runs (query, status, stage, duration_ms, settings, pairs, source) values ($1, 'running', 'augment', 0, $2, '[]', $3) returning id`,
-    [query, settings, source]
+    `insert into augment_runs (query, status, stage, duration_ms, settings, pairs, source, effort) values ($1, 'running', 'augment', 0, $2, '[]', $3, $4) returning id`,
+    [query, settings, source, origin.effort ?? null]
   );
   const runId = rows[0].id;
   // 질의 임베딩(의미 검색용)은 기다리지 않고 따로 계산한다. 실패해도 실행에는 영향이 없다.

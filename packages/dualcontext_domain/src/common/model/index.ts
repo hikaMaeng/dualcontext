@@ -182,6 +182,9 @@ export type AugmentResult = {
   writer: { mode: WriterMode; calls: number };
 };
 
+/** MCP 도구의 effort 단계: light(분해 없음) · middle(질의 분해) · high(평가 · 보강 리플렉션 최대 2번) · xhigh(최대 4번). 시험 실행에는 없다. */
+export type McpEffort = "light" | "middle" | "high" | "xhigh";
+
 /** 실행이 어디서 왔는가: 관리자 사이트의 시험 실행(test) · MCP 도구 호출(mcp). 옛 행은 test. */
 export type RunSource = "test" | "mcp";
 
@@ -193,6 +196,8 @@ export type RunListItem = {
   status: "running" | "ok" | "error";
   durationMs: number;
   source: RunSource;
+  /** MCP 호출이 고른 effort. 시험 실행 · 옛 행은 null. */
+  effort: McpEffort | null;
   researchers: string[];
   procedures: string[];
   /** 검색어(q)가 있을 때만: 질의가 맞은 방식과 점수(키워드는 fts 순위, 의미는 코사인 유사도). */

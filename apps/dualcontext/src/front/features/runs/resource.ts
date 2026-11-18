@@ -10,5 +10,9 @@ export enum RSC {
   RUNS_RUNNING_STATUS = "runs.running.status",
   RUNS_RESEARCHERS_LABEL = "runs.researchers.label",
   RUNS_SOURCE_MCP_BADGE = "runs.source.mcp.badge",
+  RUNS_EFFORT_LIGHT_TEXT = "runs.effort.light.text",
+  RUNS_EFFORT_MIDDLE_TEXT = "runs.effort.middle.text",
+  RUNS_EFFORT_HIGH_TEXT = "runs.effort.high.text",
+  RUNS_EFFORT_XHIGH_TEXT = "runs.effort.xhigh.text",
   RUNS_LOADING_STATUS = "runs.loading.status"
 }
