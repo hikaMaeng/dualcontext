@@ -34,11 +34,11 @@
 | --- | --- | --- | --- | --- |
 | `light` (기본) | 안 함 | 안 함 | classic | — |
 | `middle` | 함 | 안 함 | decompose | — |
-| `high` | 함 | 최대 2라운드 | reevaluate | `reevaluate.maxRounds = 2` |
-| `xhigh` | 함 | 최대 4라운드 | reevaluate | `reevaluate.maxRounds = 4` |
+| `high` | 함 | 리플렉션(답변 · 평가) 최대 2번 | reevaluate | `reevaluate.maxRounds = 1` |
+| `xhigh` | 함 | 리플렉션(답변 · 평가) 최대 4번 | reevaluate | `reevaluate.maxRounds = 3` |
 
 * 모드와 라운드 상한은 이미 호출 단위로 지정할 수 있다(`RunAugmentOptions.mode`, `config`). 단계 대응에 새 엔진 코드는 필요 없다.
-* 라운드 계수(`packages/dualcontext_domain/src/server/plan/reevaluate/index.ts#reevaluateLoop`에서 확인): 라운드 0 이 첫 답변 · 평가이고, 불통과면 보강 후 라운드 1, 2 … 로 이어지며 `round >= maxRounds` 에서 `max-rounds` 로 멈춘다. 따라서 `maxRounds = 2` 는 **보강 최대 2번**(답변 · 평가 최대 3번), `maxRounds = 4` 는 보강 최대 4번(답변 · 평가 최대 5번)이다. 「응답 평가 max 2단 · 4단」을 보강 횟수로 읽은 것이다.
+* 리플렉션 계수(`packages/dualcontext_domain/src/server/plan/reevaluate/index.ts#reevaluateLoop`에서 확인): 한 번의 리플렉션 = 답변 1회 + 평가 1회. 라운드 0 이 첫 리플렉션이고, 불통과면 보강 후 라운드 1, 2 … 로 이어지며 `round >= maxRounds` 에서 `max-rounds` 로 멈춘다. 그래서 리플렉션 최대 횟수 = `maxRounds + 1` 이고, `effort` 는 `maxRounds = 횟수 - 1` 로 변환한다(`high` 2번 → 1, `xhigh` 4번 → 3). 관리자 「계획 설정」의 「최대 보강 라운드」(0~5) 와 같은 값이며, 그 이름은 보강 횟수를 뜻하므로 화면 문구와 혼동하지 않도록 문서에 이 관계를 남긴다.
 * 한도(단계 수 · 아이템 수 · 통과 점수 등)는 관리자 「계획 설정」 값을 그대로 쓴다. `effort` 가 바꾸는 것은 모드와 `maxRounds` 뿐이다.
 * 시간은 위로 갈수록 늘어난다: `light` 는 한 번의 증강, `middle` 은 분석 + 아이템마다 증강(수 배), `high`·`xhigh` 는 거기에 답변 · 평가 호출이 라운드마다 더해진다. 수치는 측정하지 않았다.
 
@@ -55,7 +55,7 @@ If the reply says coverage=none, do not retry; answer from your own knowledge.
 본문 앞에 고정 머리를 붙인다(텍스트 content 하나).
 
 ```
-[dualcontext] effort=high coverage=ok sources=3 rounds=1 elapsed=94s
+[dualcontext] effort=high coverage=ok sources=3 reflections=2 elapsed=94s
 next: -
 ---
 <컨텍스트 본문. 조사원별 섹션, 웹 결과는 「검증되지 않은 보조 자료」 섹션>
@@ -64,9 +64,9 @@ next: -
 | 필드 | 값 | 의미 |
 | --- | --- | --- |
 | `effort` | light · middle · high · xhigh | 실제로 수행한 단계(요청과 다르면 이유를 `note:` 로) |
-| `coverage` | `ok` · `partial` · `none` | `none`: 마땅한 조사원 없음(본문 없음, 지금의 `content: []` 를 대체). `partial`: `high`·`xhigh` 에서 평가가 통과하지 못한 채 라운드 상한(`max-rounds`) 또는 예산에 닿아 멈춤. `ok`: 그 외 |
+| `coverage` | `ok` · `partial` · `none` | `none`: 마땅한 조사원 없음(본문 없음, 지금의 `content: []` 를 대체). `partial`: `high`·`xhigh` 에서 평가가 통과하지 못한 채 리플렉션 상한(`max-rounds`) 또는 예산에 닿아 멈춤. `ok`: 그 외 |
 | `sources` | 정수 | 본문에 실린 조사원 수 |
-| `rounds` | 정수 | 수행한 보강 횟수(라운드 0 은 제외)(`high`·`xhigh` 만) |
+| `reflections` | 정수 | 수행한 리플렉션(답변 · 평가) 횟수(`high`·`xhigh` 만) |
 | `next` | `-` · `effort=xhigh` | `high` 가 `partial` 이면 `effort=xhigh`. 그 외는 항상 `-` |
 | `missing:` | 한 줄들(`partial` 만) | 평가가 요구한 부족 컨텍스트. 호스트가 사용자에게 한계를 밝히는 데 쓴다 |
 
@@ -112,5 +112,5 @@ next: -
 
 1. 기본값: `light`(기존 classic 과 같은 동작)로 두는 안이다. 다르게 하려면 알려 달라.
 2. `middle` 이상의 총 예산 기본값(초).
-3. 「max 2단 · 4단」을 보강 횟수로 읽었다(위 라운드 계수). 평가 횟수(답변 · 평가 총 2번 · 4번)를 뜻했다면 `maxRounds` 를 1 · 3 으로 바꾼다.
+3. 「max 2단 · 4단」을 리플렉션(답변 · 평가) 총 횟수로 확정했다(`maxRounds` 1 · 3). 보강 횟수 기준이었다면 2 · 4 로 바꾼다.
 4. MCP 호출을 `augment_runs` 에 남길 것인가(`effort` · `coverage` 기록용). 남기면 질의 원문이 평문으로 쌓이는 현재 제약(`constraints.md`)이 MCP 에도 적용된다.
