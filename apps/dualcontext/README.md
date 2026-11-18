@@ -11,4 +11,5 @@ Minimal verified web-service baseline.
 | Constraints | docs/constraints.md |
 | Internals | docs/internals.md |
 | Testing | docs/testing.md |
+| MCP guide (zero-context) | docs/mcp-guide.md |
 | MCP design (proposal) | docs/mcp-design.md |
