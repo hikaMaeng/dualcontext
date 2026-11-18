@@ -103,6 +103,14 @@ test("도구 설명: 컨텍스트만 · 정보 필요 단위 · 같은 단계 �
   const all = [description, JSON.stringify(Object.keys(captured.schema))].join(" ");
   for (const must of ["context only, never an answer", "one information need", "higher effort", "coverage=none"]) assert.ok(all.includes(must), must);
   for (const banned of ["e.g.", "for example", "퇴직금", "once per question"]) assert.equal(all.includes(banned), false, banned);
+  // 장기 실행 경고: 도구 설명과 effort 설명 양쪽에 있고, 클라이언트 제한 시간 · 취소 불가 · 사용자 동의 조건을 말한다.
+  assert.match(description, /WARNING, long-running/);
+  assert.match(description, /stop waiting after about a minute/);
+  assert.match(description, /cannot be cancelled/);
+  assert.match(description, /only when the user has accepted a long wait/);
+  const effortText = (captured.schema.effort as unknown as { description?: string }).description ?? "";
+  assert.match(effortText, /tens of minutes to over an hour/);
+  assert.match(effortText, /unless the user accepted a long wait/);
   assert.equal(captured.schema.effort.isOptional(), true);
   assert.equal(captured.schema.query.isOptional(), false);
 });

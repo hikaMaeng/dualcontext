@@ -19,7 +19,10 @@ const item = (id) => page.locator(`[data-testid="run-item"][data-run-id="${id}"]
 result.list = {
   mcpItemBadgeCount: await item(mcpId).locator('[data-testid="run-item-source"]').count(),
   mcpItemBadgeText: await item(mcpId).locator('[data-testid="run-item-source"]').first().textContent(),
-  testItemBadgeCount: await item(testId).locator('[data-testid="run-item-source"]').count()
+  testItemBadgeCount: await item(testId).locator('[data-testid="run-item-source"]').count(),
+  mcpItemEffort: await item(mcpId).locator('[data-testid="run-item-effort"]').count() ? await item(mcpId).locator('[data-testid="run-item-effort"]').first().textContent() : null,
+  mcpItemEffortAttr: await item(mcpId).locator('[data-testid="run-item-effort"]').count() ? await item(mcpId).locator('[data-testid="run-item-effort"]').first().getAttribute("data-effort") : null,
+  testItemEffortCount: await item(testId).locator('[data-testid="run-item-effort"]').count()
 };
 await page.screenshot({ path: new URL("./run-log-badge-list.png", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1") });
 const failed = [];
@@ -31,6 +34,8 @@ for (const [name, id] of [["mcpView", mcpId], ["testView", testId]]) {
   result[name] = {
     id,
     badgeCount: await page.locator('[data-testid="run-source"]').count(),
+    effortCount: await page.locator('[data-testid="run-effort"]').count(),
+    effortText: await page.locator('[data-testid="run-effort"]').count() ? await page.locator('[data-testid="run-effort"]').first().textContent() : null,
     badgeText: await page.locator('[data-testid="run-source"]').count() ? await page.locator('[data-testid="run-source"]').first().textContent() : null,
     heading: (await page.locator("#run-heading").textContent())?.trim(),
     // 그래프에 증강 전 답변 노드가 있는지(MCP 실행은 최종 답변을 만들지 않으므로 없어야 한다).

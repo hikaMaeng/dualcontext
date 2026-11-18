@@ -17,6 +17,8 @@
 | `high` | 함 | 리플렉션(답변 · 평가) 최대 2번 | reevaluate, `maxRounds = 1` |
 | `xhigh` | 함 | 리플렉션 최대 4번 | reevaluate, `maxRounds = 3` |
 
+**장기 실행 경고**: `middle` 이상은 분~시간 단위다(실측은 `mcp-design.md` · `tests/reports/mcp-run-log/`). 클라이언트 요청 제한(SDK 기본 60초)을 넘기면 클라이언트는 시간 초과를 보고하지만 서버 작업은 계속 돌고 취소되지 않는다. 도구 설명문(`description`, `effort` 설명)에 같은 경고가 들어 있다.
+
 리플렉션 최대 횟수는 `maxRounds + 1` 이다(`reevaluateLoop`). 단계 수 · 아이템 수 · 통과 점수 같은 나머지 한도는 저장된 「계획 설정」 값이다.
 
 응답 형식:

@@ -13,7 +13,10 @@ export const description = [
   "One call serves one information need, so a question that holds several needs may take several calls, one per need.",
   "Do not repeat a call for the same need with a rephrased query at the same effort: if the context is thin, call again with a higher effort,",
   "or answer with what you have and say what is missing.",
-  "If the reply starts with coverage=none, do not retry for that need; answer from your own knowledge."
+  "If the reply starts with coverage=none, do not retry for that need; answer from your own knowledge.",
+  "WARNING, long-running: any effort above light is a long job. In one measurement on a shared model server, light took 16-23 seconds, middle about 20 minutes and high about 80 minutes.",
+  "Most MCP clients stop waiting after about a minute and report a timeout, while the work keeps running on the server and cannot be cancelled.",
+  "Use middle, high or xhigh only when the user has accepted a long wait; otherwise use light and say what is missing."
 ].join(" ");
 
 const queryDescription = "The information need, in the user's own words and terms. Keep names, numbers and technical terms as written; do not reduce it to bare keywords.";
@@ -23,7 +26,8 @@ const effortDescription = [
   "light: the information that answers what the query literally asks.",
   "middle: also the information hidden inside the query, the sub-needs it implies but does not state, found by breaking the query down.",
   "high: information checked internally against the query: gaps found in what was gathered are filled before it is returned.",
-  "xhigh: the same with stronger checking and more refined information; the slowest (light takes seconds to tens of seconds, xhigh minutes).",
+  "xhigh: the same with stronger checking and more refined information; the slowest.",
+  "Time: light takes seconds to tens of seconds; middle, high and xhigh can take tens of minutes to over an hour, beyond most clients' timeout, so do not choose them unless the user accepted a long wait.",
   "Pick the level of information your answer needs; when unsure, use light. A high reply that says next: effort=xhigh could not be fully verified."
 ].join(" ");
 

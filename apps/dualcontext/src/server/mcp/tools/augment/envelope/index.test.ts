@@ -7,7 +7,7 @@ const result = (context: string, researchers: string[] = ["A", "B", "A"]): Augme
   context,
   routing: { researchers: [], procedures: [] },
   researcherRouting: "embedding",
-  pairs: researchers.map((researcher) => ({ researcher, procedure: null, materials: [] })) as unknown as AugmentResult["pairs"],
+  pairs: researchers.map((researcher) => ({ researcher, procedure: null, materials: [] })) as never,
   writer: { mode: "batch", calls: 1 }
 });
 const trace = (stop: string, evaluation: unknown = null, rounds = 1): PlanTrace =>

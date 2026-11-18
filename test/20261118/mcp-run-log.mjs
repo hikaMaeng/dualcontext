@@ -17,7 +17,7 @@ const client = new Client({ name: "mcp-run-log-check", version: "0.0.0" });
 await client.connect(transport);
 const tools = await client.listTools();
 const started = Date.now();
-const response = await client.callTool({ name: "augment_context", arguments: effort ? { query, effort } : { query } }, undefined, { timeout: 1_800_000 });
+const response = await client.callTool({ name: "augment_context", arguments: effort ? { query, effort } : { query } }, undefined, { timeout: 14_400_000 });
 const elapsedMs = Date.now() - started;
 await client.close();
 
@@ -30,6 +30,8 @@ const result = {
   effortArg: effort ?? null,
   tools: tools.tools.map((tool) => tool.name),
   inputSchemaKeys: Object.keys(tools.tools[0].inputSchema.properties ?? {}),
+  descriptionHasWarning: /WARNING, long-running/.test(tools.tools[0].description ?? "") && /cannot be cancelled/.test(tools.tools[0].description ?? ""),
+  effortDescriptionHasTime: /tens of minutes to over an hour/.test(tools.tools[0].inputSchema.properties?.effort?.description ?? ""),
   isError: response.isError ?? false,
   elapsedMs,
   responseChars: text.length,
