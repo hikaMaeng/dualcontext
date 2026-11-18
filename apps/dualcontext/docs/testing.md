@@ -28,6 +28,9 @@ npm run test --workspaces
 * `packages/dualcontext_domain/src/server/augment/index.test.ts`: 라우팅, 폴백, 프로시저 상위 개수, 쌍별 라이터 호출 수, 수집 실패 표시, 사전 컨텍스트(라이터에만 전달 · 빈 배열이면 기존 호출과 같음).
 * `packages/dualcontext_domain/src/server/route/index.test.ts`: 코사인 상위 K, LLM 답 파싱.
 
+* `src/server/mcp/tools/augment/index.test.ts`: MCP 도구 호출이 `source=mcp` 로 기록되고 최종 답변 모델 호출이 없음, 빈 컨텍스트, 실패는 오류 + `error` 행. `workbench/model/model.test.ts` 의 MCP 케이스: 최종 답변 노드를 그리지 않음.
+* MCP 실행 로그 실측 계획 · 보고서: `tests/plans/mcp-run-log-20261118.md`, `tests/reports/mcp-run-log/20261118_165528.md`(스크립트 `test/20261118/`).
+
 ## 타입 검사
 
 ```sh

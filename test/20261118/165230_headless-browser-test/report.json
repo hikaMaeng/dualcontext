@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "mode": "smoke",
+  "startedAt": "2026-11-18T07:52:32.268Z",
+  "inputUrl": "http://127.0.0.1:18081/",
+  "testedUrl": "http://127.0.0.1:18081/",
+  "finalUrl": "http://127.0.0.1:18081/",
+  "title": "dualcontext",
+  "mainPresent": true,
+  "documentStatus": 200,
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screenshots": [
+    "F:\\dev\\dualcontext\\test\\20261118\\165230_headless-browser-test\\screenshots\\smoke.png"
+  ],
+  "trace": "F:\\dev\\dualcontext\\test\\20261118\\165230_headless-browser-test\\trace.zip",
+  "steps": [
+    {
+      "action": "goto",
+      "status": "passed"
+    },
+    {
+      "action": "assertRole",
+      "status": "passed"
+    },
+    {
+      "action": "screenshot",
+      "status": "passed"
+    }
+  ],
+  "finishedAt": "2026-11-18T07:52:33.562Z"
+}

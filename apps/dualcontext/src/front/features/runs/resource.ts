@@ -9,5 +9,6 @@ export enum RSC {
   RUNS_FAILED_ALERT = "runs.failed.alert",
   RUNS_RUNNING_STATUS = "runs.running.status",
   RUNS_RESEARCHERS_LABEL = "runs.researchers.label",
+  RUNS_SOURCE_MCP_BADGE = "runs.source.mcp.badge",
   RUNS_LOADING_STATUS = "runs.loading.status"
 }

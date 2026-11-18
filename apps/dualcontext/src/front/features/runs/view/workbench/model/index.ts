@@ -1,4 +1,4 @@
-import type { Answers, PlanItem, PlanStep, PlanTrace } from "dualcontext_domain/common";
+import type { Answers, PlanItem, PlanStep, PlanTrace, RunSource } from "dualcontext_domain/common";
 import { runNodeKey } from "dualcontext_domain/common";
 import type { RunStatus } from "../../../../../lib/run";
 
@@ -65,6 +65,8 @@ export type RunGraph = { nodes: RunGraphNode[]; edges: RunGraphEdge[]; groups: R
 
 /** 그래프를 만드는 데 읽는 실행 상세의 부분. */
 export type GraphInput = {
+  /** mcp 면 최종 답변(증강 전 · 후)을 만들지 않은 실행이라 그 노드를 그리지 않는다. 없으면 시험 실행. */
+  source?: RunSource;
   status: RunStatus;
   stage: "augment" | "answering" | "done" | null;
   error: string | null;
@@ -176,13 +178,16 @@ export function buildRunGraph(run: GraphInput): RunGraph {
     }
   }
 
-  // ── 증강 전 · 후 최종 답변
-  add({ id: runNodeKey.finalAnswer("before"), kind: "final-before", state: beforeNode(), ...(before ? { ms: before.ms, chars: before.text?.length ?? 0 } : {}) });
-  link("query", runNodeKey.finalAnswer("before"), "flow");
+  // ── 증강 전 · 후 최종 답변(MCP 호출은 컨텍스트만 돌려주므로 만들지 않는다)
+  const withFinalAnswers = run.source !== "mcp";
+  if (withFinalAnswers) {
+    add({ id: runNodeKey.finalAnswer("before"), kind: "final-before", state: beforeNode(), ...(before ? { ms: before.ms, chars: before.text?.length ?? 0 } : {}) });
+    link("query", runNodeKey.finalAnswer("before"), "flow");
+  }
 
   const after = run.answers?.after;
   // reevaluate 는 answers.after 가 올 때까지 기다린다(fromPlan 이면 라운드 답변이 최종이라 따로 만들지 않는다 — 도중에 깜빡이지 않게).
-  const wantAfter = !fromPlan && (plan ? (plan.mode === "decompose" ? plan.stop !== null && answering : after !== undefined) : true);
+  const wantAfter = withFinalAnswers && !fromPlan && (plan ? (plan.mode === "decompose" ? plan.stop !== null && answering : after !== undefined) : true);
   if (wantAfter) {
     add({
       id: runNodeKey.finalAnswer("after"),
@@ -216,7 +221,9 @@ export function buildRunGraph(run: GraphInput): RunGraph {
     link(runNodeKey.classic, runNodeKey.finalAnswer("after"), "flow");
   }
 
-  const finalId = nodes.find((node) => node.final)?.id ?? (lastRound >= 0 ? runNodeKey.answer(lastRound) : "query");
+  // 최종 답변 노드가 없는 실행(MCP): 답변 라운드가 있으면 그 마지막, classic 이면 증강 노드, 그 밖에는 질의 분해(없으면 질의).
+  const noFinal = lastRound >= 0 ? runNodeKey.answer(lastRound) : run.source !== "mcp" ? "query" : !plan ? runNodeKey.classic : ids.has(runNodeKey.analyze) ? runNodeKey.analyze : "query";
+  const finalId = nodes.find((node) => node.final)?.id ?? noFinal;
   return { nodes, edges, groups, finalId };
 }
 

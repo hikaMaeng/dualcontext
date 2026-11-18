@@ -1,0 +1,23 @@
+{
+  "list": {
+    "mcpItemBadgeCount": 1,
+    "mcpItemBadgeText": "MCP",
+    "testItemBadgeCount": 0
+  },
+  "mcpView": {
+    "id": 292,
+    "badgeCount": 1,
+    "badgeText": "MCP",
+    "heading": "실행 상세 #292MCP",
+    "beforeAnswerNodeInPage": false
+  },
+  "testView": {
+    "id": 287,
+    "badgeCount": 0,
+    "badgeText": null,
+    "heading": "실행 상세 #287",
+    "beforeAnswerNodeInPage": true
+  },
+  "consoleErrors": [],
+  "failedResponses": []
+}

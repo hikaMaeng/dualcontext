@@ -204,6 +204,7 @@
   "runs.status.label": "Status",
   "runs.loading.status": "Loading the run…",
   "runs.researchers.label": "Selected researchers",
+  "runs.source.mcp.badge": "MCP",
   "runs.list.label": "Run log list",
   "runs.list.empty.message": "No run logs match the conditions.",
   "runs.list.loading.status": "Loading the list…",

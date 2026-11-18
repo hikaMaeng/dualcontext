@@ -182,6 +182,9 @@ export type AugmentResult = {
   writer: { mode: WriterMode; calls: number };
 };
 
+/** 실행이 어디서 왔는가: 관리자 사이트의 시험 실행(test) · MCP 도구 호출(mcp). 옛 행은 test. */
+export type RunSource = "test" | "mcp";
+
 /** 실행 로그 목록의 한 줄. 선택된 조사원 · 프로시저는 실행 기록의 pairs 에서 뽑은 이름이다(중복 제거, 선택 순서 유지). */
 export type RunListItem = {
   id: number;
@@ -189,6 +192,7 @@ export type RunListItem = {
   query: string;
   status: "running" | "ok" | "error";
   durationMs: number;
+  source: RunSource;
   researchers: string[];
   procedures: string[];
   /** 검색어(q)가 있을 때만: 질의가 맞은 방식과 점수(키워드는 fts 순위, 의미는 코사인 유사도). */

@@ -204,6 +204,7 @@
   "runs.status.label": "상태",
   "runs.loading.status": "실행 기록을 불러오는 중입니다…",
   "runs.researchers.label": "선택된 조사원",
+  "runs.source.mcp.badge": "MCP",
   "runs.list.label": "실행 로그 목록",
   "runs.list.empty.message": "조건에 맞는 실행 로그가 없습니다.",
   "runs.list.loading.status": "목록을 불러오는 중입니다…",

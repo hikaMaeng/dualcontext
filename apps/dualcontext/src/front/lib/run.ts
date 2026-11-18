@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Answers, AugmentPair, PlanTrace, RoutingTrace } from "dualcontext_domain/common";
+import type { Answers, AugmentPair, PlanTrace, RoutingTrace, RunSource } from "dualcontext_domain/common";
 import { api } from "./api";
 
 export type RunStatus = "running" | "ok" | "error";
@@ -19,6 +19,8 @@ export type RunDetail = {
   id: number;
   createdAt: string;
   query: string;
+  /** 실행의 출처. 옛 응답에는 없을 수 있다(없으면 시험 실행). */
+  source?: RunSource;
   status: RunStatus;
   stage: "augment" | "answering" | "done" | null;
   error: string | null;

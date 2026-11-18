@@ -52,14 +52,32 @@ export function runsRouter(deps: Deps) {
     // 구독을 먼저 걸고 현재 상태를 읽는다. 그 사이에 바뀐 상태를 놓치지 않기 위해서다(중복 전송은 해롭지 않다).
     const pending: { status: string }[] = [];
     let live = false;
-    const send = (detail: unknown) => response.write(`data: ${JSON.stringify(detail)}\n\n`);
+    // 같은 내용을 두 번 보내지 않는다(아래 watch 가 주기적으로 같은 행을 읽는다).
+    let lastSent = "";
+    const send = (detail: unknown) => {
+      const json = JSON.stringify(detail);
+      if (json === lastSent) return;
+      lastSent = json;
+      response.write(`data: ${json}\n\n`);
+    };
     const onUpdate = (detail: { status: string }) => {
       if (!live) return void pending.push(detail);
       send(detail);
       if (detail.status !== "running") finish();
     };
     const beat = setInterval(() => response.write(": keep-alive\n\n"), 15_000);
+    // MCP 호출은 별개 프로세스가 쓰므로 이 프로세스의 bus 로는 변화가 오지 않는다. 같은 행을 주기적으로 읽어 바뀌었으면 보낸다.
+    const watch = setInterval(async () => {
+      if (!live) return;
+      try {
+        const detail = await readRun(deps.pool, id);
+        if (detail) onUpdate(detail);
+      } catch {
+        // 읽기 실패는 다음 주기에 다시 시도한다.
+      }
+    }, 2_000);
     function finish() {
+      clearInterval(watch);
       clearInterval(beat);
       bus.off(String(id), onUpdate);
       response.end();
@@ -69,6 +87,7 @@ export function runsRouter(deps: Deps) {
 
     const first = await readRun(deps.pool, id);
     if (!first) {
+      clearInterval(watch);
       clearInterval(beat);
       bus.off(String(id), onUpdate);
       return void response.status(404).json({ error: "not found" });

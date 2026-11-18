@@ -20,7 +20,12 @@ export function RunSummary({ detail, phase, onRemove, t }: Props) {
   return (
     <header className="grid gap-2">
       <div className="flex items-center justify-between gap-3">
-        <h2 id="run-heading" className="text-lg font-semibold">{t[RSC.RUNS_DETAIL_HEADING_TEXT]} #{detail.id}</h2>
+        <h2 id="run-heading" className="flex items-center gap-2 text-lg font-semibold">
+          <span>{t[RSC.RUNS_DETAIL_HEADING_TEXT]} #{detail.id}</span>
+          {detail.source === "mcp" && (
+            <span data-testid="run-source" data-source="mcp" className="rounded border border-line px-1.5 text-xs font-semibold text-muted">{t[SHARED.RUNS_SOURCE_MCP_BADGE]}</span>
+          )}
+        </h2>
         {!phase.running && (
           <Button variant="outline" size="sm" className="text-danger" data-testid="run-delete" onClick={onRemove}>{t[ROOT.COMMON_DELETE_BUTTON]}</Button>
         )}

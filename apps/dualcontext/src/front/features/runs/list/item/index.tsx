@@ -25,6 +25,9 @@ export function RunItem({ item, t }: { item: RunListItem; t: Texts }) {
           <span data-testid="run-item-id" className="shrink-0 text-xs font-semibold tabular-nums text-muted">#{item.id}</span>
           <time dateTime={item.createdAt} className="shrink-0 text-xs text-muted">{formatWhen(item.createdAt)}</time>
           <span aria-hidden="true" className="shrink-0 text-muted">{"|"}</span>
+          {item.source === "mcp" && (
+            <span data-testid="run-item-source" data-source="mcp" className="shrink-0 rounded border border-line px-1.5 text-xs font-semibold text-muted">{t[SHARED.RUNS_SOURCE_MCP_BADGE]}</span>
+          )}
           <span data-testid="run-item-query" title={item.query} className="min-w-0 flex-1 truncate whitespace-nowrap">{item.query}</span>
           <span data-testid="run-item-status" className={item.status === "error" ? "shrink-0 text-xs text-danger" : "shrink-0 text-xs text-muted"}>{statusText(item.status, t)}</span>
         </span>

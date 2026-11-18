@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "mode": "scenario",
+  "startedAt": "2026-11-18T07:52:44.013Z",
+  "inputUrl": "http://127.0.0.1:18081/",
+  "testedUrl": "http://127.0.0.1:18081/",
+  "finalUrl": "http://127.0.0.1:18081/#runs/291",
+  "title": "dualcontext",
+  "mainPresent": true,
+  "documentStatus": 200,
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "F:\\dev\\dualcontext\\test\\20261118\\165242_headless-browser-test\\screenshots\\run-list-with-mcp-badge.png",
+    "F:\\dev\\dualcontext\\test\\20261118\\165242_headless-browser-test\\screenshots\\run-view-mcp.png"
+  ],
+  "trace": "F:\\dev\\dualcontext\\test\\20261118\\165242_headless-browser-test\\trace.zip",
+  "steps": [
+    {
+      "action": "goto",
+      "status": "passed"
+    },
+    {
+      "action": "assertRole",
+      "status": "passed"
+    },
+    {
+      "action": "assertText",
+      "status": "passed"
+    },
+    {
+      "action": "screenshot",
+      "status": "passed"
+    },
+    {
+      "action": "goto",
+      "status": "passed"
+    },
+    {
+      "action": "assertText",
+      "status": "passed"
+    },
+    {
+      "action": "screenshot",
+      "status": "passed"
+    }
+  ],
+  "finishedAt": "2026-11-18T07:52:45.408Z"
+}

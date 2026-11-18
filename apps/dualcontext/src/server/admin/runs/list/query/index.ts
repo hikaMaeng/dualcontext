@@ -41,7 +41,7 @@ export function buildListQueries(params: ListParams, semantic?: Semantic): { pag
   const offset = bind((params.page - 1) * params.pageSize);
   return {
     page: {
-      text: `select id, created_at as "createdAt", query, status, duration_ms as "durationMs",
+      text: `select id, created_at as "createdAt", query, status, duration_ms as "durationMs", source,
                     researcher_names as researchers, procedure_names as procedures, ${score} as score
                from augment_runs ${clause} order by ${order} limit ${limit} offset ${offset}`,
       values

@@ -204,6 +204,7 @@
   "runs.status.label": "Status",
   "runs.loading.status": "Carregando a execução…",
   "runs.researchers.label": "Pesquisadores selecionados",
+  "runs.source.mcp.badge": "MCP",
   "runs.list.label": "Lista do registro de execuções",
   "runs.list.empty.message": "Nenhum registro de execução corresponde às condições.",
   "runs.list.loading.status": "Carregando a lista…",

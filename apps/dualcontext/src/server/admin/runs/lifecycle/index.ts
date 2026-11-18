@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
 import type pg from "pg";
-import { runNodeKey, type Answers, AugmentResult, ContextMode, ContextPlanConfig, PlanTrace } from "dualcontext_domain/common";
+import { runNodeKey, type Answers, AugmentResult, ContextMode, ContextPlanConfig, PlanTrace, type RunSource } from "dualcontext_domain/common";
 import type { PlanProgress } from "dualcontext_domain/server";
 import { answerPrompts, generateAnswers } from "../../../answer/index.js";
 import { runAugment, type Deps, type RunAugmentEngine } from "../../../augment/index.js";
@@ -18,7 +18,7 @@ const keepLatest = 500;
 export const bus = new EventEmitter();
 bus.setMaxListeners(0);
 
-const detailColumns = `id, created_at as "createdAt", query, status, stage, error, duration_ms as "durationMs",
+const detailColumns = `id, created_at as "createdAt", query, source, status, stage, error, duration_ms as "durationMs",
   researcher_routing as "researcherRouting", routing, settings, pairs, context, answers, plan, plan_progress as "planProgress",
   coalesce((select array_agg(n.key order by n.key) from augment_run_nodes n where n.run_id = augment_runs.id), '{}') as "nodes"`;
 
@@ -102,7 +102,7 @@ export function createTraceSaver(deps: Deps, runId: number) {
 }
 
 /** 백그라운드 작업 본체. 단계마다 행을 고치고 방송한다. 절대 거부(reject)되지 않는다. */
-async function execute(deps: Deps, runId: number, query: string, config: ContextPlanConfig, writerId?: number, engine?: RunAugmentEngine): Promise<Outcome> {
+async function execute(deps: Deps, runId: number, query: string, config: ContextPlanConfig, writerId?: number, engine?: RunAugmentEngine, source: RunSource = "test"): Promise<Outcome> {
   const started = Date.now();
   let result: AugmentResult | null = null;
   let plan: PlanTrace | null = null;
@@ -124,7 +124,8 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
     // 증강한 컨텍스트로 최종 답변까지 받는다. 비교를 위해 증강 전(질의만) 답변도 함께 만들고, 끝나는 대로 기록한다.
     // 답변마다 따로 감싸 두 호출이 섞이지 않게 한다. 계획의 마지막 답을 재사용했거나 컨텍스트가 비어 모델을 부르지 않은 쪽은 calls 가 없어 노드를 남기지 않는다.
     const recorders = { before: recordModel(deps.model, "answer"), after: recordModel(deps.model, "answer") };
-    answers = await generateAnswers(deps.model, query, result.context, async (which, answer) => {
+    // MCP 호출은 컨텍스트만 돌려주므로 최종 답변(증강 전 · 후)을 만들지 않는다: 호출마다 모델 호출 두 번과 지연이 더 든다.
+    if (source !== "mcp") answers = await generateAnswers(deps.model, query, result.context, async (which, answer) => {
       const calls = recorders[which].calls();
       if (calls.length > 0) nodes.push(runNodeKey.finalAnswer(which), { calls });
       await deps.pool.query(
@@ -154,19 +155,20 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
  * 시험 실행을 시작한다. 행을 running 으로 만들고 작업을 백그라운드로 보낸 뒤 바로 runId 를 돌려준다.
  * done 을 기다리면 예전 동기 호출처럼 끝까지 기다릴 수 있다.
  * choice 가 없으면 저장된 계획 설정(모드 포함) 그대로다. engine 은 테스트용이다.
+ * source 는 실행의 출처(시험 실행 test · MCP 호출 mcp). mcp 는 최종 답변을 만들지 않는다.
  */
-export async function startRun(deps: Deps, query: string, writerId?: number, choice: RunPlanChoice = {}, engine?: RunAugmentEngine) {
+export async function startRun(deps: Deps, query: string, writerId?: number, choice: RunPlanChoice = {}, engine?: RunAugmentEngine, source: RunSource = "test") {
   const plan = applyPlanOverride(await readPlanConfig(deps.pool), choice.mode, choice.override);
   const settings = await snapshot(deps, plan, writerId);
   const { rows } = await deps.pool.query<{ id: number }>(
-    `insert into augment_runs (query, status, stage, duration_ms, settings, pairs) values ($1, 'running', 'augment', 0, $2, '[]') returning id`,
-    [query, settings]
+    `insert into augment_runs (query, status, stage, duration_ms, settings, pairs, source) values ($1, 'running', 'augment', 0, $2, '[]', $3) returning id`,
+    [query, settings, source]
   );
   const runId = rows[0].id;
   // 질의 임베딩(의미 검색용)은 기다리지 않고 따로 계산한다. 실패해도 실행에는 영향이 없다.
   void embedRunQuery(deps.pool, deps.model, runId, query);
   await deps.pool.query(`delete from augment_runs where id not in (select id from augment_runs order by id desc limit $1)`, [keepLatest]);
-  return { runId, done: execute(deps, runId, query, plan, writerId, engine) };
+  return { runId, done: execute(deps, runId, query, plan, writerId, engine, source) };
 }
 
 /**

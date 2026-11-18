@@ -198,3 +198,18 @@ test("neighborsOf 는 들어오는 · 나가는 이웃을 돌려준다", () => {
   assert.deepEqual(around.outputs.map((node) => node.id), ["answer:after"]);
   assert.deepEqual(neighborsOf(graph, "nope"), { inputs: [], outputs: [] });
 });
+
+test("MCP classic 실행: 최종 답변(증강 전 · 후) 노드를 그리지 않고, 마지막 노드는 증강이다", () => {
+  const graph = buildRunGraph(input({ source: "mcp", answers: {} }));
+  assert.deepEqual(graph.nodes.map((node) => node.id), ["query", "classic"]);
+  assert.deepEqual(graph.nodes.filter((node) => node.state === "pending" || node.state === "running"), []);
+  assert.equal(graph.finalId, "classic");
+});
+
+test("MCP 분해 실행: 계획이 끝나도 최종 답변 노드가 생기지 않는다(시험 실행이면 생긴다)", () => {
+  const traced = plan({ mode: "decompose", stop: "done" as PlanTrace["stop"], items: [item("i1", "A", { top: true })] });
+  const mcp = buildRunGraph(input({ source: "mcp", plan: traced, answers: {} }));
+  assert.equal(mcp.nodes.some((node) => node.id === "answer:before" || node.id === "answer:after"), false);
+  const test_ = buildRunGraph(input({ plan: traced, answers: {} }));
+  assert.equal(test_.nodes.some((node) => node.id === "answer:before"), true);
+});

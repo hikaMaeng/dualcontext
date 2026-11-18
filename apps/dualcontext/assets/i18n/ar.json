@@ -204,6 +204,7 @@
   "runs.status.label": "الحالة",
   "runs.loading.status": "جارٍ تحميل التشغيل…",
   "runs.researchers.label": "الباحثون المختارون",
+  "runs.source.mcp.badge": "MCP",
   "runs.list.label": "قائمة سجل التشغيل",
   "runs.list.empty.message": "لا توجد سجلات تشغيل تطابق الشروط.",
   "runs.list.loading.status": "جارٍ تحميل القائمة…",

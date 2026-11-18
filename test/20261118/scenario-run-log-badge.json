@@ -1,0 +1,9 @@
+[
+  { "action": "goto", "url": "/#runs" },
+  { "action": "assertRole", "role": "list" },
+  { "action": "assertText", "text": "퇴직금 청구 요건 1년 이상 계속근로" },
+  { "action": "screenshot", "name": "run-list-with-mcp-badge" },
+  { "action": "goto", "url": "/#runs/292" },
+  { "action": "assertText", "text": "퇴직금 청구 요건 1년 이상 계속근로" },
+  { "action": "screenshot", "name": "run-view-mcp" }
+]
