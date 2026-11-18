@@ -29,7 +29,7 @@
 
 ## effort (4단)
 
-`effort` 는 「질의 분해를 하는가 · 응답 평가를 몇 라운드까지 하는가」로 정의한다. 값은 `light` · `middle` · `high` · `xhigh`.
+`effort` 는 「질의 분해를 하는가 · 서버 안 리플렉션(답변 · 평가)을 최대 몇 번 하는가」로 정의한다. 호출자는 이 값 하나만 고르며, 분해 · 리플렉션 횟수는 직접 지정할 수 없다. 값은 `light` · `middle` · `high` · `xhigh`.
 
 | effort | 질의 분해 | 응답 평가 · 보강 | 서버 엔진 | 엔진 설정 |
 | --- | --- | --- | --- | --- |
@@ -43,13 +43,21 @@
 * 한도(단계 수 · 아이템 수 · 통과 점수 등)는 관리자 「계획 설정」 값을 그대로 쓴다. `effort` 가 바꾸는 것은 모드와 `maxRounds` 뿐이다.
 * 시간은 위로 갈수록 늘어난다: `light` 는 한 번의 증강, `middle` 은 분석 + 아이템마다 증강(수 배), `high`·`xhigh` 는 거기에 답변 · 평가 호출이 라운드마다 더해진다. 수치는 측정하지 않았다.
 
-호스트용 선택 규칙(도구 설명에 둘 문장):
+호스트가 읽는 도구 설명(도구 · 인자 설명문, 영문으로 둔다). 구조와 같은 순서로 쓴다: 무엇을 주는가(컨텍스트, 답변 아님) → 입력 두 개 → effort 단계 → 응답 읽는 법.
 
 ```
-effort (optional, default light): light = single lookup; middle = question has several parts;
-high = needs checking and gap-filling; xhigh = only when high replied coverage=partial. Slower as effort rises.
-If the reply says coverage=none, do not retry; answer from your own knowledge.
+description:
+  Returns background context to ground your answer to a query. It returns context only, never an answer:
+  you write the answer yourself from it. Call it for questions that need specialist, private or recent material;
+  skip it for general knowledge. If the reply starts with coverage=none, do not retry; answer from your own knowledge.
+inputSchema:
+  query:  The user's question, as asked.
+  effort: (optional, default light) How hard to look. light = one lookup. middle = the question has several parts.
+          high = also checks the gathered context for gaps and fills them. xhigh = only if a high reply said next: effort=xhigh.
+          Higher is slower.
 ```
+
+설명문에 「리플렉션」 · 「분해」 같은 내부 용어는 쓰지 않고 효과로만 쓴다. 설명문 글자 수는 위 정도(약 900자 이내)를 넘기지 않는다.
 
 ## 응답 봉투
 
