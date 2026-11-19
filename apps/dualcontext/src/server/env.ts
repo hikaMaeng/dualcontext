@@ -8,6 +8,18 @@ export type ServerEnv = {
   llmApiKey: string;
 };
 
+/**
+ * 내부 전용 listener 포트(MCP stdio 프로세스가 중계하는 곳). 컨테이너 안 loopback 에만 열고 compose 에서 게시하지 않는다.
+ * 기본은 PORT + 1 이다: 서버 프로세스와 `docker exec` 로 뜨는 stdio 프로세스가 같은 환경에서 같은 값을 계산한다.
+ * DB 설정이 필요 없으므로 stdio 프로세스도 이 함수만 쓴다.
+ */
+export function readInternalPort(source: NodeJS.ProcessEnv = process.env): number {
+  const raw = source.DUALCONTEXT_INTERNAL_PORT;
+  const port = raw !== undefined && raw !== "" ? Number(raw) : Number(source.PORT) + 1;
+  if (!Number.isInteger(port) || port < 10000 || port > 59999) throw new Error("DUALCONTEXT_INTERNAL_PORT (default PORT + 1) must be an integer from 10000 to 59999");
+  return port;
+}
+
 export function readEnv(source: NodeJS.ProcessEnv = process.env): ServerEnv {
   const rawPort = source.PORT;
   const parsedPort = Number(rawPort);

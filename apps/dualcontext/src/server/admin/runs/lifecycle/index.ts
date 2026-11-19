@@ -20,6 +20,13 @@ const keepLatest = 500;
 export const bus = new EventEmitter();
 bus.setMaxListeners(0);
 
+/**
+ * 가벼운 진행 알림(단계 이름만). MCP 중계가 진행 알림을 만들 때 쓴다: 전체 행을 읽는 bus 와 달리 DB 를 읽지 않는다.
+ * 키: runId 문자열. 구독자가 없으면 발행은 비용이 거의 없다.
+ */
+export const progressBus = new EventEmitter();
+progressBus.setMaxListeners(0);
+
 const detailColumns = `id, created_at as "createdAt", query, source, effort, status, stage, error, duration_ms as "durationMs",
   researcher_routing as "researcherRouting", routing, settings, pairs, context, answers, plan, plan_progress as "planProgress",
   coalesce((select array_agg(n.key order by n.key) from augment_run_nodes n where n.run_id = augment_runs.id), '{}') as "nodes"`;
@@ -78,6 +85,7 @@ export type RunPlanChoice = { mode?: ContextMode; override?: PlanOverride };
  * 기록 실패는 실행을 멈추지 않는다(플래너도 진행 알림 실패를 무시한다). 실행이 running 일 때만 쓴다.
  */
 async function recordProgress(writer: RunWriter, publishRun: () => Promise<void>, runId: number, event: PlanProgress) {
+  progressBus.emit(String(runId), event);
   await writer.query(`update augment_runs set plan_progress = $2 where id = $1 and status = 'running'`, [runId, JSON.stringify({ ...event, at: new Date().toISOString() })]);
   await publishRun();
 }

@@ -6,6 +6,7 @@ import type { Deps, RunAugmentEngine } from "../../../augment/index.js";
 import { defaultPlanConfig } from "../../../plan/config/index.js";
 import { defaultRouterConfig } from "../../../routing/config/index.js";
 import { description, registerAugmentTool } from "./index.js";
+import { createLocalRunner } from "./run/index.js";
 
 const built: AugmentResult = {
   context: "컨텍스트 본문",
@@ -16,7 +17,8 @@ const built: AugmentResult = {
 };
 
 type Args = { query: string; effort?: string };
-type Handler = (args: Args) => Promise<{ isError?: boolean; content: { type: string; text: string }[] }>;
+type Extra = { signal: AbortSignal; requestId: number; sendNotification: () => Promise<void> };
+type Handler = (args: Args, extra: Extra) => Promise<{ isError?: boolean; content: { type: string; text: string }[] }>;
 type Field = { isOptional(): boolean };
 const captured: { schema: { query: Field; effort: Field } } = { schema: null as never };
 
@@ -40,10 +42,11 @@ function register(engine: RunAugmentEngine, stored: unknown = defaultPlanConfig(
   };
   let handler: Handler | null = null;
   const server = { registerTool: (_name: string, config: { inputSchema: typeof captured.schema }, run: Handler) => { handler = run; captured.schema = config.inputSchema; } };
-  registerAugmentTool(server as never, { pool, model, dataDir: "" } as unknown as Deps, engine);
+  registerAugmentTool(server as never, createLocalRunner({ pool, model, dataDir: "" } as unknown as Deps, engine));
   // 실행에 바인딩된 모델(forRun)은 이 시험에서는 같은 가짜 모델이다.
   (model as Record<string, unknown>).forRun = () => model;
-  return { run: (args: Args) => (handler as Handler)(args), calls, chats };
+  const extra = (): Extra => ({ signal: new AbortController().signal, requestId: 1, sendNotification: async () => undefined });
+  return { run: (args: Args) => (handler as Handler)(args, extra()), calls, chats };
 }
 
 const ok: RunAugmentEngine = { augment: async () => built, planContext: async () => { throw new Error("부르면 안 된다"); } };
@@ -108,7 +111,7 @@ test("도구 설명: 컨텍스트만 · 정보 필요 단위 · 같은 단계 �
   // 장기 실행 경고: 도구 설명과 effort 설명 양쪽에 있고, 클라이언트 제한 시간 · 취소 불가 · 사용자 동의 조건을 말한다.
   assert.match(description, /WARNING, long-running/);
   assert.match(description, /stop waiting after about a minute/);
-  assert.match(description, /cannot be cancelled/);
+  assert.match(description, /the server then cancels the work/);
   assert.match(description, /only when the user has accepted a long wait/);
   const effortText = (captured.schema.effort as unknown as { description?: string }).description ?? "";
   assert.match(effortText, /tens of minutes to over an hour/);

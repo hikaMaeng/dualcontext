@@ -1,9 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { startRun } from "../../../admin/runs/lifecycle/index.js";
-import type { Deps, RunAugmentEngine } from "../../../augment/index.js";
-import { defaultEffort, effortChoice, efforts } from "./effort/index.js";
-import { buildError, buildReply } from "./envelope/index.js";
+import type { RequestTracker } from "../../transport/index.js";
+import { defaultEffort, efforts } from "./effort/index.js";
+import type { ToolRunner } from "./run/index.js";
 
 /** 도구 설명(호스트 모델이 읽는다). effort 는 「제공하는 정보 수준」으로 설명하고 예시는 싣지 않는다. 설계: docs/mcp-design.md. */
 export const description = [
@@ -14,8 +13,8 @@ export const description = [
   "Do not repeat a call for the same need with a rephrased query at the same effort: if the context is thin, call again with a higher effort,",
   "or answer with what you have and say what is missing.",
   "If the reply starts with coverage=none, do not retry for that need; answer from your own knowledge.",
-  "WARNING, long-running: any effort above light is a long job. In one measurement on a shared model server, light took 16-23 seconds, middle about 20 minutes and high about 80 minutes.",
-  "Most MCP clients stop waiting after about a minute and report a timeout, while the work keeps running on the server and cannot be cancelled.",
+  "WARNING, long-running: any effort above light is a long job. In one measurement on a shared model server, light took 16-23 seconds, middle 20 to 76 minutes and high about 80 minutes.",
+  "Most MCP clients stop waiting after about a minute and report a timeout; the server then cancels the work, so a timed-out middle, high or xhigh call produces nothing.",
   "Use middle, high or xhigh only when the user has accepted a long wait; otherwise use light and say what is missing."
 ].join(" ");
 
@@ -33,11 +32,11 @@ const effortDescription = [
 
 /**
  * 이 서버가 제공하는 유일한 도구. 입력은 질의(정보 필요)와 선택 effort 뿐이고, 출력은 증강된 컨텍스트다(답변은 돌려주지 않는다).
- * effort 가 모드와 평가 · 보강 한도를 정한다(`effort/`). 저장된 관리자 모드는 MCP 호출에 적용하지 않는다.
- * 응답은 고정 머리 + 컨텍스트(`envelope/`). 호출은 관리자 「실행 로그」에 출처 mcp 와 effort 로 남고 최종 답변(증강 전 · 후)은 만들지 않는다.
- * engine 은 시험용으로 바꿔 끼운다(기본은 실제 증강 경로).
+ * 실행은 runner 가 맡는다: 엔진 소유자 프로세스는 로컬 실행기, MCP stdio 프로세스는 엔진 소유자로 중계하는 실행기를 쓴다(`run/`, `relay/`).
+ * 취소: 요청의 취소 신호(SDK)와 transport 어댑터가 등록한 요청별 신호(`tracker`, 요청 ID 0 취소 포함)를 합쳐 runner 에 넘긴다.
+ * 진행: 클라이언트가 진행 토큰을 보냈을 때만 `notifications/progress`(단조 증가 progress)를 보낸다. 클라이언트가 `resetTimeoutOnProgress` 를 쓸 때만 시간 제한이 연장된다.
  */
-export function registerAugmentTool(server: McpServer, deps: Deps, engine?: RunAugmentEngine) {
+export function registerAugmentTool(server: McpServer, runner: ToolRunner, tracker?: RequestTracker) {
   server.registerTool(
     "augment_context",
     {
@@ -47,13 +46,18 @@ export function registerAugmentTool(server: McpServer, deps: Deps, engine?: RunA
         effort: z.enum(efforts).optional().describe(effortDescription)
       }
     },
-    async ({ query, effort = defaultEffort }) => {
-      const started = Date.now();
-      const { done } = await startRun(deps, query, undefined, effortChoice(effort), engine, { source: "mcp", effort });
-      const outcome = await done;
-      // 계획 모드에서 질의 분석이 실패하면 빈 결과로 숨기지 않고 오류로 낸다(실행 로그에도 error 로 남는다).
-      if (outcome.error !== null || outcome.result === null) return { isError: true, content: [{ type: "text" as const, text: buildError(outcome.error ?? "no result") }] };
-      return { content: [{ type: "text" as const, text: buildReply({ effort, result: outcome.result, plan: outcome.plan, elapsedMs: Date.now() - started }) }] };
+    async ({ query, effort = defaultEffort }, extra) => {
+      const own = tracker?.signalFor(extra.requestId);
+      const signal = own ? AbortSignal.any([extra.signal, own]) : extra.signal;
+      const token = extra._meta?.progressToken;
+      let count = 0;
+      const progress = (message: string) => {
+        if (token === undefined) return;
+        count += 1;
+        void extra.sendNotification({ method: "notifications/progress", params: { progressToken: token, progress: count, message } }).catch(() => undefined);
+      };
+      const reply = await runner({ query, effort }, { signal, progress });
+      return { ...(reply.isError ? { isError: true } : {}), content: [{ type: "text" as const, text: reply.text }] };
     }
   );
 }

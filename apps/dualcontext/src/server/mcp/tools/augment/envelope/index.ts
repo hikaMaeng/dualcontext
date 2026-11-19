@@ -16,6 +16,8 @@ const evaluated = (effort: McpEffort) => effort === "high" || effort === "xhigh"
 /** 평가를 거친 effort 에서, 평가가 통과해 멈춘 것이 아니면 partial. */
 export function coverageOf({ effort, result, plan }: Pick<ReplyInput, "effort" | "result" | "plan">): Coverage {
   if (result.context.trim() === "") return "none";
+  // 선택 시한에 걸려 그때까지 조립된 컨텍스트만 돌려준 경우는 어느 effort 든 partial 이다.
+  if (plan?.stop === "deadline") return "partial";
   if (evaluated(effort) && plan !== null && plan.stop !== "passed") return "partial";
   return "ok";
 }
@@ -38,7 +40,8 @@ export function buildReply(input: ReplyInput): string {
   // 올림 안내는 high 가 partial 일 때만 한다. 그 밖(none · xhigh · 평가 없는 단계)은 항상 「-」.
   const next = effort === "high" && coverage === "partial" ? "effort=xhigh" : "-";
   const lines = [head.join(" "), `next: ${next}`];
-  if (coverage === "partial") for (const { name, description } of missingOf(plan)) lines.push(`missing: ${oneLine(name)}${description ? ` - ${oneLine(description)}` : ""}`);
+  if (coverage === "partial" && plan?.stop === "deadline") lines.push("note: stopped at the time budget; this context is what was gathered so far and may be incomplete");
+  else if (coverage === "partial") for (const { name, description } of missingOf(plan)) lines.push(`missing: ${oneLine(name)}${description ? ` - ${oneLine(description)}` : ""}`);
   lines.push("---");
   lines.push(coverage === "none" ? "No matching source for this query. Do not retry; answer from your own knowledge." : result.context);
   return lines.join("\n");
