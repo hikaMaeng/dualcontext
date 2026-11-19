@@ -1,0 +1,14 @@
+{
+  "seconds": 45,
+  "workers": 3,
+  "requests": 84,
+  "withResults": 10,
+  "errors": {
+    "DuckDuckGo answered 202": 50
+  },
+  "ms": {
+    "p50": 82,
+    "p99": 733,
+    "max": 733
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "seconds": 45,
+  "researcherId": 29,
+  "rounds": 19,
+  "detail": [
+    {
+      "startStatus": 202,
+      "ms": 10317,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1025,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1040,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1041,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1047,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1032,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1034,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1023,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1035,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1045,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1023,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1034,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 1042,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 3072,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 4114,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 4117,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 4101,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 4093,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    },
+    {
+      "startStatus": 202,
+      "ms": 4123,
+      "status": "ok",
+      "pages": 3,
+      "chunks": 92,
+      "error": null
+    }
+  ]
+}
