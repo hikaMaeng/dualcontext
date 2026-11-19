@@ -67,6 +67,11 @@ export function useRun(id: number | null): RunDetail | null {
     let timer: number | undefined;
 
     const poll = () => {
+      // SSE 를 못 쓸 때의 폴링: 숨은 탭에서는 읽지 않는다.
+      if (document.hidden) {
+        timer = window.setTimeout(poll, pollMs);
+        return;
+      }
       api<RunDetail>(`/runs/${id}`)
         .then((detail) => {
           if (closed) return;

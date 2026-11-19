@@ -297,6 +297,7 @@
   "runs.plan.summary.duration.label": "Duração",
   "runs.plan.summary.running.status": "Em andamento",
   "plan.stop.answerfailed.text": "Falha ao gerar a resposta",
+  "plan.stop.deadline.text": "Orçamento de tempo atingido (contexto reunido até agora)",
   "plan.progress.running.status": "Plano em andamento",
   "plan.progress.analyze.text": "Analisando a consulta",
   "plan.progress.dependencies.text": "Analisando dependências",

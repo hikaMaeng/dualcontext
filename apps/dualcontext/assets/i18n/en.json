@@ -297,6 +297,7 @@
   "runs.plan.summary.duration.label": "Duration",
   "runs.plan.summary.running.status": "In progress",
   "plan.stop.answerfailed.text": "Answer generation failed",
+  "plan.stop.deadline.text": "Time budget reached (context gathered so far)",
   "plan.progress.running.status": "Plan in progress",
   "plan.progress.analyze.text": "Analysing the query",
   "plan.progress.dependencies.text": "Analysing dependencies",

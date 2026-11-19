@@ -38,8 +38,18 @@ export function useRunList(query: ListQuery): { data: RunListPage | null; failed
   const anyRunning = data?.items.some((item) => item.status === "running") ?? false;
   useEffect(() => {
     if (!anyRunning) return;
-    const timer = window.setInterval(() => setTick((n) => n + 1), refreshMs);
-    return () => window.clearInterval(timer);
+    // 숨은 탭에서는 읽지 않고, 다시 보이는 순간 한 번 읽는다(의미 검색 중이면 폴링마다 서버가 질의를 다시 임베딩하므로 불필요한 호출을 줄인다).
+    const timer = window.setInterval(() => {
+      if (!document.hidden) setTick((n) => n + 1);
+    }, refreshMs);
+    const onVisible = () => {
+      if (!document.hidden) setTick((n) => n + 1);
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [anyRunning]);
 
   return { data, failed, loading };

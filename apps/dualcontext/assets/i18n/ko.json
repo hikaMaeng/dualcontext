@@ -297,6 +297,7 @@
   "runs.plan.summary.duration.label": "소요",
   "runs.plan.summary.running.status": "진행 중",
   "plan.stop.answerfailed.text": "답변 생성 실패",
+  "plan.stop.deadline.text": "시한 만료(그때까지 조립된 컨텍스트)",
   "plan.progress.running.status": "계획 진행 중",
   "plan.progress.analyze.text": "질의 분석",
   "plan.progress.dependencies.text": "의존성 분석",

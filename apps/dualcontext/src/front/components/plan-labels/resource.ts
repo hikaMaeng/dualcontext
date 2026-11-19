@@ -14,6 +14,7 @@ export enum RSC {
   PLAN_STOP_NOITEMS_TEXT = "plan.stop.noitems.text",
   PLAN_STOP_EVALUATIONFAILED_TEXT = "plan.stop.evaluationfailed.text",
   PLAN_STOP_ANSWERFAILED_TEXT = "plan.stop.answerfailed.text",
+  PLAN_STOP_DEADLINE_TEXT = "plan.stop.deadline.text",
   PLAN_ITEM_PENDING_TEXT = "plan.item.pending.text",
   PLAN_ITEM_BUILT_TEXT = "plan.item.built.text",
   PLAN_ITEM_EMPTY_TEXT = "plan.item.empty.text",

@@ -297,6 +297,7 @@
   "runs.plan.summary.duration.label": "المدة",
   "runs.plan.summary.running.status": "قيد التنفيذ",
   "plan.stop.answerfailed.text": "فشل إنشاء الإجابة",
+  "plan.stop.deadline.text": "تم بلوغ ميزانية الوقت (السياق المجمّع حتى الآن)",
   "plan.progress.running.status": "التخطيط قيد التنفيذ",
   "plan.progress.analyze.text": "تحليل الاستعلام",
   "plan.progress.dependencies.text": "تحليل الاعتماديات",

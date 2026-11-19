@@ -24,7 +24,8 @@ const stopText: Record<PlanStop, RSC> = {
   "no-new-items": RSC.PLAN_STOP_NONEWITEMS_TEXT,
   "no-items": RSC.PLAN_STOP_NOITEMS_TEXT,
   "evaluation-failed": RSC.PLAN_STOP_EVALUATIONFAILED_TEXT,
-  "answer-failed": RSC.PLAN_STOP_ANSWERFAILED_TEXT
+  "answer-failed": RSC.PLAN_STOP_ANSWERFAILED_TEXT,
+  deadline: RSC.PLAN_STOP_DEADLINE_TEXT
 };
 
 const statusText: Record<ItemStatus, RSC> = {

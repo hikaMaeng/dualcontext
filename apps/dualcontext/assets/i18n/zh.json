@@ -297,6 +297,7 @@
   "runs.plan.summary.duration.label": "耗时",
   "runs.plan.summary.running.status": "进行中",
   "plan.stop.answerfailed.text": "回答生成失败",
+  "plan.stop.deadline.text": "已达时间预算(以当时已汇集的上下文为准)",
   "plan.progress.running.status": "规划进行中",
   "plan.progress.analyze.text": "分析查询",
   "plan.progress.dependencies.text": "分析依赖",

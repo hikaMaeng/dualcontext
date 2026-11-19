@@ -297,6 +297,7 @@
   "runs.plan.summary.duration.label": "अवधि",
   "runs.plan.summary.running.status": "जारी",
   "plan.stop.answerfailed.text": "उत्तर बनाना विफल",
+  "plan.stop.deadline.text": "समय सीमा पूरी (अब तक जुटाया गया संदर्भ)",
   "plan.progress.running.status": "योजना जारी",
   "plan.progress.analyze.text": "क्वेरी का विश्लेषण",
   "plan.progress.dependencies.text": "निर्भरता विश्लेषण",

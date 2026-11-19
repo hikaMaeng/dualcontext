@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RunNodeDetail } from "dualcontext_domain/common";
 import { loadNode } from "../../../api";
 
@@ -6,8 +6,9 @@ import { loadNode } from "../../../api";
 export type NodeDocStatus = "idle" | "loading" | "ready" | "missing" | "failed";
 export type NodeDoc = { status: NodeDocStatus; doc: RunNodeDetail | null };
 
-/** 진행 중인 실행에서 아직 없거나 자라는 중인 노드 문서를 다시 읽는 간격(ms). */
+/** 진행 중인 실행에서 아직 없거나 자라는 중인 노드 문서를 다시 읽는 처음 간격(ms). 문서가 바뀌지 않으면 maxRefreshMs 까지 1.5배씩 늘린다. */
 export const refreshMs = 4000;
+export const maxRefreshMs = 15000;
 
 /** 서버에 문서가 없는 노드 키: 질의는 실행 행 자체가 상세다. */
 export const hasNoDocument = (key: string): boolean => key === "query";
@@ -23,13 +24,21 @@ export function useNodeDetail(runId: number, key: string | null, options: { runn
   const [tick, setTick] = useState(0);
   const enabled = options.enabled !== false && key !== null && !hasNoDocument(key);
   const identity = `${runId}|${key}`;
+  // 문서가 이전 읽기와 같으면 쌓이는 횟수(백오프 단계). 바뀌면 0 으로 돌아간다.
+  const unchanged = useRef(0);
+  const lastAt = useRef<string | null>(null);
 
+  // options.running 이 바뀔 때(실행이 끝날 때)도 한 번 더 읽는다: 마지막 폴링 뒤에 문서가 자랐어도 최종 문서를 놓치지 않는다.
   useEffect(() => {
     if (!enabled || key === null) return;
     let stale = false;
     loadNode(runId, key)
       .then((doc) => {
-        if (!stale) setState({ status: doc ? "ready" : "missing", doc, for: identity });
+        if (stale) return;
+        const at = doc?.at ?? null;
+        unchanged.current = at !== null && at === lastAt.current ? unchanged.current + 1 : 0;
+        lastAt.current = at;
+        setState({ status: doc ? "ready" : "missing", doc, for: identity });
       })
       .catch(() => {
         if (!stale) setState((current) => ({ status: "failed", doc: current.for === identity ? current.doc : null, for: identity }));
@@ -37,12 +46,29 @@ export function useNodeDetail(runId: number, key: string | null, options: { runn
     return () => {
       stale = true;
     };
-  }, [enabled, runId, key, identity, options.stored, tick]);
+  }, [enabled, runId, key, identity, options.stored, options.running, tick]);
 
   useEffect(() => {
     if (!enabled || !options.running) return;
-    const timer = window.setInterval(() => setTick((n) => n + 1), refreshMs);
-    return () => window.clearInterval(timer);
+    unchanged.current = 0;
+    let timer: number | undefined;
+    // 실행이 진행 중인 동안만 읽는다. 숨은 탭에서는 읽지 않고(보이는 순간 한 번 읽는다), 문서가 바뀌지 않으면 간격을 늘린다.
+    const schedule = () => {
+      const delay = Math.min(refreshMs * 1.5 ** unchanged.current, maxRefreshMs);
+      timer = window.setTimeout(() => {
+        if (!document.hidden) setTick((n) => n + 1);
+        schedule();
+      }, delay);
+    };
+    const onVisible = () => {
+      if (!document.hidden) setTick((n) => n + 1);
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    schedule();
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [enabled, options.running, identity]);
 
   if (!enabled) return { status: "idle", doc: null };
