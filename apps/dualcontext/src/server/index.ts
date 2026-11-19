@@ -9,6 +9,7 @@ import { createMcpServer } from "./mcp/index.js";
 import { createRelayRunner } from "./mcp/relay/index.js";
 import { createLocalRunner } from "./mcp/tools/augment/run/index.js";
 import { createCancelAwareTransport } from "./mcp/transport/index.js";
+import { createCollectQueues } from "./collect/queues/index.js";
 import { createModelClient } from "./model/index.js";
 import { ensurePlanConfig } from "./plan/config/index.js";
 import { runRegistry } from "./run/index.js";
@@ -35,7 +36,9 @@ if (stdio) {
   const env = readEnv();
   const pool = createPool(env.databaseUrl);
   const model = createModelClient(pool, env.llmApiKey);
-  const deps = { pool, model, dataDir: env.dataDir };
+  // 조사원 수집의 종류별 작업 큐: 아이템 · 조사원이 아무리 많이 동시에 발동해도 수집 부하는 종류별 소비자 수로 묶인다.
+  const collectors = createCollectQueues();
+  const deps = { pool, model, dataDir: env.dataDir, collectors };
   await ensureDefaults(pool);
   // 계획 설정 단일 행(기본 classic). 이미 있으면 건드리지 않는다.
   await ensurePlanConfig(pool);
@@ -72,7 +75,7 @@ if (stdio) {
         clearInterval(drain);
         server.closeAllConnections();
         internal.closeAllConnections();
-        void model.close().then(() => Promise.all([pool.end(), healthPool.end()])).finally(() => process.exit(0));
+        void Promise.all([collectors.close(), model.close()]).then(() => Promise.all([pool.end(), healthPool.end()])).finally(() => process.exit(0));
       }, 100);
     });
   }

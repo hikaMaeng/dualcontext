@@ -3,6 +3,7 @@ import { augmentQuery, type AugmentPorts, type Provided } from "dualcontext_doma
 import { listProceduresOf } from "../../admin/procedures/index.js";
 import { listResearchers } from "../../admin/researchers/index.js";
 import { collect } from "../../collect/index.js";
+import type { CollectQueues } from "../../collect/queues/index.js";
 import type { ModelClient } from "../../model/index.js";
 import { createSelectors } from "../../routing/index.js";
 import { createWriter, loadWriter } from "../../writer/index.js";
@@ -14,6 +15,10 @@ export type Deps = {
   dataDir: string;
   /** 실행 취소 신호(실행마다 `startRun` 이 채운다). 수집기가 `fetch` · 파일 루프 · 대기에 쓴다. 모델 호출은 `model.forRun` 이 같은 신호로 취소한다. */
   signal?: AbortSignal;
+  /** 조사원 수집의 종류별 작업 큐(서버가 하나 만든다). 있으면 모든 수집이 이 큐를 거친다. 시험에서만 비운다. */
+  collectors?: CollectQueues;
+  /** 큐의 공정성 단위(실행 번호). `startRun` 이 채운다. */
+  runKey?: string;
 };
 
 /**
@@ -29,7 +34,12 @@ export async function augment(deps: Deps, query: string, writerId?: number, prov
     split: selectors.split,
     selectResearchers: selectors.selectResearchers,
     selectProcedures: selectors.selectProcedures,
-    collect: (researcher, text) => collect(deps.pool, deps.model, deps.dataDir, researcher, text, deps.signal),
+    collect: (researcher, text) =>
+      collect(deps.pool, deps.model, deps.dataDir, researcher, text, {
+        ...(deps.signal ? { signal: deps.signal } : {}),
+        ...(deps.collectors ? { queues: deps.collectors } : {}),
+        ...(deps.runKey !== undefined ? { runKey: deps.runKey } : {})
+      }),
     writer: createWriter(deps.model, await loadWriter(deps.pool, writerId))
   };
   return provided && provided.length > 0 ? augmentQuery(query, ports, provided) : augmentQuery(query, ports);

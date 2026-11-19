@@ -221,7 +221,7 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
   let error: string | null = null;
   let aborted: Outcome["aborted"];
   // 이 실행의 모델 호출은 모두 실행에 바인딩된 façade 로 간다: runKey(공정성 단위)와 취소 신호가 자동으로 붙는다.
-  const runDeps: Deps = { ...deps, model: deps.model.forRun({ runKey: String(runId), signal: ctx.signal }), signal: ctx.signal };
+  const runDeps: Deps = { ...deps, model: deps.model.forRun({ runKey: String(runId), signal: ctx.signal }), signal: ctx.signal, runKey: String(runId) };
   const writer = createRunWriter(deps.pool);
   const publishRun = () => publish(deps.pool, runId);
   const saver = createTraceSaver(writer, runId, publishRun);

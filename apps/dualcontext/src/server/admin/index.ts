@@ -27,9 +27,10 @@ export function adminRouter(deps: Deps) {
   router.use(aiServerRouter(deps.pool, deps.model));
   router.use(runsRouter(deps));
 
-  // 데이터베이스 상태 + 실행 계측: 추론 큐(소비자 수 · 진행 중 · 대기 · 지연 재투입 · 발행 · 재시도), 진행 중 실행 수, 이벤트 루프 지연(읽으면 비워진다).
+  // 데이터베이스 상태 + 실행 계측: 추론 큐(소비자 수 · 진행 중 · 대기 · 지연 재투입 · 발행 · 재시도), 조사원 수집 큐(종류별 같은 지표, 없으면 null),
+  // 진행 중 실행 수, 이벤트 루프 지연(읽으면 비워진다).
   router.get("/status", async (_request, response) => {
-    response.json({ ...(await readDatabaseStatus(deps.pool)), queues: deps.model.stats(), activeRuns: runRegistry.size(), eventLoop: eventLoopSnapshot() });
+    response.json({ ...(await readDatabaseStatus(deps.pool)), queues: deps.model.stats(), collect: deps.collectors?.stats() ?? null, activeRuns: runRegistry.size(), eventLoop: eventLoopSnapshot() });
   });
 
   // 시험 실행: MCP 도구와 같은 증강 경로 + 증강 전 · 후 최종 답변. writerId 를 주면 그 라이터로 돌려 본다.
