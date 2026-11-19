@@ -25,7 +25,7 @@ type Message = { id?: RequestId; method?: string; params?: { requestId?: Request
 export function createCancelAwareTransport(inner: Transport): CancelAwareTransport {
   const controllers = new Map<string, AbortController>();
   const cancelled = new Set<string>();
-  let handler: Transport["onmessage"];
+  let handler: Pick<Transport, "onmessage">["onmessage"];
 
   const intercept = (message: JSONRPCMessage) => {
     const m = message as Message;

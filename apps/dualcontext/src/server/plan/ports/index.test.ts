@@ -251,13 +251,13 @@ test("onNode: build 가 던지면 그때까지의 호출 · 사전 컨텍스트 
 });
 
 test("answer: 채팅 오류는 이 층에서 재시도하지 않는다. evaluate: 해석 실패만 한 번 더 생성한다. 호출 기록은 논리 호출마다 한 건이다", async () => {
-  const sent: Record<string, { calls: { response: string | null; error?: string }[] }> = {};
+  const recorded: Record<string, { calls: { response: string | null; error?: string }[] }> = {};
   const { deps, prompts } = fakeDeps([new Error("chat produced no data for 180s")]);
-  const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key, patch) => { sent[key] = patch as never; });
+  const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key, patch) => { recorded[key] = patch as never; });
   await assert.rejects(ports.answer("q", "ctx", { round: 0 }), /no data for 180s/);
   assert.equal(prompts.length, 1);
-  assert.equal(sent["answer:0"].calls.length, 1);
-  assert.match(sent["answer:0"].calls[0].error ?? "", /no data for 180s/);
+  assert.equal(recorded["answer:0"].calls.length, 1);
+  assert.match(recorded["answer:0"].calls[0].error ?? "", /no data for 180s/);
 
   const evalJson = '{"score":80,"reason":"ok","missing":[]}';
   const second = fakeDeps(["이건 JSON 이 아니다", evalJson]);
