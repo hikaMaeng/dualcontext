@@ -1,0 +1,40 @@
+{
+  "query": "근로계약서 없이 일했을 때 퇴직금 청구 요건과 미지급 시 진정 절차를 알려줘",
+  "effortArg": "middle",
+  "tools": [
+    "augment_context"
+  ],
+  "inputSchemaKeys": [
+    "query",
+    "effort"
+  ],
+  "descriptionHasWarning": true,
+  "effortDescriptionHasTime": true,
+  "isError": false,
+  "elapsedMs": 4589203,
+  "responseChars": 13174,
+  "header": "[dualcontext] effort=middle coverage=ok sources=5 elapsed=4589s\nnext: -",
+  "newRuns": [
+    {
+      "id": 305,
+      "source": "mcp",
+      "effort": "middle",
+      "status": "ok",
+      "query": "근로계약서 없이 일했을 때 퇴직금 청구 요건과 미지급 시 진정 절차를 알려줘"
+    }
+  ],
+  "detail": {
+    "id": 305,
+    "source": "mcp",
+    "effort": "middle",
+    "planMode": "decompose",
+    "maxRounds": 2,
+    "planStop": "mode-decompose",
+    "status": "ok",
+    "stage": "done",
+    "error": null,
+    "answersKeys": [],
+    "contextChars": 13098,
+    "contextInResponse": true
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "query": "근로계약서 없이 일했을 때 퇴직금 청구 요건과 미지급 시 진정 절차를 알려줘",
+  "effortArg": "xhigh",
+  "tools": [
+    "augment_context"
+  ],
+  "inputSchemaKeys": [
+    "query",
+    "effort"
+  ],
+  "descriptionHasWarning": true,
+  "effortDescriptionHasTime": true,
+  "isError": true,
+  "elapsedMs": 8528,
+  "responseChars": 215,
+  "header": "error: AI server /chat/completions answered 502: {\"error\":{\"code\":502,\"message\":\"upstream transport failed (request was not replayed)\",\"type\":\"invalid_request_error\"}}. next: effort=light, or answer without context.",
+  "newRuns": [
+    {
+      "id": 307,
+      "source": "mcp",
+      "effort": "xhigh",
+      "status": "error",
+      "query": "근로계약서 없이 일했을 때 퇴직금 청구 요건과 미지급 시 진정 절차를 알려줘"
+    }
+  ],
+  "detail": {
+    "id": 307,
+    "source": "mcp",
+    "effort": "xhigh",
+    "planMode": "reevaluate",
+    "maxRounds": 3,
+    "planStop": null,
+    "status": "error",
+    "stage": "done",
+    "error": "AI server /chat/completions answered 502: {\"error\":{\"code\":502,\"message\":\"upstream transport failed (request was not replayed)\",\"type\":\"invalid_request_error\"}}",
+    "answersKeys": [],
+    "contextChars": 0,
+    "contextInResponse": false
+  }
+}

@@ -8,7 +8,7 @@ import { writeFileSync } from "node:fs";
 const query = process.argv[2] ?? "근로계약서 없이 일했을 때 퇴직금 청구 요건";
 const effort = process.argv[3];
 const base = process.env.DUALCONTEXT_URL ?? "http://127.0.0.1:18081";
-const out = new URL(`./mcp-run-log_${effort ?? "default"}_result.json`, import.meta.url);
+const out = new URL(`./rerun-final/mcp-run-log_${effort ?? "default"}_result.json`, import.meta.url);
 
 const listRuns = async () => (await (await fetch(`${base}/api/admin/runs?pageSize=100`)).json()).items;
 const idsBefore = new Set((await listRuns()).map((item) => item.id));
