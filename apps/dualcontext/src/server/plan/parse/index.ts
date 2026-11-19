@@ -20,12 +20,18 @@ export class PlanParseError extends Error {
   }
 }
 
-/** text 에서 index 의 여는 괄호와 짝이 맞는 닫는 괄호까지의 구간. 짝이 없으면 null. */
-function balanced(text: string, start: number): string | null {
+/** 스캔 총량 예산(문자 수). 여는 괄호마다 끝까지 훑는 O(n²) 를 병적 입력(`[[[[…`)에서도 묶는다. 정상 응답(수 KB)은 예산의 극히 일부만 쓴다. */
+const scanBudget = 5_000_000;
+/** 한 번에 보는 응답 길이 상한. 그 너머는 읽지 않는다(스트림 가드가 이미 수신량을 제한한다). */
+const maxScanChars = 400_000;
+
+/** text 에서 index 의 여는 괄호와 짝이 맞는 닫는 괄호까지의 구간. 짝이 없으면 null. 예산이 바닥나면 null 이고 budget.left 가 음수가 된다. */
+function balanced(text: string, start: number, budget: { left: number }): string | null {
   const stack: string[] = [];
   let inString = false;
   let escaped = false;
   for (let index = start; index < text.length; index += 1) {
+    if (--budget.left < 0) return null;
     const char = text[index];
     if (inString) {
       if (escaped) escaped = false;
@@ -48,9 +54,13 @@ function balanced(text: string, start: number): string | null {
  * accept 가 없으면 처음 해석되는 값. 없으면 PlanParseError.
  */
 export function extractJson(text: string, accept: (value: unknown) => boolean = () => true): unknown {
-  for (let index = 0; index < text.length; index += 1) {
-    if (text[index] !== "{" && text[index] !== "[") continue;
-    const candidate = balanced(text, index);
+  // 의미(앞에서부터 후보를 해석해 accept 를 통과한 첫 값)는 그대로이고, 스캔 총량과 길이에만 상한을 둔다(상한 밖 입력의 뒤쪽 후보는 보지 않는다).
+  const source = text.length > maxScanChars ? text.slice(0, maxScanChars) : text;
+  const budget = { left: scanBudget };
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] !== "{" && source[index] !== "[") continue;
+    const candidate = balanced(source, index, budget);
+    if (budget.left < 0) break;
     if (candidate === null) continue;
     let value: unknown;
     try {

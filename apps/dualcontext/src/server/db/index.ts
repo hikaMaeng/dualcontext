@@ -8,8 +8,26 @@ export type DatabaseStatus = {
   koreanSample: string | null;
 };
 
+const positiveInt = (name: string, fallback: number): number => {
+  const value = Number.parseInt(process.env[name] ?? "", 10);
+  return Number.isInteger(value) && value > 0 ? value : fallback;
+};
+
+/**
+ * 작업 풀. 기본 10(DUALCONTEXT_DB_POOL): 실행의 진행 · 노드 · 라우팅 · 검색이 함께 쓴다. 풀이 포화되어도 연결 대기는 무한하지 않다(connectionTimeoutMillis).
+ * 풀 오류(유휴 연결 끊김 등)는 프로세스를 죽이지 않고 기록만 한다.
+ */
 export function createPool(databaseUrl: string) {
-  return new pg.Pool({ connectionString: databaseUrl, max: 4 });
+  const pool = new pg.Pool({ connectionString: databaseUrl, max: positiveInt("DUALCONTEXT_DB_POOL", 10), connectionTimeoutMillis: 10_000 });
+  pool.on("error", (error) => console.error("database pool error", error.message));
+  return pool;
+}
+
+/** 헬스체크 전용 풀: 작업 풀이 포화되어도 `/health` 가 줄을 서서 컨테이너가 unhealthy 로 판정되는 일이 없게 따로 둔다. */
+export function createHealthPool(databaseUrl: string) {
+  const pool = new pg.Pool({ connectionString: databaseUrl, max: 1, connectionTimeoutMillis: 2_000 });
+  pool.on("error", (error) => console.error("database health pool error", error.message));
+  return pool;
 }
 
 export async function pingDatabase(pool: pg.Pool): Promise<boolean> {

@@ -2,7 +2,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { adminRouter } from "./admin/index.js";
 import { abandonRunningRuns, backfillInBackground, startupBackfillLimit } from "./admin/runs/index.js";
 import { createApp } from "./app.js";
-import { createPool, pingDatabase } from "./db/index.js";
+import { createHealthPool, createPool, pingDatabase } from "./db/index.js";
 import { readEnv, readInternalPort } from "./env.js";
 import { createInternalApp, listenInternal } from "./internal/index.js";
 import { createMcpServer } from "./mcp/index.js";
@@ -45,7 +45,8 @@ if (stdio) {
   if (abandoned > 0) console.log(`closed ${abandoned} interrupted run(s)`);
   // 옛 실행 로그의 질의 임베딩(의미 검색용)을 뒤에서 채운다. 기다리지 않고, 임베딩 서버가 안 되면 조용히 멈춘다. 당기는 순서는 뒤(background)다.
   backfillInBackground(pool, model.background(), startupBackfillLimit);
-  const app = createApp({ checkDatabase: () => pingDatabase(pool), admin: adminRouter(deps) });
+  const healthPool = createHealthPool(env.databaseUrl);
+  const app = createApp({ checkDatabase: () => pingDatabase(healthPool), admin: adminRouter(deps) });
   const server = app.listen(env.port, () => {
     console.log(`dualcontext listening on ${env.port}`);
   });
@@ -71,7 +72,7 @@ if (stdio) {
         clearInterval(drain);
         server.closeAllConnections();
         internal.closeAllConnections();
-        void model.close().then(() => pool.end()).finally(() => process.exit(0));
+        void model.close().then(() => Promise.all([pool.end(), healthPool.end()])).finally(() => process.exit(0));
       }, 100);
     });
   }
