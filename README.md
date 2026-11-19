@@ -4,7 +4,7 @@
 
 호스트 모델은 질문을 받고, `dualcontext` 는 **답이 아니라 컨텍스트만** 돌려줍니다. 답은 호스트 모델이 그 컨텍스트를 읽고 직접 씁니다.
 
-> TypeScript · npm workspaces + Turbo · Express · PostgreSQL + pgvector · MCP(stdio) · Docker 컨테이너 하나로 실행
+> [MIT 라이선스](LICENSE) · TypeScript · npm workspaces + Turbo · Express · PostgreSQL + pgvector · MCP(stdio) · Docker 컨테이너 하나로 실행
 
 ## 목차
 
@@ -180,4 +180,4 @@ Turbo 원격 캐시는 기본으로 꺼져 있습니다. 공유 캐시 소유자
 
 ## 라이선스
 
-아직 지정하지 않았습니다(`LICENSE` 파일 없음). 재사용 · 배포 전에 저장소 소유자에게 확인하세요.
+[MIT](LICENSE)
