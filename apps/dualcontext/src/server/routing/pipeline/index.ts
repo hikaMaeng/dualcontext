@@ -1,4 +1,4 @@
-import type { StageConfig, StepTrace } from "dualcontext_domain/common";
+import { isRunAborted, type StageConfig, type StepTrace } from "dualcontext_domain/common";
 import type { ScoredId, Selection } from "dualcontext_domain/server";
 import { runEmbeddingStep } from "../steps/embedding/index.js";
 import { runKeywordStep } from "../steps/keyword/index.js";
@@ -36,6 +36,8 @@ export async function runPipeline<T extends { id: number }>(stage: StageConfig, 
       result = step.type === "embedding" ? await runEmbeddingStep(step, current, stepEnv) : step.type === "keyword" ? await runKeywordStep(step, current, stepEnv) : await runLlmStep(step, current, stepEnv);
       note = result.note;
     } catch (error) {
+      // 취소는 폴백으로 흡수하지 않는다(취소 뒤에 키워드 폴백 · 후속 호출이 생기지 않게 한다).
+      if (isRunAborted(error)) throw error;
       const reason = (error instanceof Error ? error.message : String(error)).replace(/\s+/g, " ").slice(0, 80);
       if (step.onError === "keyword") result = { items: env.keywordTopK(current, step.topK) };
       else if (step.onError === "none") result = { items: [] };

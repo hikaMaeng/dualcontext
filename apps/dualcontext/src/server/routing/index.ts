@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type pg from "pg";
 import type { Procedure, Researcher, RouterConfig, StageConfig } from "dualcontext_domain/common";
-import { routeProceduresByKeyword, routeResearchersByKeyword, type Selection } from "dualcontext_domain/server";
+import { routeProceduresByKeyword, routeResearchersByKeyword, settleAll, settled, type Selection } from "dualcontext_domain/server";
 import type { ModelClient } from "../model/index.js";
 import { readRouterConfig } from "./config/index.js";
 import { runPipeline } from "./pipeline/index.js";
@@ -68,10 +68,11 @@ export function createSelectors(pool: pg.Pool, model: ModelClient, options: Sele
         keywordTopK: (items: Researcher[], topK: number) => routeResearchersByKeyword(query, items, topK).selected
       };
       const pipelineOptions = options.part ? { part: { topK: config.split.partTopK } } : {};
-      const [globalSelection, judged] = await Promise.all([
-        runPipeline(config.researcher, global, env, pipelineOptions),
-        Promise.all(individual.map((researcher) => runPipeline(researcher.router as StageConfig, [researcher], env, pipelineOptions)))
-      ]);
+      // 전역 파이프라인과 조사원별 파이프라인은 병렬이고, 하나가 실패해도 시작한 쪽이 모두 정착한 뒤 던진다.
+      const globalPromise = runPipeline(config.researcher, global, env, pipelineOptions);
+      const judgedPromise = settleAll(individual.map((researcher) => runPipeline(researcher.router as StageConfig, [researcher], env, pipelineOptions)));
+      await settled([globalPromise, judgedPromise]);
+      const [globalSelection, judged] = [await globalPromise, await judgedPromise];
       const scores = [...(globalSelection.scores ?? []), ...judged.flatMap((selection) => selection.scores ?? [])];
       return {
         mode: globalSelection.mode,

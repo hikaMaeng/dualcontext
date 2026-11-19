@@ -35,6 +35,6 @@ test("종료 표지([DONE]) 뒤에는 더 읽지 않고 스트림을 닫는다",
   const result = await readChatStream(body());
   assert.equal(result.content, "답");
   assert.equal(result.finished, true);
-  assert.equal(produced, 1, "표지 뒤 청크를 소비하면 연결이 계속 열려 있다");
+  assert.equal(produced, 0, "표지가 있는 청크에서 멈춘다: 다음 청크를 요청하면 연결이 계속 열려 있다");
   assert.equal(closed, true, "반복자가 정리되어 연결이 닫힌다");
 });

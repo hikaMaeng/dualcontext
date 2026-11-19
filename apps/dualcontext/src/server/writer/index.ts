@@ -1,5 +1,5 @@
 import type pg from "pg";
-import type { Pair, WriterConfig } from "dualcontext_domain/common";
+import { isRunAborted, type Pair, type WriterConfig } from "dualcontext_domain/common";
 import { describeProvided, isWebSource, webSectionNote, webSectionTitle, writeContext, type Provided } from "dualcontext_domain/server";
 import type { ModelClient } from "../model/index.js";
 
@@ -67,6 +67,7 @@ export function createWriter(model: ModelClient, config: WriterConfig | null) {
       try {
         return await model.chat(prompt);
       } catch (error) {
+        if (isRunAborted(error)) throw error;
         // LLM 라이터 실패를 숨기지 않는다: 결정적 조립 결과 앞에 실패 사실을 적는다.
         const reason = error instanceof Error ? error.message : String(error);
         return `[라이터 LLM 호출 실패: ${reason.slice(0, 120)} - 기본 조립으로 대체]\n\n${writeContext(query, pairs, provided)}`;

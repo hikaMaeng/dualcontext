@@ -1,4 +1,5 @@
-import type { Answer, Answers } from "dualcontext_domain/common";
+import { isRunAborted, type Answer, type Answers } from "dualcontext_domain/common";
+import { settleAll } from "dualcontext_domain/server";
 import type { ModelClient } from "../model/index.js";
 
 /**
@@ -28,6 +29,7 @@ async function ask(model: ModelClient, prompt: string): Promise<Answer> {
   try {
     return { text: await model.chat(prompt), error: null, ms: Date.now() - started };
   } catch (error) {
+    if (isRunAborted(error)) throw error;
     return { text: null, error: error instanceof Error ? error.message : String(error), ms: Date.now() - started };
   }
 }
@@ -53,7 +55,7 @@ export async function generateAnswers(
     await Promise.resolve(onAnswer?.(which, answer)).catch(() => undefined);
     return answer;
   };
-  const [before, after] = await Promise.all([
+  const [before, after] = await settleAll([
     ask(models?.before ?? model, fill(answerPrompts.before, { query })).then((answer) => record("before", answer)),
     (skipAfter
       ? Promise.resolve<Answer>({ text: null, error: null, ms: 0, skipped: true })

@@ -1,4 +1,4 @@
-import type { SplitConfig } from "dualcontext_domain/common";
+import { isRunAborted, type SplitConfig } from "dualcontext_domain/common";
 import { parseSplitAnswer, splitQuery } from "dualcontext_domain/server";
 import type { ModelClient } from "../../model/index.js";
 
@@ -16,6 +16,7 @@ export async function splitWithConfig(query: string, config: SplitConfig, model:
     if (parts === null) throw new Error("LLM answer had no question array");
     return { parts: parts.length > 1 ? parts : [query] };
   } catch (error) {
+    if (isRunAborted(error)) throw error;
     const reason = (error instanceof Error ? error.message : String(error)).replace(/\s+/g, " ").slice(0, 80);
     return { parts: heuristic(), reason: `llm-split-failed(${reason})->heuristic` };
   }
