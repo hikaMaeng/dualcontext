@@ -1,0 +1,132 @@
+{
+  "startedAt": "2026-11-19T03:01:13.472Z",
+  "checks": [
+    {
+      "name": "status: queues · activeRuns · eventLoop 가 있다",
+      "ok": true,
+      "detail": "{\"chatWorkers\":9,\"embedWorkers\":32}"
+    },
+    {
+      "name": "light: 중계로 정상 응답(머리 + 컨텍스트)",
+      "ok": true,
+      "detail": "[dualcontext] effort=light coverage=ok sources=2 elapsed=17s | next: -"
+    },
+    {
+      "name": "light: 진행 알림이 단조 증가로 왔다",
+      "ok": true,
+      "detail": "[1]"
+    },
+    {
+      "name": "light: 실행 로그에 MCP 로 남았다",
+      "ok": true,
+      "detail": "{\"id\":310,\"source\":\"mcp\",\"status\":\"ok\"}"
+    },
+    {
+      "name": "취소: middle 실행이 시작되어 running 이다",
+      "ok": true,
+      "detail": "{\"id\":311,\"status\":\"running\"}"
+    },
+    {
+      "name": "취소: 취소 알림 뒤 실행이 error(취소됨)로 닫힌다",
+      "ok": true,
+      "detail": "{\"status\":\"error\",\"error\":\"취소됨(cancelled)\",\"afterMs\":624}"
+    },
+    {
+      "name": "취소: 큐의 진행 중 요청이 0 으로 돌아오고 활성 실행이 없다",
+      "ok": true,
+      "detail": "{\"inFlight\":0,\"queued\":0,\"activeRuns\":0,\"midInFlight\":1,\"midMax\":1}"
+    },
+    {
+      "name": "EOF: middle 실행이 시작되어 running 이다",
+      "ok": true,
+      "detail": "{\"id\":312}"
+    },
+    {
+      "name": "EOF: stdio 가 닫히면 실행이 취소된다",
+      "ok": true,
+      "detail": "{\"status\":\"error\",\"error\":\"취소됨(cancelled)\"}"
+    },
+    {
+      "name": "계측: 취소 건수가 기록되었다",
+      "ok": true,
+      "detail": "{\"workers\":9,\"inFlight\":0,\"queued\":0,\"delayed\":0,\"maxInFlight\":1,\"dispatched\":4,\"retried\":0,\"cancelled\":2}"
+    }
+  ],
+  "light": {
+    "elapsedMs": 17472,
+    "header": "[dualcontext] effort=light coverage=ok sources=2 elapsed=17s\nnext: -",
+    "runId": 310,
+    "progressCount": 1
+  },
+  "cancel": {
+    "runId": 311,
+    "closed": {
+      "status": "error",
+      "error": "취소됨(cancelled)"
+    },
+    "midQueues": {
+      "workers": 9,
+      "inFlight": 1,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 1,
+      "dispatched": 3,
+      "retried": 0,
+      "cancelled": 0
+    },
+    "afterQueues": {
+      "workers": 9,
+      "inFlight": 0,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 1,
+      "dispatched": 3,
+      "retried": 0,
+      "cancelled": 1
+    }
+  },
+  "eof": {
+    "runId": 312,
+    "closed": {
+      "status": "error",
+      "error": "취소됨(cancelled)"
+    }
+  },
+  "finalStatus": {
+    "postgres": "17.12 (Debian 17.12-1.pgdg12+1)",
+    "pgvector": "0.8.6",
+    "textsearchKo": "1.0",
+    "koreanConfig": true,
+    "koreanSample": "'검색':3 '한국어':1 '형태소':2",
+    "queues": {
+      "chat": {
+        "workers": 9,
+        "inFlight": 0,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 1,
+        "dispatched": 4,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "embed": {
+        "workers": 32,
+        "inFlight": 0,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 2,
+        "dispatched": 8,
+        "retried": 0,
+        "cancelled": 0
+      }
+    },
+    "activeRuns": 0,
+    "eventLoop": {
+      "p50": 10.1,
+      "p99": 10.9,
+      "max": 19.6,
+      "samples": 615
+    }
+  },
+  "finishedAt": "2026-11-19T03:01:48.586Z"
+}
