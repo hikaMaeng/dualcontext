@@ -5,7 +5,7 @@ import type { Provided } from "dualcontext_domain/server";
 import { answerPrompts } from "../../answer/index.js";
 import type { Deps } from "../../augment/base/index.js";
 import { defaultPlanConfig } from "../config/index.js";
-import { buildKey, callAttempts, createPlanPorts, fillPlanPrompt, itemQuery, neutralize, type BaseAugment } from "./index.js";
+import { buildKey, createPlanPorts, generationAttempts, fillPlanPrompt, itemQuery, neutralize, type BaseAugment } from "./index.js";
 import { defaultPlanPrompts } from "../prompts/index.js";
 
 /** 받은 프롬프트를 남기고 정해 둔 답을 차례로 돌려주는 가짜 채팅 모델. 답이 Error 면 던진다. */
@@ -55,9 +55,9 @@ test("prerequisites · dedupe: 아이템 · 기존 목록 · 번호가 프롬프
   assert.match(prompts[1], /i1: y — Y/);
 });
 
-test("모델 호출 실패 · 해석 실패는 재시도 끝에 던진다(플래너가 격리한다)", async () => {
-  const again = (answer: string | Error) => Array.from({ length: callAttempts }, () => answer);
-  const { deps } = fakeDeps([...again(new Error("서버 다운")), ...again("JSON 아님"), ...again("{}")]);
+test("모델 호출 실패는 바로 던지고(재시도는 추론 큐 몫), 해석 실패는 한 번 더 생성한 뒤 던진다(플래너가 격리한다)", async () => {
+  const again = (answer: string | Error) => Array.from({ length: generationAttempts }, () => answer);
+  const { deps } = fakeDeps([new Error("서버 다운"), ...again("JSON 아님"), ...again("{}")]);
   const ports = createPlanPorts(deps, undefined, defaultPlanConfig());
   await assert.rejects(ports.analyze("q"), /서버 다운/);
   await assert.rejects(ports.analyze("q"), /JSON/);
@@ -116,7 +116,7 @@ test("evaluate: 질의 · 컨텍스트 · 답변을 채우고, 부족 항목은 
 });
 
 test("evaluate: missing 이 없는 평가({\"score\":100})는 형식 오류로 던진다(빈 부족 목록으로 통과시키지 않는다)", async () => {
-  const { deps } = fakeDeps(Array(callAttempts).fill('{"score":100}'));
+  const { deps } = fakeDeps(Array(generationAttempts).fill('{"score":100}'));
   await assert.rejects(createPlanPorts(deps, undefined, defaultPlanConfig()).evaluate("q", "c", "a"), /missing/);
 });
 
@@ -200,12 +200,12 @@ test("onNode: dedupe 는 level 이 없으면 seed 키, ref 가 없으면 노드�
 });
 
 test("onNode: 모델 호출이 실패해도 그 호출(오류 포함)을 노드에 남기고 그대로 던진다", async () => {
-  const { deps } = fakeDeps(Array.from({ length: callAttempts }, () => new Error("서버 다운")));
+  const { deps } = fakeDeps([new Error("서버 다운")]);
   const sent: Sent[] = [];
   const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key, patch) => sent.push({ key, patch }));
   await assert.rejects(ports.evaluate("q", "c", "a", { round: 0 }), /서버 다운/);
   assert.equal(sent[0].key, "evaluate:0");
-  assert.equal(sent[0].patch.calls.length, callAttempts, "재시도까지 시도마다 기록된다");
+  assert.equal(sent[0].patch.calls.length, 1, "논리 호출 하나가 한 건으로 기록된다(네트워크 재시도는 추론 큐 안에서 일어난다)");
   assert.equal(sent[0].patch.calls[0].error, "서버 다운");
   assert.equal(sent[0].patch.calls[0].response, null);
 });
@@ -250,22 +250,22 @@ test("onNode: build 가 던지면 그때까지의 호출 · 사전 컨텍스트 
   assert.equal(sent[0].patch.augment, undefined);
 });
 
-test("answer · evaluate: 첫 호출이 실패해도 한 번 더 시도하고, 두 번 다 실패하면 던진다. 시도마다 노드 호출 기록에 남는다", async () => {
+test("answer: 채팅 오류는 이 층에서 재시도하지 않는다. evaluate: 해석 실패만 한 번 더 생성한다. 호출 기록은 논리 호출마다 한 건이다", async () => {
   const sent: Record<string, { calls: { response: string | null; error?: string }[] }> = {};
-  const { deps, prompts } = fakeDeps([new Error("chat produced no data for 180s"), new Error("again"), "세 번째 답"]);
+  const { deps, prompts } = fakeDeps([new Error("chat produced no data for 180s")]);
   const ports = createPlanPorts(deps, undefined, defaultPlanConfig(), undefined, (key, patch) => { sent[key] = patch as never; });
-  assert.equal(await ports.answer("q", "ctx", { round: 0 }), "세 번째 답");
-  assert.equal(prompts.length, 3);
-  assert.equal(sent["answer:0"].calls.length, 3);
+  await assert.rejects(ports.answer("q", "ctx", { round: 0 }), /no data for 180s/);
+  assert.equal(prompts.length, 1);
+  assert.equal(sent["answer:0"].calls.length, 1);
   assert.match(sent["answer:0"].calls[0].error ?? "", /no data for 180s/);
 
   const evalJson = '{"score":80,"reason":"ok","missing":[]}';
-  const second = fakeDeps(["이건 JSON 이 아니다", "또 아니다", "{}", evalJson]);
+  const second = fakeDeps(["이건 JSON 이 아니다", evalJson]);
   const evaluated = await createPlanPorts(second.deps, undefined, defaultPlanConfig()).evaluate("q", "ctx", "a", { round: 0 });
   assert.equal(evaluated.score, 80);
-  assert.equal(second.prompts.length, 4, "재시도 3회까지(해석 실패도 재시도)");
+  assert.equal(second.prompts.length, 2, "해석 실패는 한 번 더 생성한다");
 
-  const failing = fakeDeps([new Error("a"), new Error("b"), new Error("c"), new Error("d")]);
-  await assert.rejects(createPlanPorts(failing.deps, undefined, defaultPlanConfig()).answer("q", "ctx", { round: 0 }), /d/);
-  assert.equal(failing.prompts.length, callAttempts);
+  const failing = fakeDeps(["x", "y", "z"]);
+  await assert.rejects(createPlanPorts(failing.deps, undefined, defaultPlanConfig()).evaluate("q", "ctx", "a", { round: 0 }));
+  assert.equal(failing.prompts.length, generationAttempts);
 });

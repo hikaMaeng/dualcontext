@@ -38,6 +38,8 @@ export type LlmCall = {
   at: string;
   /** 프롬프트 · 응답이 길어 잘렸는가(잘린 글자 수는 본문 끝의 표식에 있다). */
   truncated?: boolean;
+  /** 이 논리 호출의 네트워크 시도 수(일시 오류 재시도 포함, 성공했을 때만 알 수 있다). 1 이면 재시도가 없었다. */
+  attempts?: number;
 };
 
 /** 아이템이 사전 컨텍스트로 건네받은 것. chars = 원문 길이, sent = 실제로 라이터에 넘긴 글자 수(maxProvidedChars 로 자른 뒤). */

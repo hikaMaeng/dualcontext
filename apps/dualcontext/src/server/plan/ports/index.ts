@@ -1,4 +1,4 @@
-import { runNodeKey, type Answer, type AugmentResult, type ContextPlanConfig, type ItemDraft, type NodeProvided } from "dualcontext_domain/common";
+import { isRunAborted, runNodeKey, type Answer, type AugmentResult, type ContextPlanConfig, type ItemDraft, type NodeProvided } from "dualcontext_domain/common";
 import type { ItemBuild, PlanPorts, Provided } from "dualcontext_domain/server";
 import { answerPrompts } from "../../answer/index.js";
 import { augment, type Deps } from "../../augment/base/index.js";
@@ -36,18 +36,22 @@ const fill = (template: string, values: Record<string, string>) => template.repl
 
 /** 계획 프롬프트를 채운다. 값은 모두 구분자를 무력화한 뒤 넣는다(템플릿 자체의 구분자는 그대로). */
 /**
- * 분해 · 사전 요구 · 중복 정리 · 답변 · 평가 호출의 재시도 횟수(retries = 3, 총 시도 4). 컨텍스트가 길면 모델 서버가 첫 토큰을 늦게 줘 유휴 시간 제한(그때 기본 180초, 지금은 600초)에 걸려 실패하는 일이 실측으로 반복됐다
- * (run 238 · 240 · 242 가 첫 답변에서 answer-failed). 한 번 더 시도하면 그 사이 서버 큐가 풀려 성공하는 경우가 있다. 시도마다 호출 기록(calls)에 남는다.
+ * 응답 **형식 오류**(파싱 실패)에 같은 프롬프트로 다시 생성하는 횟수(parseRetries = 1, 논리 호출당 생성 최대 2번).
+ * 네트워크 · 서버 오류와 유휴 중단의 재시도는 추론 큐(model/)가 지연 재투입으로 한 층에서 맡는다: 예전에는 이 층도 모든 오류를 대기 없이
+ * 4번 되풀이해 호출 하나가 최대 HTTP 16번이 되었다(설계 docs/execution-design.md). 취소(RunAborted)는 재시도하지 않는다.
+ * 호출 기록(calls)에는 논리 호출마다 한 건이 남고, 파싱 재생성은 별도 기록이다.
  */
-export const retries = 3;
-export const callAttempts = 1 + retries;
+export const parseRetries = 1;
+export const generationAttempts = 1 + parseRetries;
 
-async function withAttempts<T>(run: () => Promise<T>, attempts: number = callAttempts): Promise<T> {
+async function generate<T>(chat: () => Promise<string>, parse: (text: string) => T): Promise<T> {
   let last: unknown;
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+  for (let generation = 1; generation <= generationAttempts; generation += 1) {
+    const text = await chat();
     try {
-      return await run();
+      return parse(text);
     } catch (error) {
+      if (isRunAborted(error)) throw error;
       last = error;
     }
   }
@@ -73,7 +77,7 @@ export function createPlanPorts(deps: Deps, writerId: number | undefined, config
       const rec = recordModel(deps.model, "analyze");
       try {
         const prompt = fillPlanPrompt(prompts.analyze, { query, max: String(config.maxItems) });
-        return await withAttempts(async () => parseAnalyze(await rec.model.chat(prompt), config.maxItems));
+        return await generate(() => rec.model.chat(prompt), (text) => parseAnalyze(text, config.maxItems));
       } finally {
         if (ref) onNode?.(runNodeKey.analyze, { calls: rec.calls() });
       }
@@ -87,7 +91,7 @@ export function createPlanPorts(deps: Deps, writerId: number | undefined, config
       });
       const rec = recordModel(deps.model, "prerequisites");
       try {
-        return await withAttempts(async () => parsePrerequisites(await rec.model.chat(prompt), config.maxNeedsPerItem));
+        return await generate(() => rec.model.chat(prompt), (text) => parsePrerequisites(text, config.maxNeedsPerItem));
       } finally {
         if (ref?.item) onNode?.(runNodeKey.item(ref.item), { prerequisitesCalls: rec.calls() });
       }
@@ -101,7 +105,7 @@ export function createPlanPorts(deps: Deps, writerId: number | undefined, config
       });
       const rec = recordModel(deps.model, "dedupe");
       try {
-        return await withAttempts(async () => parseDedupe(await rec.model.chat(prompt), candidates.length, existing.map((entry) => entry.id)));
+        return await generate(() => rec.model.chat(prompt), (text) => parseDedupe(text, candidates.length, existing.map((entry) => entry.id)));
       } finally {
         if (ref) onNode?.(runNodeKey.dedupe(ref.round, ref.level), { calls: rec.calls() });
       }
@@ -144,7 +148,7 @@ export function createPlanPorts(deps: Deps, writerId: number | undefined, config
       const prompt = context.trim() === "" ? fill(answerPrompts.before, { query }) : fill(answerPrompts.after, { query, context });
       const rec = recordModel(deps.model, "answer");
       try {
-        const text = await withAttempts(() => rec.model.chat(prompt));
+        const text = await rec.model.chat(prompt);
         record.lastAnswer = { context, answer: { text, error: null, ms: Date.now() - started } };
         return text;
       } finally {
@@ -156,7 +160,7 @@ export function createPlanPorts(deps: Deps, writerId: number | undefined, config
       // 부족 항목은 자르지 않고 전부 돌려준다: 통과 판정(maxMissing)은 전체 개수로, 보강 수(maxNewItems)는 플래너가 자른다.
       const rec = recordModel(deps.model, "evaluate");
       try {
-        return await withAttempts(async () => parseEvaluate(await rec.model.chat(prompt)));
+        return await generate(() => rec.model.chat(prompt), parseEvaluate);
       } finally {
         if (ref) onNode?.(runNodeKey.evaluate(ref.round), { calls: rec.calls() });
       }
