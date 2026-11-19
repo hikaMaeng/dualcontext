@@ -89,3 +89,7 @@ docker compose -p dualcrawltest down
 ## 실행 모델(큐 · 취소 · 중계) 검증
 
 계획과 기대 결과는 `tests/plans/execution-model-20261119.md`, 실행 기록은 `tests/reports/execution-model/` 에 있다. 단위 시험: `queue/`(상태기계 · 순환 · 지연 · aging · 취소 경쟁), `model/`(게이트웨이 · 재시도 · 스트림 가드: 로컬 HTTP 서버로 병렬성과 취소를 검증), `run/`, `admin/runs/lifecycle/`(종료 순서 · 보관 삭제 · 허브), `internal/` · `mcp/transport/`(중계 · 연결 이탈 판정 · SDK 연결에서 요청 ID 0 취소와 진행 알림). 배포 후 실서버 스크립트(`test/20261119/`): `mcp-verify.mjs`(중계 · 취소 · EOF), `codebase-worker-check.mjs`(스레드 소비자), `parallelism-bench.mjs`(옛 방식 대비 병렬성), `plan-run.mjs` · `mcp-effort.mjs`(실호출 중 큐 표본), `sse-live-check.mjs`(헤드리스 브라우저 SSE).
+
+## 조사원 수집 큐 · 질의분해 관측
+
+계획과 기대 결과는 `tests/plans/collect-queues-20261119.md`, 실행 기록은 `tests/reports/collect-queues/` 에 있다. 단위 시험: `collect/queues/index.test.ts`(동시 처리 수 상한 · 종류 간 격리 · 취소 · `collect` 연결 · 종료). 관측: `test/20261119/host-monitor.ps1`(호스트 · 컨테이너 · 큐 지표를 2초 간격으로 디스크에 남기고 임계치를 넘으면 실행을 자동 취소) + `test/20261119/decompose-run.mjs`(저장된 한도 그대로 질의분해). 큐 효과의 전후 비교와 코드베이스 · 크롤러 조사원이 고르는 질의의 부하는 아직 측정하지 않았다(보고서 「Failures」).

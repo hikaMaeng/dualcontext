@@ -1,0 +1,73 @@
+{
+  "effort": "light",
+  "query": "근로계약서 없이 일했을 때 퇴직금 청구 요건과 미지급 시 진정 절차를 알려줘",
+  "isError": false,
+  "elapsedMs": 18374,
+  "responseChars": 4065,
+  "header": "[dualcontext] effort=light coverage=ok sources=2 elapsed=18s\nnext: -",
+  "progressCount": 1,
+  "run": {
+    "id": 327,
+    "source": "mcp",
+    "effort": "light",
+    "status": "ok",
+    "error": null,
+    "durationMs": 18281,
+    "planMode": "classic",
+    "maxRounds": 2,
+    "planStop": null,
+    "items": null,
+    "rounds": null,
+    "steps": null,
+    "score": null,
+    "answersKeys": [],
+    "contextChars": 3992
+  },
+  "maxInFlight": 4,
+  "peakInFlight": 1,
+  "peakQueued": 0,
+  "eventLoopP99Max": 10.9,
+  "eventLoopMax": 34.4,
+  "samples": [
+    {
+      "t": 0,
+      "inFlight": 0,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 4,
+      "retried": 32,
+      "eventLoopP99": 10.2,
+      "eventLoopMax": 10.2
+    },
+    {
+      "t": 5,
+      "inFlight": 1,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 4,
+      "retried": 32,
+      "eventLoopP99": 10.9,
+      "eventLoopMax": 34.4
+    },
+    {
+      "t": 10,
+      "inFlight": 1,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 4,
+      "retried": 32,
+      "eventLoopP99": 10.7,
+      "eventLoopMax": 12.3
+    },
+    {
+      "t": 15,
+      "inFlight": 1,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 4,
+      "retried": 32,
+      "eventLoopP99": 10.7,
+      "eventLoopMax": 11
+    }
+  ]
+}
