@@ -85,3 +85,7 @@ docker compose -p dualcrawltest down
 ## 브라우저
 
 `headless-browser-test` 스킬로 배포된 URL 에서 왼쪽 메뉴 이동, 조사원 저장, 시험 실행을 검증한다. 로케이터는 `constraints.md` 의 것만 쓴다.
+
+## 실행 모델(큐 · 취소 · 중계) 검증
+
+계획과 기대 결과는 `tests/plans/execution-model-20261119.md`, 실행 기록은 `tests/reports/execution-model/` 에 있다. 단위 시험: `queue/`(상태기계 · 순환 · 지연 · aging · 취소 경쟁), `model/`(게이트웨이 · 재시도 · 스트림 가드: 로컬 HTTP 서버로 병렬성과 취소를 검증), `run/`, `admin/runs/lifecycle/`(종료 순서 · 보관 삭제 · 허브), `internal/` · `mcp/transport/`(중계 · 연결 이탈 판정 · SDK 연결에서 요청 ID 0 취소와 진행 알림). 배포 후 실서버 스크립트(`test/20261119/`): `mcp-verify.mjs`(중계 · 취소 · EOF), `codebase-worker-check.mjs`(스레드 소비자), `parallelism-bench.mjs`(옛 방식 대비 병렬성), `plan-run.mjs` · `mcp-effort.mjs`(실호출 중 큐 표본), `sse-live-check.mjs`(헤드리스 브라우저 SSE).
