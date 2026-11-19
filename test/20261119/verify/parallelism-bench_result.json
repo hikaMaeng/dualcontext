@@ -1,0 +1,142 @@
+{
+  "startedAt": "2026-11-19T03:20:54.926Z",
+  "scenarios": [
+    {
+      "title": "A 정상(지연 200ms, 90건)",
+      "latencyMs": 200,
+      "requests": 90,
+      "retryBaseMs": 10,
+      "old": {
+        "name": "old",
+        "elapsedMs": 3245,
+        "eventLoopP99Ms": 16.59,
+        "ok": 90,
+        "failed": 0,
+        "serverPeak": 6,
+        "httpRequests": 90
+      },
+      "now": {
+        "name": "now",
+        "elapsedMs": 2190,
+        "eventLoopP99Ms": 16.88,
+        "ok": 90,
+        "failed": 0,
+        "serverPeak": 9,
+        "httpRequests": 90,
+        "queue": {
+          "workers": 9,
+          "inFlight": 0,
+          "queued": 0,
+          "delayed": 0,
+          "maxInFlight": 9,
+          "dispatched": 90,
+          "retried": 0,
+          "cancelled": 0
+        }
+      }
+    },
+    {
+      "title": "B 일시 503(40% 요청이 앞 2번 실패)",
+      "latencyMs": 100,
+      "requests": 60,
+      "retryBaseMs": 10,
+      "old": {
+        "name": "old",
+        "elapsedMs": 2483,
+        "eventLoopP99Ms": 16.65,
+        "ok": 60,
+        "failed": 0,
+        "serverPeak": 6,
+        "httpRequests": 108
+      },
+      "now": {
+        "name": "now",
+        "elapsedMs": 1337,
+        "eventLoopP99Ms": 16.77,
+        "ok": 60,
+        "failed": 0,
+        "serverPeak": 9,
+        "httpRequests": 108,
+        "queue": {
+          "workers": 9,
+          "inFlight": 0,
+          "queued": 0,
+          "delayed": 0,
+          "maxInFlight": 9,
+          "dispatched": 108,
+          "retried": 48,
+          "cancelled": 0
+        }
+      }
+    },
+    {
+      "title": "C 계속 503(장애, 12건)",
+      "latencyMs": 50,
+      "requests": 12,
+      "retryBaseMs": 10,
+      "old": {
+        "name": "old",
+        "elapsedMs": 3074,
+        "eventLoopP99Ms": 17.02,
+        "ok": 0,
+        "failed": 12,
+        "serverPeak": 6,
+        "httpRequests": 192
+      },
+      "now": {
+        "name": "now",
+        "elapsedMs": 404,
+        "eventLoopP99Ms": 16.47,
+        "ok": 0,
+        "failed": 12,
+        "serverPeak": 9,
+        "httpRequests": 48,
+        "queue": {
+          "workers": 9,
+          "inFlight": 0,
+          "queued": 0,
+          "delayed": 0,
+          "maxInFlight": 9,
+          "dispatched": 48,
+          "retried": 36,
+          "cancelled": 0
+        }
+      }
+    },
+    {
+      "title": "D 계속 502(장애, 12건)",
+      "latencyMs": 50,
+      "requests": 12,
+      "retryBaseMs": 10,
+      "old": {
+        "name": "old",
+        "elapsedMs": 527,
+        "eventLoopP99Ms": 16.11,
+        "ok": 0,
+        "failed": 12,
+        "serverPeak": 6,
+        "httpRequests": 48
+      },
+      "now": {
+        "name": "now",
+        "elapsedMs": 419,
+        "eventLoopP99Ms": 16.75,
+        "ok": 0,
+        "failed": 12,
+        "serverPeak": 9,
+        "httpRequests": 48,
+        "queue": {
+          "workers": 9,
+          "inFlight": 0,
+          "queued": 0,
+          "delayed": 0,
+          "maxInFlight": 9,
+          "dispatched": 48,
+          "retried": 36,
+          "cancelled": 0
+        }
+      }
+    }
+  ],
+  "finishedAt": "2026-11-19T03:21:08.632Z"
+}

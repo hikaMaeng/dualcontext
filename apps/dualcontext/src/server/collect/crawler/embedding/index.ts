@@ -6,6 +6,8 @@
 export type EmbeddingPort = {
   settings(): Promise<{ embedding: { baseUrl: string; model: string } }>;
   embed(texts: string[]): Promise<number[][]>;
+  /** 모델 클라이언트(`ModelClient.pinned`)가 있으면 설정을 읽은 그 값으로 **고정한** 클라이언트를 돌려준다(이후 호출이 설정을 다시 읽지 않는다). */
+  pinned?(ai: never): { embed(texts: string[]): Promise<number[][]> };
 };
 
 export class EmbeddingSettingsChanged extends Error {}
@@ -25,7 +27,13 @@ export type PinnedEmbedder = {
  * A→B→A 로 되돌아오는 변경은 못 잡는다(잔여 한계).
  */
 export async function pinEmbedder(port: EmbeddingPort): Promise<PinnedEmbedder> {
-  const pinned = (await port.settings()).embedding;
+  const settings = await port.settings();
+  const pinned = settings.embedding;
+  // 모델 클라이언트가 고정을 지원하면 그것을 쓴다: 설정을 한 번 읽은 값으로만 호출하므로 A→B→A 로 되돌아오는 변경에도 안전하다.
+  if (typeof port.pinned === "function") {
+    const fixed = port.pinned(settings as never);
+    return { key: pinned.model, baseUrl: pinned.baseUrl, embed: (texts) => fixed.embed(texts) };
+  }
   const unchanged = async () => {
     const now = (await port.settings()).embedding;
     return now.model === pinned.model && now.baseUrl === pinned.baseUrl;
