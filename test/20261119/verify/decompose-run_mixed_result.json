@@ -1,0 +1,114 @@
+{
+  "runId": 329,
+  "mode": "decompose",
+  "elapsedMs": 91393,
+  "status": "error",
+  "error": "AI server /chat/completions answered 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n   ",
+  "planStop": null,
+  "items": 0,
+  "levels": 0,
+  "waves": 0,
+  "steps": 1,
+  "settingsPlan": {
+    "mode": "decompose",
+    "maxLevels": 3,
+    "maxNeedsPerItem": 4,
+    "maxItems": 16
+  },
+  "answers": {
+    "before": null,
+    "after": null
+  },
+  "samples": [
+    {
+      "t": 1,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 11,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 21,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 31,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 41,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 51,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 61,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 71,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 81,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 91,
+      "status": "error",
+      "stage": "done",
+      "progress": "analyze",
+      "items": 0,
+      "steps": 1,
+      "nodes": 1
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "seconds": 40,
+  "elapsedMs": 62660,
+  "concurrency": 3,
+  "workers": [
+    {
+      "id": 2,
+      "table": "ds_legal_terms",
+      "rounds": 2,
+      "rows": 6,
+      "errors": 1,
+      "embedMs": {
+        "p50": 30759,
+        "p99": 30759,
+        "max": 30759
+      },
+      "sqlMs": {
+        "p50": 322,
+        "p99": 322,
+        "max": 322
+      }
+    },
+    {
+      "id": 3,
+      "table": "ds_legal_cases",
+      "rounds": 3,
+      "rows": 28,
+      "errors": 0,
+      "embedMs": {
+        "p50": 8498,
+        "p99": 50414,
+        "max": 50414
+      },
+      "sqlMs": {
+        "p50": 8,
+        "p99": 206,
+        "max": 206
+      }
+    },
+    {
+      "id": 4,
+      "table": "ds_medical_exam",
+      "rounds": 2,
+      "rows": 21,
+      "errors": 1,
+      "embedMs": {
+        "p50": 30775,
+        "p99": 30775,
+        "max": 30775
+      },
+      "sqlMs": {
+        "p50": 298,
+        "p99": 298,
+        "max": 298
+      }
+    }
+  ]
+}

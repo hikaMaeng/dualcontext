@@ -62,7 +62,9 @@ while ((Get-Date) -lt $deadline -and -not (Test-Path $stopFile)) {
   $status = Get-Api "/status"
   $app = $null
   if ($status) {
-    $app = @{ activeRuns = $status.activeRuns; chatIn = $status.queues.chat.inFlight; chatQ = $status.queues.chat.queued; chatDelayed = $status.queues.chat.delayed; chatRetried = $status.queues.chat.retried; embedIn = $status.queues.embed.inFlight; embedQ = $status.queues.embed.queued; elP99 = $status.eventLoop.p99; elMax = $status.eventLoop.max }
+    $col = $null
+    if ($status.collect) { $col = @{ web = "$($status.collect.web.inFlight)/$($status.collect.web.queued)"; store = "$($status.collect.store.inFlight)/$($status.collect.store.queued)"; crawl = "$($status.collect.crawl.inFlight)/$($status.collect.crawl.queued)"; codebase = "$($status.collect.codebase.inFlight)/$($status.collect.codebase.queued)" } }
+    $app = @{ collect = $col; activeRuns = $status.activeRuns; chatIn = $status.queues.chat.inFlight; chatQ = $status.queues.chat.queued; chatDelayed = $status.queues.chat.delayed; chatRetried = $status.queues.chat.retried; embedIn = $status.queues.embed.inFlight; embedQ = $status.queues.embed.queued; elP99 = $status.eventLoop.p99; elMax = $status.eventLoop.max }
   }
   $cpu = $v["processor(_total)\% processor time"]
   $mem = $v["memory\available mbytes"]
