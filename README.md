@@ -112,6 +112,7 @@ AI 서버 · 조사원 · 라우터 · 라이터는 관리자 사이트에서 �
 | `DUALCONTEXT_CHAT_WORKERS` | `9` | 채팅 호출 소비자 수 = 추론 서버로 나가는 동시 요청 상한 |
 | `DUALCONTEXT_EMBED_WORKERS` | `32` | 임베딩 호출 소비자 수 |
 | `DUALCONTEXT_COLLECT_WEB_WORKERS` | `2` | 웹 검색 조사원 동시 요청 상한 |
+| `DUALCONTEXT_COLLECT_STORE_WORKERS` | `6` | pgvector · 폴더 조사원 DB 조회 동시 상한 |
 | `DUALCONTEXT_COLLECT_CRAWL_WORKERS` | `2` | 크롤러 조사원 동시 상한 |
 | `DUALCONTEXT_COLLECT_CODEBASE_WORKERS` | `2` | 코드베이스 조사원 동시 상한(클론 · 폴더 읽기 · 색인) |
 | `DUALCONTEXT_BUDGET_<EFFORT>_S` | 없음 | effort(`LIGHT` · `MIDDLE` · `HIGH` · `XHIGH`)별 선택 시한(초). 지나면 그때까지 모은 컨텍스트를 `coverage=partial` 로 반환 |

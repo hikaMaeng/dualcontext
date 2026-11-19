@@ -1,0 +1,688 @@
+{
+  "runId": 333,
+  "mode": "decompose",
+  "elapsedMs": 691173,
+  "status": "ok",
+  "error": null,
+  "planStop": "mode-decompose",
+  "items": 8,
+  "levels": 2,
+  "waves": 3,
+  "steps": 20,
+  "settingsPlan": {
+    "mode": "decompose",
+    "maxLevels": 3,
+    "maxNeedsPerItem": 4,
+    "maxItems": 16
+  },
+  "answers": {
+    "before": null,
+    "after": null
+  },
+  "samples": [
+    {
+      "t": 0,
+      "status": "running",
+      "stage": "augment",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 10,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 20,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": null,
+      "steps": null,
+      "nodes": 0
+    },
+    {
+      "t": 30,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": 0,
+      "steps": 1,
+      "nodes": 1
+    },
+    {
+      "t": 40,
+      "status": "running",
+      "stage": "augment",
+      "progress": "analyze",
+      "items": 0,
+      "steps": 1,
+      "nodes": 1
+    },
+    {
+      "t": 50,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 60,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 70,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 80,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 90,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 100,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 110,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 120,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 130,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 140,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 150,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 160,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 170,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 180,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 2
+    },
+    {
+      "t": 190,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 2,
+      "nodes": 3
+    },
+    {
+      "t": 200,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 5,
+      "nodes": 5
+    },
+    {
+      "t": 210,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 220,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 231,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 241,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 251,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 261,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 271,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 281,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 291,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 301,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 311,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 321,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 4,
+      "steps": 6,
+      "nodes": 6
+    },
+    {
+      "t": 331,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 8,
+      "steps": 7,
+      "nodes": 7
+    },
+    {
+      "t": 341,
+      "status": "running",
+      "stage": "augment",
+      "progress": "dependencies",
+      "items": 8,
+      "steps": 7,
+      "nodes": 7
+    },
+    {
+      "t": 351,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 361,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 371,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 381,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 391,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 401,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 411,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 421,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 431,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 11,
+      "nodes": 11
+    },
+    {
+      "t": 441,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 13,
+      "nodes": 11
+    },
+    {
+      "t": 451,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 13,
+      "nodes": 11
+    },
+    {
+      "t": 461,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 13,
+      "nodes": 11
+    },
+    {
+      "t": 471,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 1: i5,i6,i7,i8",
+      "items": 8,
+      "steps": 14,
+      "nodes": 11
+    },
+    {
+      "t": 481,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 2: i1,i3,i4",
+      "items": 8,
+      "steps": 15,
+      "nodes": 11
+    },
+    {
+      "t": 491,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 2: i1,i3,i4",
+      "items": 8,
+      "steps": 15,
+      "nodes": 11
+    },
+    {
+      "t": 501,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 2: i1,i3,i4",
+      "items": 8,
+      "steps": 15,
+      "nodes": 11
+    },
+    {
+      "t": 511,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 2: i1,i3,i4",
+      "items": 8,
+      "steps": 15,
+      "nodes": 11
+    },
+    {
+      "t": 521,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 2: i1,i3,i4",
+      "items": 8,
+      "steps": 15,
+      "nodes": 11
+    },
+    {
+      "t": 531,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 2: i1,i3,i4",
+      "items": 8,
+      "steps": 15,
+      "nodes": 11
+    },
+    {
+      "t": 541,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 2: i1,i3,i4",
+      "items": 8,
+      "steps": 15,
+      "nodes": 11
+    },
+    {
+      "t": 551,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 17,
+      "nodes": 11
+    },
+    {
+      "t": 561,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 571,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 581,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 591,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 601,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 611,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 621,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 631,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 641,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 651,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 661,
+      "status": "running",
+      "stage": "augment",
+      "progress": "build",
+      "detail": "wave 3: i2",
+      "items": 8,
+      "steps": 18,
+      "nodes": 11
+    },
+    {
+      "t": 671,
+      "status": "running",
+      "stage": "answering",
+      "progress": "done",
+      "detail": "mode-decompose",
+      "items": 8,
+      "steps": 20,
+      "nodes": 11
+    },
+    {
+      "t": 681,
+      "status": "running",
+      "stage": "answering",
+      "progress": "done",
+      "detail": "mode-decompose",
+      "items": 8,
+      "steps": 20,
+      "nodes": 11
+    },
+    {
+      "t": 691,
+      "status": "ok",
+      "stage": "done",
+      "progress": "done",
+      "detail": "mode-decompose",
+      "items": 8,
+      "steps": 20,
+      "nodes": 13
+    }
+  ]
+}

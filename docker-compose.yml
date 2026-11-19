@@ -72,3 +72,10 @@ networks:
   # port to the host is how the outside reaches the service.
   dualcontext_internal:
     internal: false
+    # Fixed subnet on purpose. Docker's default pool handed this network 192.168.0.0/20, which
+    # overlaps the host LAN (192.168.0.x): the container treated every LAN address (an AI server
+    # on another computer) as a neighbour on its own bridge and failed with EHOSTUNREACH.
+    # 10.253.250.0/24 is unused by the other local compose projects (10.253.240-242.0/24, 172.17-31/16).
+    ipam:
+      config:
+        - subnet: 10.253.250.0/24

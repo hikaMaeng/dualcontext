@@ -23,7 +23,7 @@ function probe() {
   };
 }
 
-test("모든 작업을 받고 동시에 도는 수는 종류별 소비자 수를 넘지 않는다(store 는 인자와 무관하게 항상 1)", async () => {
+test("모든 작업을 받고 동시에 도는 수는 종류별 소비자 수를 넘지 않는다", async () => {
   const queues = createCollectQueues(workers);
   const web = probe();
   const store = probe();
@@ -33,8 +33,7 @@ test("모든 작업을 받고 동시에 도는 수는 종류별 소비자 수를
   ]);
   assert.equal(results.length, 24);
   assert.equal(web.peak(), 2);
-  assert.equal(store.peak(), 1);
-  assert.equal(queues.stats().store.workers, 1);
+  assert.equal(store.peak(), 3);
   assert.equal(queues.stats().web.dispatched, 12);
   assert.equal(queues.stats().web.queued, 0);
   await queues.close();
@@ -82,8 +81,8 @@ test("collect 는 큐가 있으면 조사원 종류의 큐를 거치고, 오류�
   await queues.close();
 });
 
-test("DB 조회형 pgvector 조사원은 한 번에 하나만 DB 를 조회하고, 질의 임베딩은 큐 밖에서 병렬로 간다", async () => {
-  const queues = createCollectQueues({ web: 2, store: 9, crawl: 1, codebase: 1 });
+test("DB 조회형 pgvector 조사원의 DB 조회는 store 소비자 수만큼만 동시에 돌고, 질의 임베딩은 큐 밖에서 병렬로 간다", async () => {
+  const queues = createCollectQueues({ web: 2, store: 2, crawl: 1, codebase: 1 });
   let embeds = 0;
   let peakEmbeds = 0;
   let queries = 0;
@@ -109,8 +108,8 @@ test("DB 조회형 pgvector 조사원은 한 번에 하나만 DB 를 조회하�
   const researcher = { id: 1, type: "pgvector", config: { table: "t", vectorColumn: "v", textColumn: "x", identifierSearch: false } } as unknown as Researcher;
   const results = await Promise.all(Array.from({ length: 6 }, () => collect(pool as never, model as never, "/x", researcher, "질의", { queues, runKey: "1" })));
   assert.equal(results.length, 6);
-  assert.equal(peakQueries, 1);
-  assert.ok(peakEmbeds > 1, `임베딩은 병렬이어야 한다(최대 동시 ${peakEmbeds})`);
+  assert.equal(peakQueries, 2);
+  assert.ok(peakEmbeds > 2, `임베딩은 병렬이어야 한다(최대 동시 ${peakEmbeds})`);
   assert.equal(queues.stats().store.dispatched, 6);
   await queues.close();
 });
