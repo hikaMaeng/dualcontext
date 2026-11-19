@@ -1,6 +1,7 @@
 import type pg from "pg";
 import type { Material, Researcher } from "dualcontext_domain/common";
 import type { ModelClient } from "../model/index.js";
+import { raceAbort } from "./abort/index.js";
 import { collectCodebase } from "./codebase/index.js";
 import { collectCrawler } from "./crawler/index.js";
 import { collectDuckDuckGo } from "./duckduckgo/index.js";
@@ -33,7 +34,8 @@ export function collect(pool: pg.Pool, model: ModelClient, dataDir: string, rese
     case "duckduckgo":
       return collectWeb(model, researcher.config, query, (searched) => queued("web", (signal) => collectDuckDuckGo(researcher.config, searched, signal)));
     case "pgvector":
-      return queued("store", (signal) => collectPgvector(pool, model, researcher.config, query, signal));
+      // 질의 임베딩(추론 서버 호출)은 store 큐 밖에서 임베딩 큐로 병렬 처리하고, DB 조회만 store 큐(한 번에 하나)에서 돈다.
+      return raceAbort(model.embed([query]), options.signal).then(([vector]) => queued("store", (signal) => collectPgvector(pool, model, researcher.config, query, signal, vector)));
     case "folder":
       return queued("store", (signal) => collectFolder(pool, dataDir, researcher.config, query, signal));
     case "codebase":

@@ -1,0 +1,42 @@
+{
+  "runs": 3,
+  "elapsedMs": 242780,
+  "collectQueues": {
+    "web": {
+      "dispatched": 3,
+      "maxInFlight": 1
+    },
+    "store": {
+      "dispatched": 5,
+      "maxInFlight": 2
+    },
+    "crawl": {
+      "dispatched": 0,
+      "maxInFlight": 0
+    },
+    "codebase": {
+      "dispatched": 0,
+      "maxInFlight": 0
+    }
+  },
+  "detail": [
+    {
+      "runId": 330,
+      "query": "근로계약서 없이 일했을 때 퇴직금 청구 요건과 미지급 시 진정 절차",
+      "status": "timeout-cancelled",
+      "elapsedMs": 242738
+    },
+    {
+      "runId": 332,
+      "query": "당뇨병 환자의 식이요법과 합병증 관리 기준",
+      "status": "timeout-cancelled",
+      "elapsedMs": 242753
+    },
+    {
+      "runId": 331,
+      "query": "임대차 보증금 반환 소송 절차와 임차권등기명령",
+      "status": "timeout-cancelled",
+      "elapsedMs": 242767
+    }
+  ]
+}

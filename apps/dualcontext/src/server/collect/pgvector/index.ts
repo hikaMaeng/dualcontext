@@ -99,7 +99,7 @@ export function mergeIdentifierRows(exact: Material[], vector: Material[], topK:
  * 전체 차원 컬럼으로 재순위화해 topK 개를 돌려준다. 없으면 전체 차원 컬럼만 쓴다.
  * 질의 임베딩은 AI 서버 설정의 임베딩 모델로 만든다(테이블의 벡터와 같은 모델이어야 한다).
  */
-export async function collectPgvector(pool: pg.Pool, model: ModelClient, config: Record<string, unknown>, query: string, signal?: AbortSignal): Promise<Material[]> {
+export async function collectPgvector(pool: pg.Pool, model: ModelClient, config: Record<string, unknown>, query: string, signal?: AbortSignal, precomputed?: number[]): Promise<Material[]> {
   const table = assertIdentifier(config.table, "table");
   const vectorColumn = assertIdentifier(config.vectorColumn, "vectorColumn");
   const textColumn = assertIdentifier(config.textColumn, "textColumn");
@@ -116,7 +116,8 @@ export async function collectPgvector(pool: pg.Pool, model: ModelClient, config:
   const identifierSearch = config.identifierSearch !== false;
 
   // 임베딩 호출은 모델 층(큐 · 신호)이 취소를 다룬다. 이 아래의 DB 쿼리는 취소할 수 없으므로 `raceAbort` 로 기다림만 끝낸다.
-  const [full] = await raceAbort(model.embed([query]), signal);
+  // 호출자가 질의 임베딩을 미리 만들어 주면(수집 큐 밖에서) 그것을 쓴다: 이 함수는 DB 조회만 한다.
+  const full = precomputed ?? (await raceAbort(model.embed([query]), signal))[0];
   const titleSql = titleColumn ? `"${titleColumn}"::text` : `'${table}'`;
   const from = `"public"."${table}"`;
 

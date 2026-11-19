@@ -1,7 +1,7 @@
 import { createTaskQueue, type Priority, type QueueStats, type TaskQueue } from "../../queue/index.js";
-import { collectKinds, defaultCollectWorkers, type CollectKind } from "./config.js";
+import { collectKinds, defaultCollectWorkers, storeWorkers, type CollectKind } from "./config.js";
 
-export { collectKinds, defaultCollectWorkers, type CollectKind } from "./config.js";
+export { collectKinds, defaultCollectWorkers, storeWorkers, type CollectKind } from "./config.js";
 
 export type CollectRunOptions = {
   /** 공정성 단위(실행). 같은 큐에서 실행들이 번갈아 당겨진다. */
@@ -23,7 +23,8 @@ type Job = { work: (signal: AbortSignal) => Promise<unknown> };
  */
 export function createCollectQueues(workers: Record<CollectKind, number> = defaultCollectWorkers()) {
   const queues = Object.fromEntries(
-    collectKinds.map((kind) => [kind, createTaskQueue<Job, unknown>({ workers: workers[kind], attempt: (job, { signal }) => job.work(signal) })])
+    // store(DB 조회형)는 전달된 값과 무관하게 항상 일꾼 1개다: 한 번에 하나만 발동한다.
+    collectKinds.map((kind) => [kind, createTaskQueue<Job, unknown>({ workers: kind === "store" ? storeWorkers : workers[kind], attempt: (job, { signal }) => job.work(signal) })])
   ) as Record<CollectKind, TaskQueue<Job, unknown>>;
 
   return {
