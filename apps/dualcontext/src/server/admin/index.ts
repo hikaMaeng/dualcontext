@@ -2,6 +2,8 @@ import express from "express";
 import { z } from "zod";
 import { type Deps } from "../augment/index.js";
 import { readDatabaseStatus } from "../db/index.js";
+import { eventLoopSnapshot } from "../metrics/index.js";
+import { runRegistry } from "../run/index.js";
 import { aiServerRouter } from "./ai-server/index.js";
 import { contextModeSchema, planOverrideSchema } from "../plan/config/index.js";
 import { crawlRouter } from "./crawl/index.js";
@@ -25,8 +27,9 @@ export function adminRouter(deps: Deps) {
   router.use(aiServerRouter(deps.pool, deps.model));
   router.use(runsRouter(deps));
 
+  // 데이터베이스 상태 + 실행 계측: 추론 큐(소비자 수 · 진행 중 · 대기 · 지연 재투입 · 발행 · 재시도), 진행 중 실행 수, 이벤트 루프 지연(읽으면 비워진다).
   router.get("/status", async (_request, response) => {
-    response.json(await readDatabaseStatus(deps.pool));
+    response.json({ ...(await readDatabaseStatus(deps.pool)), queues: deps.model.stats(), activeRuns: runRegistry.size(), eventLoop: eventLoopSnapshot() });
   });
 
   // 시험 실행: MCP 도구와 같은 증강 경로 + 증강 전 · 후 최종 답변. writerId 를 주면 그 라이터로 돌려 본다.

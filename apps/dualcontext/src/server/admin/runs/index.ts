@@ -1,5 +1,6 @@
 import express from "express";
 import type { Deps } from "../../augment/index.js";
+import { runRegistry } from "../../run/index.js";
 import { bus, readRun, terminalSnapshot } from "./lifecycle/index.js";
 import { readNode, validNodeKey } from "./nodes/index.js";
 import { EmbeddingUnavailable, listRuns } from "./list/index.js";
@@ -124,6 +125,14 @@ export function runsRouter(deps: Deps) {
     // 가장 최근 상태가 끝난 상태면 더 보낼 것이 없다.
     const latestStatus = snapshot ? String(snapshot.status) : (pending.at(-1)?.status ?? first.status);
     if (latestStatus !== "running") finish();
+  });
+
+  // 진행 중인 실행을 취소한다(큐에 담긴 요청은 빠지고 나간 요청은 끊긴다). 이미 끝났거나 모르는 실행이면 404.
+  router.post("/runs/:id/cancel", (request, response) => {
+    const id = Number(request.params.id);
+    if (!Number.isInteger(id)) return void response.status(400).json({ error: "invalid id" });
+    if (!runRegistry.cancel(id, "cancelled")) return void response.status(404).json({ error: "run is not active" });
+    response.status(202).json({ runId: id, status: "cancelling" });
   });
 
   router.delete("/runs/:id", async (request, response) => {
