@@ -1,6 +1,6 @@
 import express from "express";
 import type { Deps } from "../../augment/index.js";
-import { bus, readRun } from "./lifecycle/index.js";
+import { bus, readRun, terminalSnapshot } from "./lifecycle/index.js";
 import { readNode, validNodeKey } from "./nodes/index.js";
 import { EmbeddingUnavailable, listRuns } from "./list/index.js";
 import { readFilterOptions } from "./list/filters/index.js";
@@ -8,6 +8,17 @@ import { parseListParams } from "./list/params/index.js";
 
 export { abandonRunningRuns, startRun } from "./lifecycle/index.js";
 export { backfillInBackground, startupBackfillLimit } from "./embedding/index.js";
+
+/** 같은 이벤트 객체의 직렬화는 한 번만 한다(구독자마다 큰 행을 다시 직렬화하지 않는다). */
+const serialized = new WeakMap<object, string>();
+const jsonOf = (detail: object): string => {
+  let json = serialized.get(detail);
+  if (json === undefined) {
+    json = JSON.stringify(detail);
+    serialized.set(detail, json);
+  }
+  return json;
+};
 
 export function runsRouter(deps: Deps) {
   const router = express.Router();
@@ -47,18 +58,39 @@ export function runsRouter(deps: Deps) {
   });
 
   // 실시간용(SSE): 상태가 바뀔 때마다 상세 행 전체를 보내고, 끝나면 스트림을 닫는다.
+  // 엔진은 이 프로세스 하나가 소유하므로(MCP 호출도 내부 listener 를 거쳐 이 프로세스에서 돈다) 변화는 모두 bus 로 온다: DB 를 주기적으로 읽지 않는다.
+  // 같은 이벤트의 직렬화는 구독자들이 공유하고, 느린 소비자는 쓰기 역압(drain)을 기다리며 최신 상태만 남긴다.
   router.get("/runs/:id/events", async (request, response) => {
     const id = Number(request.params.id);
+    if (!Number.isInteger(id)) return void response.status(400).json({ error: "invalid id" });
     // 구독을 먼저 걸고 현재 상태를 읽는다. 그 사이에 바뀐 상태를 놓치지 않기 위해서다(중복 전송은 해롭지 않다).
     const pending: { status: string }[] = [];
     let live = false;
-    // 같은 내용을 두 번 보내지 않는다(아래 watch 가 주기적으로 같은 행을 읽는다).
     let lastSent = "";
+    let backlog: string | null = null;
+    let waitingDrain = false;
+    const write = (json: string) => {
+      if (waitingDrain) {
+        backlog = json;
+        return;
+      }
+      if (!response.write(`data: ${json}\n\n`)) {
+        waitingDrain = true;
+        response.once("drain", () => {
+          waitingDrain = false;
+          if (backlog !== null) {
+            const latest = backlog;
+            backlog = null;
+            write(latest);
+          }
+        });
+      }
+    };
     const send = (detail: unknown) => {
-      const json = JSON.stringify(detail);
+      const json = jsonOf(detail as object);
       if (json === lastSent) return;
       lastSent = json;
-      response.write(`data: ${json}\n\n`);
+      write(json);
     };
     const onUpdate = (detail: { status: string }) => {
       if (!live) return void pending.push(detail);
@@ -66,38 +98,32 @@ export function runsRouter(deps: Deps) {
       if (detail.status !== "running") finish();
     };
     const beat = setInterval(() => response.write(": keep-alive\n\n"), 15_000);
-    // MCP 호출은 별개 프로세스가 쓰므로 이 프로세스의 bus 로는 변화가 오지 않는다. 같은 행을 주기적으로 읽어 바뀌었으면 보낸다.
-    const watch = setInterval(async () => {
-      if (!live) return;
-      try {
-        const detail = await readRun(deps.pool, id);
-        if (detail) onUpdate(detail);
-      } catch {
-        // 읽기 실패는 다음 주기에 다시 시도한다.
-      }
-    }, 2_000);
     function finish() {
-      clearInterval(watch);
       clearInterval(beat);
       bus.off(String(id), onUpdate);
       response.end();
     }
     bus.on(String(id), onUpdate);
-    request.on("close", finish);
+    request.on("close", () => {
+      clearInterval(beat);
+      bus.off(String(id), onUpdate);
+    });
 
     const first = await readRun(deps.pool, id);
     if (!first) {
-      clearInterval(watch);
       clearInterval(beat);
       bus.off(String(id), onUpdate);
       return void response.status(404).json({ error: "not found" });
     }
     response.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive", "x-accel-buffering": "no" });
-    send(first);
+    // DB 가 아직 running 이어도 이 프로세스가 이미 종료를 확정했다면(종료 기록 실패 등) 메모리의 종료 스냅샷이 우선이다.
+    const snapshot = first.status === "running" ? terminalSnapshot(id) : undefined;
+    send(snapshot ?? first);
     live = true;
     for (const detail of pending) send(detail);
     // 가장 최근 상태가 끝난 상태면 더 보낼 것이 없다.
-    if ((pending.at(-1)?.status ?? first.status) !== "running") finish();
+    const latestStatus = snapshot ? String(snapshot.status) : (pending.at(-1)?.status ?? first.status);
+    if (latestStatus !== "running") finish();
   });
 
   router.delete("/runs/:id", async (request, response) => {

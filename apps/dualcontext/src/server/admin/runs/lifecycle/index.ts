@@ -36,18 +36,76 @@ export async function readRun(pool: pg.Pool, id: number) {
   return rows[0] ?? null;
 }
 
-/**
- * 구독자가 있을 때만 전체 행을 읽어 방송한다(없는데 읽으면 큰 행을 읽고 버리는 일이 된다).
- * fallback 은 DB 재조회가 실패했을 때 대신 내보낼 메모리 상태다(종료 상태가 구독자에게 전달되지 못하는 일을 막는다).
- */
-async function publish(pool: pg.Pool, runId: number, fallback?: Record<string, unknown>) {
-  if (bus.listenerCount(String(runId)) === 0) return;
+/** 갱신 합치기 간격: 같은 실행의 방송은 이 간격에 한 번(선두 + 후미)으로 합친다. 종료는 즉시 보낸다. */
+export const coalesceMs = 500;
+/** 종료 스냅샷 보관: 최대 개수와 수명. 종료 publish 가 DB 재조회에 실패해도 재접속 · 늦은 구독자에게 종료를 준다. */
+const maxSnapshots = 50;
+const snapshotTtlMs = 60_000;
+
+const finished = new Map<number, Record<string, unknown>>();
+const throttles = new Map<number, { timer: ReturnType<typeof setTimeout> | undefined; last: number }>();
+
+/** 이 실행이 이미 끝났으면 그 종료 상태(메모리). 늦게 붙은 SSE 구독자가 쓴다. */
+export const terminalSnapshot = (runId: number): Record<string, unknown> | undefined => finished.get(runId);
+
+function remember(runId: number, detail: Record<string, unknown>) {
+  finished.set(runId, detail);
+  if (finished.size > maxSnapshots) finished.delete(finished.keys().next().value as number);
+  setTimeout(() => { if (finished.get(runId) === detail) finished.delete(runId); }, snapshotTtlMs).unref();
+}
+
+/** 행을 읽어 방송한다. 이미 종료된 실행에는 진행 중 상태를 내보내지 않는다(늦게 끝난 옛 조회가 running 을 덮지 못한다). */
+async function emitNow(pool: pg.Pool, runId: number, fallback?: Record<string, unknown>, terminal = false) {
+  if (!terminal && finished.has(runId)) return;
+  let detail: Record<string, unknown> | null = null;
   try {
-    const detail = await readRun(pool, runId);
-    if (detail) bus.emit(String(runId), detail);
+    detail = await readRun(pool, runId);
   } catch (error) {
-    if (fallback) bus.emit(String(runId), fallback);
-    else throw error;
+    if (!fallback) throw error;
+  }
+  if (terminal) {
+    // DB 에서 읽은 종료 행이 우선이고, 읽지 못했으면 메모리 상태(fallback)가 종료 스냅샷이다. DB 가 아직 running 이면 메모리 상태로 덮는다.
+    const final = detail && detail.status !== "running" ? detail : (fallback ?? detail);
+    if (final) {
+      remember(runId, final);
+      bus.emit(String(runId), final);
+    }
+    return;
+  }
+  if (detail && !finished.has(runId)) bus.emit(String(runId), detail);
+}
+
+/**
+ * 구독자가 있을 때만 전체 행을 읽어 방송한다(없는데 읽으면 큰 행을 읽고 버리는 일이 된다). 진행 중 방송은 합친다(선두 + 후미, coalesceMs).
+ * terminal 이면 대기 중인 후미 타이머를 취소하고 즉시 보낸다. fallback 은 종료 때 DB 재조회가 실패하면 대신 내보낼 메모리 상태다.
+ */
+async function publish(pool: pg.Pool, runId: number, fallback?: Record<string, unknown>, terminal = false) {
+  if (terminal) {
+    const state = throttles.get(runId);
+    clearTimeout(state?.timer);
+    throttles.delete(runId);
+    // 구독자가 없으면 큰 행을 읽지 않는다: 작은 메모리 스냅샷만 남긴다(늦게 붙는 구독자는 DB 의 종료 행을 직접 읽는다).
+    if (bus.listenerCount(String(runId)) === 0) {
+      if (fallback) remember(runId, fallback);
+      return;
+    }
+    return emitNow(pool, runId, fallback, true);
+  }
+  if (bus.listenerCount(String(runId)) === 0) return;
+  const state = throttles.get(runId) ?? { timer: undefined, last: 0 };
+  throttles.set(runId, state);
+  const wait = state.last + coalesceMs - Date.now();
+  if (wait <= 0) {
+    state.last = Date.now();
+    return emitNow(pool, runId);
+  }
+  if (state.timer === undefined) {
+    state.timer = setTimeout(() => {
+      state.timer = undefined;
+      state.last = Date.now();
+      void emitNow(pool, runId).catch(() => undefined);
+    }, wait);
+    state.timer.unref();
   }
 }
 
@@ -208,11 +266,13 @@ async function execute(deps: Deps, runId: number, query: string, config: Context
   const duration = Date.now() - started;
   try {
     await deps.pool.query(`update augment_runs set status = $2, stage = 'done', error = $3, duration_ms = $4 where id = $1 and status = 'running'`, [runId, status, error, duration]);
-    await publish(deps.pool, runId, { id: runId, status, stage: "done", error, durationMs: duration, persisted: true });
+    await publish(deps.pool, runId, { id: runId, status, stage: "done", error, durationMs: duration, persisted: true }, true);
   } catch (caught) {
     // 종료 기록을 DB 에 확정하지 못했다: 성공처럼 publish 하지 않는다. 구독자에게는 메모리 상태(persisted:false)로 종료를 알리고, 다음 기동의 abandonRunningRuns 가 행을 닫는다.
     console.error(`run ${runId}: could not record the final state`, caught);
-    bus.emit(String(runId), { id: runId, status: "error", stage: "done", error: error ?? "종료 상태를 기록하지 못했다", durationMs: duration, persisted: false });
+    const memory = { id: runId, status: "error", stage: "done", error: error ?? "종료 상태를 기록하지 못했다", durationMs: duration, persisted: false };
+    remember(runId, memory);
+    bus.emit(String(runId), memory);
   } finally {
     ctx.dispose();
   }
