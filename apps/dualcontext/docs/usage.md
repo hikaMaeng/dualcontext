@@ -130,7 +130,7 @@ node apps/dualcontext/seed-data/load-datasets.mjs --no-register gpu-hardware   #
 docker cp ./manuals/. dualcontext:/var/lib/postgresql/data/manuals/
 ```
 
-`pgdata` 와 볼륨 밖은 거부된다. 질의 때마다 파일을 읽고 한국어 전문 검색으로 순위를 매긴다.
+`pgdata` 와 볼륨 밖은 거부된다. 질의 때마다 파일을 읽고 한국어 전문 검색으로 순위를 매긴다. 한 실행에서 폴더 조사원들이 읽는 총량은 20MB 까지다(`DUALCONTEXT_FOLDER_RUN_MB`): 남은 예산보다 큰 파일은 그 실행에서 건너뛴다.
 
 ## 크롤러 조사원
 
@@ -154,5 +154,9 @@ npm run deploy crawler
 | `DUALCONTEXT_DATABASE_URL` | 예 | `postgresql://` URL. 이미지 기본값은 컨테이너 안 루프백 DB. |
 | `DUALCONTEXT_DATA_DIR` | 예 | 볼륨 마운트 절대 경로. 이미지 기본값 `/var/lib/postgresql/data`. |
 | `DUALCONTEXT_LLM_API_KEY` | 아니오 | AI 서버 설정에 키가 없을 때 쓰는 키. |
+| `DUALCONTEXT_SEARCH_WORKERS` | 아니오 | 코드베이스 검색 스레드 수. 기본 2, 1-16. 색인 경로 해시로 스레드에 고정된다. |
+| `DUALCONTEXT_CPU_WORKERS` | 아니오 | 코드베이스 빌드 동시 작업(스레드) 수. 기본 `min(2, cpus-1)`(최소 1), 1-16. |
+| `DUALCONTEXT_SEARCH_HEAP_MB` · `DUALCONTEXT_SEARCH_CACHE_MB` · `DUALCONTEXT_BUILD_HEAP_MB` | 아니오 | 검색 스레드 힙 상한(기본 768) · 검색 색인 캐시 총 예산(기본 512, 스레드 수로 나눔) · 빌드 스레드 힙 상한(기본 2048). |
+| `DUALCONTEXT_FOLDER_RUN_MB` | 아니오 | 한 실행의 폴더 조사원들이 합쳐 읽을 수 있는 바이트(MB). 기본 20. |
 
 기본값은 Dockerfile `ENV` 와 `docker/env.defaults` 에 있다. 비밀 값은 커밋하지 않는다.

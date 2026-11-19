@@ -14,3 +14,9 @@ test("모델 실패 · 빈 답이면 질의 원문을 쓴다", async () => {
   assert.equal(await webSearchQuery(async () => { throw new Error("down"); }, "원문"), "원문");
   assert.equal(await webSearchQuery(async () => "", "원문"), "원문");
 });
+
+test("취소는 원문 폴백으로 삼키지 않고 다시 던진다", async () => {
+  const cancelled = Object.assign(new Error("cancelled"), { name: "RunAborted" });
+  await assert.rejects(webSearchQuery(async () => { throw cancelled; }, "원문"), (error) => error === cancelled);
+  await assert.rejects(webSearchQuery(async () => { throw new DOMException("aborted", "AbortError"); }, "원문"), (error) => (error as Error).name === "AbortError");
+});

@@ -1,9 +1,11 @@
 import { createHash } from "node:crypto";
 import type pg from "pg";
-import type { ModelClient } from "../../../model/index.js";
 import { chunkMarkdown } from "../chunk/index.js";
 import { limits, type CrawlerConfig } from "../config/index.js";
 import type { CrawledPage } from "../walk/index.js";
+
+export { embedPending } from "./embed.js";
+export { cosine, rankHits, searchChunks, searchParams, searchSql, searchTimeoutMs, type Hit } from "./search.js";
 
 export type CrawlState = {
   fingerprint: string;
@@ -48,7 +50,8 @@ const hash = (text: string) => createHash("sha256").update(text).digest("hex");
 
 /**
  * 크롤 결과를 캐시에 반영한다(한 트랜잭션). 이번에 못 만난 페이지는 지우고, 내용 해시가 같은 페이지는 청크와 임베딩을 그대로 둔다.
- * 청크 총량은 limits.maxChunks 에서 자른다. 반환값은 저장된 페이지·청크 수.
+ * 청크 총량은 limits.maxChunks 에서 자른다. 한 페이지의 청크는 `unnest` 로 한 번에 넣는다(청크마다 왕복하지 않는다).
+ * 반환값은 저장된 페이지·청크 수.
  */
 export async function replacePages(pool: pg.Pool, researcherId: number, config: CrawlerConfig, pages: CrawledPage[]): Promise<{ pages: number; chunks: number }> {
   const client = await pool.connect();
@@ -73,8 +76,13 @@ export async function replacePages(pool: pg.Pool, researcherId: number, config: 
         [researcherId, page.url, page.title, contentHash]
       );
       await client.query("delete from crawl_chunks where researcher_id = $1 and url = $2", [researcherId, page.url]);
-      for (const chunk of chunks) {
-        await client.query("insert into crawl_chunks (researcher_id, url, idx, text) values ($1, $2, $3, $4)", [researcherId, page.url, chunk.index, chunk.text]);
+      if (chunks.length > 0) {
+        await client.query("insert into crawl_chunks (researcher_id, url, idx, text) select $1, $2, u.idx, u.text from unnest($3::int[], $4::text[]) as u(idx, text)", [
+          researcherId,
+          page.url,
+          chunks.map((chunk) => chunk.index),
+          chunks.map((chunk) => chunk.text)
+        ]);
       }
     }
     await client.query("delete from crawl_pages where researcher_id = $1 and not (url = any($2::text[]))", [researcherId, [...kept]]);
@@ -91,64 +99,4 @@ export async function replacePages(pool: pg.Pool, researcherId: number, config: 
   } finally {
     client.release();
   }
-}
-
-const embedBatch = 32;
-
-/** 임베딩이 없거나 다른 모델로 만들어진 청크를 현재 임베딩 모델로 채운다. */
-export async function embedPending(pool: pg.Pool, model: ModelClient, researcherId: number): Promise<number> {
-  const key = (await model.settings()).embedding.model;
-  const { rows } = await pool.query<{ url: string; idx: number; text: string }>(
-    "select url, idx, text from crawl_chunks where researcher_id = $1 and (embedding is null or embedding_key is distinct from $2) order by url, idx",
-    [researcherId, key]
-  );
-  for (let at = 0; at < rows.length; at += embedBatch) {
-    const batch = rows.slice(at, at + embedBatch);
-    const vectors = await model.embed(batch.map((row) => row.text));
-    for (const [i, row] of batch.entries()) {
-      await pool.query("update crawl_chunks set embedding = $4, embedding_key = $5 where researcher_id = $1 and url = $2 and idx = $3", [researcherId, row.url, row.idx, vectors[i], key]);
-    }
-  }
-  return rows.length;
-}
-
-export function cosine(a: number[], b: number[]): number {
-  let dot = 0;
-  let na = 0;
-  let nb = 0;
-  for (let i = 0; i < a.length && i < b.length; i += 1) {
-    dot += a[i] * b[i];
-    na += a[i] * a[i];
-    nb += b[i] * b[i];
-  }
-  return na === 0 || nb === 0 ? 0 : dot / Math.sqrt(na * nb);
-}
-
-export type Hit = { url: string; title: string; text: string; score: number };
-
-/** 순위 매기기만 하는 순수 함수: 점수 미달 제거, 페이지당 perPage 개 제한, 상위 topK. */
-export function rankHits(hits: Hit[], config: Pick<CrawlerConfig, "minScore" | "perPage" | "topK">): Hit[] {
-  const perPage = new Map<string, number>();
-  const out: Hit[] = [];
-  for (const hit of [...hits].sort((a, b) => b.score - a.score)) {
-    if (hit.score < config.minScore) break;
-    const used = perPage.get(hit.url) ?? 0;
-    if (used >= config.perPage) continue;
-    perPage.set(hit.url, used + 1);
-    out.push(hit);
-    if (out.length >= config.topK) break;
-  }
-  return out;
-}
-
-/** 질의 임베딩과 현재 모델로 만든 청크 임베딩의 코사인 유사도로 순위를 매긴다(청크 ≤ 3000 이라 메모리에서 계산). */
-export async function searchChunks(pool: pg.Pool, model: ModelClient, researcherId: number, config: CrawlerConfig, query: string): Promise<Hit[]> {
-  const key = (await model.settings()).embedding.model;
-  const [queryVector] = await model.embed([query]);
-  const { rows } = await pool.query<{ url: string; title: string; text: string; embedding: number[] }>(
-    `select c.url, p.title, c.text, c.embedding from crawl_chunks c join crawl_pages p using (researcher_id, url)
-      where c.researcher_id = $1 and c.embedding is not null and c.embedding_key = $2`,
-    [researcherId, key]
-  );
-  return rankHits(rows.map((row) => ({ url: row.url, title: row.title, text: row.text, score: cosine(queryVector, row.embedding) })), config);
 }

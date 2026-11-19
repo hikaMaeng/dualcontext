@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { crawlRequest, toFetchedPage } from "./client/index.js";
 import { chunkMarkdown } from "./chunk/index.js";
-import { crawlFingerprint, hostAllowed, linkWanted, normalizeUrl, parseCrawlerConfig } from "./config/index.js";
+import { judgeTargets, regexPool } from "../../workers/regex/index.js";
+import { crawlFingerprint, hostAllowed, normalizeUrl, parseCrawlerConfig, staticLinkWanted, wantedLinks, type LinkJudge } from "./config/index.js";
 import { assertPublicUrl, BlockedUrlError, isBlockedAddress, isInternalHostname } from "./guard/index.js";
 import { isAllowed, parseRobots } from "./robots/index.js";
 import { cosine, rankHits } from "./store/index.js";
@@ -97,14 +98,32 @@ test("설정: 지문은 크롤 대상이 바뀔 때만 달라지고 검색 설�
   assert.notEqual(crawlFingerprint(base), crawlFingerprint({ ...base, depth: 2 }));
 });
 
-test("링크 정규화와 선별: 해시·추적 파라미터 제거, 바이너리 제외, 제외 패턴 우선", () => {
+test("링크 정규화와 선별: 해시·추적 파라미터 제거, 바이너리 제외, 제외 패턴 우선", async () => {
   assert.equal(normalizeUrl("https://example.com/a/?utm_source=x&id=1#top"), "https://example.com/a?id=1");
   assert.equal(normalizeUrl("javascript:alert(1)"), null);
   const config = parseCrawlerConfig({ startUrls: ["https://example.com/"], includePatterns: ["^/docs"], excludePatterns: ["^/docs/old"] });
-  assert.equal(linkWanted(new URL("https://example.com/docs/a"), config), true);
-  assert.equal(linkWanted(new URL("https://example.com/docs/old/a"), config), false);
-  assert.equal(linkWanted(new URL("https://example.com/blog"), config), false);
-  assert.equal(linkWanted(new URL("https://example.com/docs/logo.png"), config), false);
+  const urls = ["https://example.com/docs/a", "https://example.com/docs/old/a", "https://example.com/blog", "https://example.com/docs/logo.png"].map((href) => new URL(href));
+  // 패턴 판정은 cpu.regex 스레드가 한다(판정기 주입). 확장자 판정은 정규식 패턴 없이 메인에서 먼저 거른다.
+  const asked: string[][] = [];
+  const judge: LinkJudge = async (include, exclude, targets) => {
+    asked.push(targets);
+    return judgeTargets(include, exclude, targets);
+  };
+  assert.deepEqual((await wantedLinks(urls, config, judge)).map((url) => url.pathname), ["/docs/a"]);
+  assert.deepEqual(asked, [["/docs/a", "/docs/old/a", "/blog"]], "바이너리 확장자는 스레드에 보내지 않는다");
+  const noPatterns = parseCrawlerConfig({ startUrls: ["https://example.com/"] });
+  assert.deepEqual((await wantedLinks(urls, noPatterns, async () => assert.fail("패턴이 없으면 스레드를 부르지 않는다"))).length, 3);
+  assert.equal(staticLinkWanted(new URL("https://example.com/a.PDF")), false);
+});
+
+test("링크 선별: 실제 cpu.regex 스레드를 거치고, 폭주 패턴은 그 페이지 링크를 전부 제외한다", async () => {
+  const config = parseCrawlerConfig({ startUrls: ["https://example.com/"], includePatterns: ["^/docs"], excludePatterns: ["^/docs/old"] });
+  const real = (include: string[], exclude: string[], targets: string[], signal?: AbortSignal) => regexPool().filter(include, exclude, targets, { signal });
+  const urls = ["https://example.com/docs/a", "https://example.com/docs/old/a", "https://example.com/blog"].map((href) => new URL(href));
+  assert.deepEqual((await wantedLinks(urls, config, real)).map((url) => url.pathname), ["/docs/a"]);
+  const evil = parseCrawlerConfig({ startUrls: ["https://example.com/"], excludePatterns: ["^/(a+)+$"] });
+  const victims = [`https://example.com/${"a".repeat(40)}!`, "https://example.com/ok"].map((href) => new URL(href));
+  assert.deepEqual(await wantedLinks(victims, evil, real), [], "시한 초과한 묶음의 링크는 전부 제외");
 });
 
 test("청크: 제목에서 끊고 제목을 앞에 붙이며, 긴 절은 한도 안으로 쪼갠다", () => {

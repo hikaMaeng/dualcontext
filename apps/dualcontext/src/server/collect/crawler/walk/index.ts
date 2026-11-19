@@ -1,18 +1,22 @@
-import { hostAllowed, limits, linkWanted, normalizeUrl, type CrawlerConfig } from "../config/index.js";
+import { isAbort, throwIfAborted } from "../../abort/index.js";
+import { regexPool } from "../../../workers/regex/index.js";
+import { hostAllowed, limits, normalizeUrl, wantedLinks, type CrawlerConfig, type LinkJudge } from "../config/index.js";
 import { assertPublicUrl, type Resolver } from "../guard/index.js";
 import { allowAll, denyAll, isAllowed, parseRobots, type Robots } from "../robots/index.js";
 
 export type FetchedPage = { finalUrl: string; title: string; markdown: string; links: string[] };
 export type CrawledPage = { url: string; title: string; markdown: string };
 
-/** 밖과 닿는 부분을 주입받아 순서·한도·예의 규칙만 단위 시험할 수 있게 한다. */
+/** 밖과 닿는 부분을 주입받아 순서·한도·예의 규칙만 단위 시험할 수 있게 한다. `signal` 은 크롤 작업 자신의 신호다. */
 export type WalkDeps = {
-  fetchPage: (url: string) => Promise<FetchedPage>;
-  /** 한 origin 의 robots.txt 본문. 없으면(404 등) null, 서버 오류·접속 실패는 던진다(그 origin 은 이번 크롤에서 금지로 본다). */
-  fetchRobots: (origin: string) => Promise<string | null>;
+  fetchPage: (url: string, signal?: AbortSignal) => Promise<FetchedPage>;
+  /** 한 origin 의 robots.txt 본문. 없으면(404 등) null, 서버 오류·접속 실패는 던진다(그 origin 은 이번 크롤에서 금지로 본다). 취소는 그대로 던진다. */
+  fetchRobots: (origin: string, signal?: AbortSignal) => Promise<string | null>;
   resolve?: Resolver;
   now: () => number;
-  sleep: (ms: number) => Promise<void>;
+  sleep: (ms: number, signal?: AbortSignal) => Promise<void>;
+  /** include/exclude 정규식 판정기. 기본은 `cpu.regex` 스레드(`regexPool`). */
+  judgeLinks?: LinkJudge;
 };
 
 export type WalkResult = {
@@ -22,18 +26,22 @@ export type WalkResult = {
   truncated: boolean;
 };
 
+const defaultJudge: LinkJudge = (include, exclude, targets, signal) => regexPool().filter(include, exclude, targets, { signal });
+
 /**
  * 너비 우선 크롤. 매 URL 마다: 한도 확인 → SSRF 검사 → 허용 도메인 → robots.txt → 호스트별 요청 간격 → 가져오기 →
  * 리다이렉트 후 최종 URL 재검사(내부망이나 허용 밖으로 빠졌으면 내용을 버린다) → 링크 추출.
- * 페이지 하나가 실패해도 크롤은 계속한다(사유는 skipped).
+ * 페이지 하나가 실패해도 크롤은 계속한다(사유는 skipped). 취소(`signal`)는 일반 실패로 삼키지 않고 그대로 던진다.
+ * 한 페이지의 링크는 포함/제외 정규식 판정을 한 묶음으로 `cpu.regex` 에 맡긴다(링크마다 정규식을 컴파일하지 않는다).
  */
-export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkResult> {
+export async function walk(config: CrawlerConfig, deps: WalkDeps, signal?: AbortSignal): Promise<WalkResult> {
   const deadline = deps.now() + config.maxCrawlSeconds * 1000;
   const result: WalkResult = { pages: [], skipped: [], truncated: false };
   const robotsByOrigin = new Map<string, Robots>();
   const lastRequestAt = new Map<string, number>();
   const seen = new Set<string>();
   const stored = new Set<string>();
+  const judge = deps.judgeLinks ?? defaultJudge;
   let queue: { url: string; depth: number }[] = [];
 
   const enqueue = (raw: string, depth: number) => {
@@ -49,9 +57,10 @@ export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkR
     if (known) return known;
     let robots: Robots;
     try {
-      const body = await deps.fetchRobots(origin);
+      const body = await deps.fetchRobots(origin, signal);
       robots = body === null ? allowAll : parseRobots(body);
-    } catch {
+    } catch (error) {
+      if (isAbort(error)) throw error;
       robots = denyAll;
     }
     robotsByOrigin.set(origin, robots);
@@ -59,6 +68,7 @@ export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkR
   };
 
   while (queue.length > 0) {
+    throwIfAborted(signal);
     const item = queue.shift() as { url: string; depth: number };
     if (stored.size >= config.maxPages || deps.now() >= deadline) {
       result.truncated = true;
@@ -69,6 +79,7 @@ export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkR
     try {
       url = await assertPublicUrl(item.url, deps.resolve);
     } catch (error) {
+      if (isAbort(error)) throw error;
       skip(`blocked: ${(error as Error).message}`);
       continue;
     }
@@ -90,14 +101,15 @@ export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkR
         result.truncated = true;
         break;
       }
-      await deps.sleep(wait);
+      await deps.sleep(wait, signal);
     }
     lastRequestAt.set(url.host, deps.now());
 
     let page: FetchedPage;
     try {
-      page = await deps.fetchPage(url.href);
+      page = await deps.fetchPage(url.href, signal);
     } catch (error) {
+      if (isAbort(error)) throw error;
       skip(`fetch failed: ${(error as Error).message}`);
       continue;
     }
@@ -105,6 +117,7 @@ export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkR
     try {
       finalUrl = await assertPublicUrl(page.finalUrl, deps.resolve);
     } catch (error) {
+      if (isAbort(error)) throw error;
       skip(`redirected to a blocked address: ${(error as Error).message}`);
       continue;
     }
@@ -124,6 +137,7 @@ export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkR
       result.pages.push({ url: finalKey, title: page.title.trim().slice(0, 300), markdown });
     }
     if (item.depth < config.depth) {
+      const targets: URL[] = [];
       for (const link of page.links) {
         let target: URL;
         try {
@@ -131,8 +145,9 @@ export async function walk(config: CrawlerConfig, deps: WalkDeps): Promise<WalkR
         } catch {
           continue;
         }
-        if ((target.protocol === "http:" || target.protocol === "https:") && hostAllowed(target.hostname, config) && linkWanted(target, config)) enqueue(target.href, item.depth + 1);
+        if ((target.protocol === "http:" || target.protocol === "https:") && hostAllowed(target.hostname, config)) targets.push(target);
       }
+      for (const target of await wantedLinks(targets, config, judge, signal)) enqueue(target.href, item.depth + 1);
     }
     queue = queue.slice(0, limits.maxPages * 20);
   }

@@ -138,12 +138,13 @@ const pinnedAgent = new Agent({
  */
 export async function guardedGetText(
   raw: string,
-  options: { maxBytes: number; timeoutMs: number; userAgent: string; resolve?: Resolver }
+  options: { maxBytes: number; timeoutMs: number; userAgent: string; resolve?: Resolver; signal?: AbortSignal }
 ): Promise<{ status: number; text: string } | null> {
   let current = raw;
   for (let hop = 0; hop <= 3; hop += 1) {
     const url = await assertPublicUrl(current, options.resolve);
-    const response = await fetch(url, { redirect: "manual", dispatcher: pinnedAgent, signal: AbortSignal.timeout(options.timeoutMs), headers: { "user-agent": options.userAgent } });
+    const timeout = AbortSignal.timeout(options.timeoutMs);
+    const response = await fetch(url, { redirect: "manual", dispatcher: pinnedAgent, signal: options.signal === undefined ? timeout : AbortSignal.any([options.signal, timeout]), headers: { "user-agent": options.userAgent } });
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers.get("location");
       await response.body?.cancel();

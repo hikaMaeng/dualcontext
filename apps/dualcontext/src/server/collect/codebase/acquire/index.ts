@@ -27,7 +27,7 @@ const recentFailure = (key: string): string | undefined => {
 
 /** 진행 중인 모든 공유 빌드를 취소한다(프로세스 종료). 빌드 스레드는 풀이 끝낸다. */
 export function abortSharedBuilds(): void {
-  for (const controller of controllers) controller.abort(new Error("shutting down"));
+  for (const controller of controllers) controller.abort(Object.assign(new Error("shutting down"), { name: "AbortError" }));
 }
 onShutdown(async () => abortSharedBuilds());
 

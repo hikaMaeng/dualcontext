@@ -1,3 +1,5 @@
+import { isAbort } from "../../abort/index.js";
+
 const maxQueryChars = 120;
 
 const prompt = (query: string) => `다음 질의를 웹 검색엔진(덕덕고)에 넣을 검색어 한 줄로 바꿔라.
@@ -25,7 +27,9 @@ export function cleanQuery(answer: string): string | null {
 export async function webSearchQuery(chat: (prompt: string) => Promise<string>, query: string): Promise<string> {
   try {
     return cleanQuery(await chat(prompt(query))) ?? query;
-  } catch {
+  } catch (error) {
+    // 취소는 「모델 실패 → 원문」 폴백으로 삼키지 않는다(취소된 실행이 검색을 이어가지 않게).
+    if (isAbort(error)) throw error;
     return query;
   }
 }

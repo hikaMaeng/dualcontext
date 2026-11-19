@@ -81,10 +81,25 @@ export function normalizeUrl(raw: string): string | null {
 
 const binaryExtension = /\.(png|jpe?g|gif|svg|webp|ico|pdf|zip|gz|tgz|tar|mp4|mp3|wav|woff2?|ttf|css|js|json|xml|exe|dmg)$/i;
 
-/** 따라갈 링크인지: 확장자(바이너리·정적 파일) · 포함/제외 패턴을 본다. 도메인·SSRF 는 호출자가 따로 본다. */
-export function linkWanted(url: URL, config: CrawlerConfig): boolean {
-  if (binaryExtension.test(url.pathname)) return false;
-  const target = `${url.pathname}${url.search}`;
-  if (config.excludePatterns.some((pattern) => new RegExp(pattern).test(target))) return false;
-  return config.includePatterns.length === 0 || config.includePatterns.some((pattern) => new RegExp(pattern).test(target));
+/** 정규식 판정기: (포함 패턴, 제외 패턴, 대상들) → 대상별 통과 여부. 기본은 `cpu.regex` 스레드이고 시험은 가짜를 주입한다. */
+export type LinkJudge = (include: string[], exclude: string[], targets: string[], signal?: AbortSignal) => Promise<boolean[]>;
+
+/** 확장자(바이너리·정적 파일)로 따라가지 않을 링크를 거른다. 정규식 없이 확장자 한 줄 판정이다. */
+export function staticLinkWanted(url: URL): boolean {
+  return !binaryExtension.test(url.pathname);
+}
+
+/** 포함/제외 패턴을 적용하는 대상 문자열: 경로 + 쿼리. */
+export const patternTarget = (url: URL): string => `${url.pathname}${url.search}`;
+
+/**
+ * 따라갈 링크만 남긴다(입력 순서 유지): 확장자 → 포함/제외 패턴. 패턴은 관리자가 쓴 임의 정규식이라 메인에서 돌리지 않고
+ * `judge`(`cpu.regex` 스레드)에 링크 묶음으로 맡긴다. 패턴이 하나도 없으면 정규식이 없으므로 스레드를 부르지 않는다.
+ * 도메인·SSRF 는 호출자가 따로 본다.
+ */
+export async function wantedLinks(urls: URL[], config: CrawlerConfig, judge: LinkJudge, signal?: AbortSignal): Promise<URL[]> {
+  const candidates = urls.filter(staticLinkWanted);
+  if (candidates.length === 0 || (config.includePatterns.length === 0 && config.excludePatterns.length === 0)) return candidates;
+  const verdicts = await judge(config.includePatterns, config.excludePatterns, candidates.map(patternTarget), signal);
+  return candidates.filter((_, index) => verdicts[index] === true);
 }

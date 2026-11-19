@@ -1,3 +1,4 @@
+import { raceAbort } from "../../abort/index.js";
 import { botToken } from "../robots/index.js";
 import { guardedGetText } from "../guard/index.js";
 import type { FetchedPage, WalkDeps } from "../walk/index.js";
@@ -59,26 +60,32 @@ export function toFetchedPage(requested: string, result: RawResult): FetchedPage
   };
 }
 
+/** 취소할 수 있는 대기: 신호가 취소되면 즉시 취소 오류로 끝난다. */
+function sleepAbortable(ms: number, signal?: AbortSignal): Promise<void> {
+  if (signal === undefined) return new Promise((resolve) => setTimeout(resolve, ms));
+  return raceAbort(new Promise<void>((resolve) => setTimeout(resolve, ms)), signal);
+}
+
 /** 실제 네트워크에 붙는 크롤 의존성. robots.txt 는 이 서버가 SSRF 방어 fetch 로 직접 받는다. */
 export function createWalkDeps(env: NodeJS.ProcessEnv = process.env): WalkDeps {
   const base = (env.DUALCONTEXT_CRAWLER_URL || defaultUrl).replace(/\/$/, "");
   const token = env.DUALCONTEXT_CRAWLER_TOKEN || defaultToken;
   return {
     now: () => Date.now(),
-    sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
-    async fetchRobots(origin) {
-      const response = await guardedGetText(`${origin}/robots.txt`, { maxBytes: 512 * 1024, timeoutMs: 10_000, userAgent });
+    sleep: (ms, signal) => sleepAbortable(ms, signal),
+    async fetchRobots(origin, signal) {
+      const response = await guardedGetText(`${origin}/robots.txt`, { maxBytes: 512 * 1024, timeoutMs: 10_000, userAgent, signal });
       if (response === null) throw new Error("robots.txt redirect loop");
       if (response.status >= 500) throw new Error(`robots.txt answered ${response.status}`);
       return response.status >= 400 ? null : response.text;
     },
-    async fetchPage(url) {
+    async fetchPage(url, signal) {
       const timeoutMs = 45_000;
       const response = await fetch(`${base}/crawl`, {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
         body: JSON.stringify(crawlRequest(url, timeoutMs)),
-        signal: AbortSignal.timeout(timeoutMs + 15_000)
+        signal: signal === undefined ? AbortSignal.timeout(timeoutMs + 15_000) : AbortSignal.any([signal, AbortSignal.timeout(timeoutMs + 15_000)])
       });
       if (!response.ok) throw new Error(`crawler service answered ${response.status}: ${(await response.text()).slice(0, 160)}`);
       const json = (await response.json()) as { results?: RawResult[] };
