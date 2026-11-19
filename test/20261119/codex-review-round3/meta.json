@@ -1,0 +1,42 @@
+{
+    "startedAt":  "2026-11-19T11:26:41.6603447+09:00",
+    "endedAt":  "2026-11-19T11:37:22.2028479+09:00",
+    "durationSec":  640.5,
+    "codexPath":  "C:\\Users\\hika0\\AppData\\Roaming\\npm\\codex.ps1",
+    "codexVersion":  "codex-cli 0.163.0",
+    "model":  "gpt-6-astra",
+    "effort":  "high",
+    "mode":  "free",
+    "sandbox":  "read-only",
+    "projectDir":  "F:\\dev\\dualcontext",
+    "codexCwd":  "F:\\dev\\dualcontext",
+    "gitTopLevel":  "F:/dev/dualcontext",
+    "gitHead":  "8ace6672c81aeec1bedf73fa88e5192d378d0cf8",
+    "diffArgs":  [
+
+                 ],
+    "argv":  [
+                 "exec",
+                 "--cd",
+                 "F:\\dev\\dualcontext",
+                 "-m",
+                 "gpt-6-astra",
+                 "-c",
+                 "model_reasoning_effort=high",
+                 "-c",
+                 "windows.sandbox=\"unelevated\"",
+                 "-o",
+                 "F:\\dev\\dualcontext\\test\\20261119\\codex-review-round3\\result.md",
+                 "-s",
+                 "read-only",
+                 "-"
+             ],
+    "customPrompt":  true,
+    "promptFile":  "F:\\dev\\dualcontext\\test\\20261119\\codex-review-round3\\prompt.md",
+    "promptBytes":  6164,
+    "transcript":  "F:\\dev\\dualcontext\\test\\20261119\\codex-review-round3\\transcript.log",
+    "resultFile":  "F:\\dev\\dualcontext\\test\\20261119\\codex-review-round3\\result.md",
+    "exitCode":  0,
+    "psEdition":  "Desktop",
+    "psVersion":  "5.1.26100.9444"
+}

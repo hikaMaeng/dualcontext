@@ -13,3 +13,4 @@ Minimal verified web-service baseline.
 | Testing | docs/testing.md |
 | MCP guide (zero-context) | docs/mcp-guide.md |
 | MCP design (proposal) | docs/mcp-design.md |
+| Execution model design (cancellation, concurrency, CPU isolation) | docs/execution-design.md |
