@@ -14,6 +14,8 @@ export type RunAugmentOptions = {
   mode?: ContextMode;
   /** 없으면 저장된 설정(plan_config). 실행 로그는 이번 실행에만 쓰는 설정(override 적용)을 넘긴다. */
   config?: ContextPlanConfig;
+  /** 실행 취소 신호(계획 모드의 레벨 · 웨이브 · 라운드 경계에서 확인한다). 모델 호출은 실행에 바인딩된 모델 클라이언트가 같은 신호로 취소한다. */
+  signal?: AbortSignal;
   onProgress?: (event: PlanProgress) => Promise<void> | void;
   /** 계획 단계마다 부분 trace 를 건넨다(계획 모드만). 받는 쪽은 호출 안에서 바로 직렬화한다. */
   onTrace?: (trace: PlanTrace) => void;
@@ -77,7 +79,7 @@ export async function runAugment(deps: Deps, query: string, options: RunAugmentO
 
   const config: ContextPlanConfig = { ...stored, mode };
   const ports = createPlanPorts(deps, options.writerId, config, engine.augment, options.onNode);
-  const { context, trace } = await engine.planContext(query, { config, ports, ...(options.onProgress ? { onProgress: options.onProgress } : {}), ...(options.onTrace ? { onTrace: options.onTrace } : {}) });
+  const { context, trace } = await engine.planContext(query, { config, ports, ...(options.signal ? { signal: options.signal } : {}), ...(options.onProgress ? { onProgress: options.onProgress } : {}), ...(options.onTrace ? { onTrace: options.onTrace } : {}) });
   const result = planResult(context, trace, ports.record.builds);
   const last = ports.record.lastAnswer;
   // 마지막 라운드 답변이 정확히 최종 컨텍스트로 만든 것일 때만 넘긴다(같은 프롬프트 · 같은 입력이므로 다시 부를 이유가 없다).

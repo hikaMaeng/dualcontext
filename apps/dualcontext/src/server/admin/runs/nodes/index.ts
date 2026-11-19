@@ -1,6 +1,7 @@
 import type pg from "pg";
 import type { RunNodeDetail } from "dualcontext_domain/common";
 import type { NodeSink } from "../../../plan/calls/index.js";
+import type { Queryable } from "../writer/index.js";
 
 /** 노드 키 모양: 규칙(runNodeKey)의 문자(영숫자 · : · - · _ · .)만. 그 밖의 값은 읽을 일이 없으므로 거부한다. */
 export const validNodeKey = (key: string): boolean => /^[A-Za-z0-9:_.-]{1,64}$/.test(key);
@@ -20,7 +21,7 @@ type Patch = Parameters<NodeSink>[1];
  * 쓰기 실패는 건너뛴다(실행을 멈추지 않는다). 직렬화는 push 안에서 바로 한다(호출자가 같은 객체를 계속 고칠 수 있다).
  * settle 은 대기 · 진행 중인 쓰기가 모두 끝날 때까지 기다린다. onSaved 는 한 번 쓴 뒤 불린다(실행 상세 방송).
  */
-export function createNodeSaver(pool: pg.Pool, runId: number, onSaved: () => Promise<void>, now: () => Date = () => new Date()) {
+export function createNodeSaver(pool: Queryable, runId: number, onSaved: () => Promise<void>, now: () => Date = () => new Date()) {
   const pending = new Map<string, Record<string, unknown>>();
   let pumping: Promise<void> | null = null;
   const pump = async () => {
@@ -28,8 +29,10 @@ export function createNodeSaver(pool: pg.Pool, runId: number, onSaved: () => Pro
       const [key, patch] = pending.entries().next().value as [string, Record<string, unknown>];
       pending.delete(key);
       try {
+        // 실행이 아직 running 일 때만 쓴다: 이미 발행된 쓰기가 종료 뒤에 늦게 끝나도 종료된 실행에 노드를 더하지 않는다.
         await pool.query(
-          `insert into augment_run_nodes (run_id, key, detail) values ($1, $2, $3)
+          `insert into augment_run_nodes (run_id, key, detail)
+           select $1::int, $2::text, $3::jsonb where exists (select 1 from augment_runs where id = $1::int and status = 'running')
            on conflict (run_id, key) do update set detail = augment_run_nodes.detail || excluded.detail, updated_at = now()`,
           [runId, key, JSON.stringify({ key, ...patch, at: now().toISOString() })]
         );
@@ -46,7 +49,8 @@ export function createNodeSaver(pool: pg.Pool, runId: number, onSaved: () => Pro
     });
   };
   const sink: NodeSink = (key, patch: Patch) => {
-    pending.set(key, { ...(pending.get(key) ?? {}), ...JSON.parse(JSON.stringify(patch)) });
+    // push 한 patch 는 이후 바뀌지 않는 것으로 다룬다(어댑터가 매 호출 새 객체를 만든다). 깊은 복사 없이 필드별 얕은 병합.
+    pending.set(key, { ...(pending.get(key) ?? {}), ...patch });
     if (pumping === null) start();
   };
   return {

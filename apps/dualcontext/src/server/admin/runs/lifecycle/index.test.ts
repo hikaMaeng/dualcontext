@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type pg from "pg";
-import type { AugmentResult, PlanTrace } from "dualcontext_domain/common";
+import { RunAborted, type AugmentResult, type PlanTrace } from "dualcontext_domain/common";
 import type { Deps, RunAugmentEngine } from "../../../augment/index.js";
 import { defaultPlanConfig } from "../../../plan/config/index.js";
 import { defaultRouterConfig } from "../../../routing/config/index.js";
+import { createRunWriter } from "../writer/index.js";
 import { createTraceSaver, startRun } from "./index.js";
 
 const classic: AugmentResult = {
@@ -33,6 +34,8 @@ function fake(stored: unknown, answers: string[] = []) {
     embed: async () => Promise.reject(new Error("쓰지 않는다")),
     settings: async () => ({ embedding: { baseUrl: "e", model: "em", apiKey: "k" }, chat: { baseUrl: "c", model: "cm", apiKey: "k" } })
   };
+  // 실행에 바인딩된 모델(forRun)은 이 시험에서는 같은 가짜 모델이다.
+  (model as Record<string, unknown>).forRun = () => model;
   return { deps: { pool, model, dataDir: "" } as unknown as Deps, calls, chats };
 }
 
@@ -105,20 +108,22 @@ test("부분 trace: 단계마다 plan 열에 쓰이고 끝난 뒤의 최종 trac
   };
   const { done } = await startRun(deps, "질의", undefined, { mode: "decompose" }, engine);
   await done;
-  const planWrites = calls.filter((call) => /^update augment_runs set plan = \$2 where id = \$1$/.test(call.text));
+  const planWrites = calls.filter((call) => /^update augment_runs set plan = \$2 where id = \$1 and status = 'running'$/.test(call.text));
   assert.ok(planWrites.length >= 1 && planWrites.length <= 3, "쓰기는 최신 것으로 합쳐질 수 있다");
   assert.equal(JSON.parse(String(planWrites.at(-1)?.values[1])).steps.length, 3, "마지막 부분 기록은 가장 최근 단계까지");
   const order = calls.map((call) => (/^update augment_runs set plan = \$2/.test(call.text) ? "partial" : /stage = 'answering'/.test(call.text) ? "final" : null)).filter(Boolean);
   assert.equal(order.at(-1), "final", "최종 trace 쓰기가 부분 쓰기보다 뒤");
 });
 
-test("createTraceSaver: 쓰는 동안 들어온 push 는 잃지 않고 가장 최근 것으로 이어 쓰며, 쓰기 실패는 던지지 않는다", async () => {
+test("createTraceSaver: push 는 최신 표본만 남기고 주기마다 한 번 쓴다. 쓰는 동안 들어온 push 도 잃지 않고, 쓰기 실패는 던지지 않는다", async () => {
   const written: string[] = [];
   let release: () => void = () => undefined;
   let first = true;
+  let started = 0;
   const pool = {
     query: async (text: string, values: unknown[] = []) => {
       if (/^update augment_runs set plan/.test(text)) {
+        started += 1;
         if (first) {
           first = false;
           await new Promise<void>((resolve) => { release = resolve; });
@@ -130,17 +135,85 @@ test("createTraceSaver: 쓰는 동안 들어온 push 는 잃지 않고 가장 �
       return { rows: [{ id: 1 }], rowCount: 1 };
     }
   } as unknown as pg.Pool;
-  const saver = createTraceSaver({ pool } as unknown as Deps, 1);
+  const saver = createTraceSaver(createRunWriter(pool), 1, async () => undefined, 5);
   const at = (n: number) => ({ n }) as unknown as PlanTrace;
   saver.push(at(1));
   saver.push(at(2));
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  assert.equal(started, 1, "한 번에 하나씩 쓴다(첫 쓰기가 끝나기 전에는 다음 표본을 쓰지 않는다)");
   saver.push(at(3));
   release();
   await saver.settle();
-  assert.deepEqual(written.map((json) => JSON.parse(json).n), [1, 3], "대기 중 push 는 최신(3)만 이어 쓴다");
+  assert.deepEqual(written.map((json) => JSON.parse(json).n), [2, 3], "첫 쓰기는 push(1,2) 중 표본(2), 이어서 최신(3)");
   saver.push(at(4));
   await saver.settle();
-  assert.equal(JSON.parse(written.at(-1) as string).n, 4, "실패 뒤에도 계속 쓴다");
+  assert.equal(JSON.parse(written.at(-1) as string).n, 3, "settle 로 닫힌 저장기는 이후 push 를 쓰지 않는다");
+});
+
+test("createTraceSaver: 표본은 직렬화 시점의 상태를 쓴다(push 이후 객체가 바뀌어도 마지막 상태)", async () => {
+  const written: string[] = [];
+  const pool = { query: async (text: string, values: unknown[] = []) => { if (/^update augment_runs set plan/.test(text)) written.push(String(values[1])); return { rows: [], rowCount: 1 }; } } as unknown as pg.Pool;
+  const saver = createTraceSaver(createRunWriter(pool), 1, async () => undefined, 1000);
+  const trace = { steps: [1] } as unknown as PlanTrace;
+  saver.push(trace);
+  (trace as unknown as { steps: number[] }).steps.push(2);
+  await saver.settle();
+  assert.deepEqual(JSON.parse(written[0]).steps, [1, 2]);
+});
+
+test("RunWriter: close 뒤에는 새 SQL 을 발행하지 않는다", async () => {
+  let sent = 0;
+  const pool = { query: async () => { sent += 1; return { rows: [], rowCount: 1 }; } } as unknown as pg.Pool;
+  const writer = createRunWriter(pool);
+  await writer.query("update x");
+  writer.close();
+  await writer.query("update y");
+  assert.equal(sent, 1);
+  assert.equal(writer.closed, true);
+});
+
+test("취소(사용자 이탈): 실행 중 신호가 abort 되면 error 로 끝나고 오류는 취소됨(cancelled), 이후 쓰기는 종료 상태를 덮지 않는다", async () => {
+  const { deps, calls } = fake({ ...defaultPlanConfig(), mode: "classic" });
+  let started: () => void = () => undefined;
+  const running = new Promise<void>((resolve) => { started = resolve; });
+  const engine: RunAugmentEngine = {
+    augment: async (d) => {
+      started();
+      await new Promise((_resolve, reject) => setTimeout(() => reject(new RunAborted("cancelled")), 30));
+      return classic;
+    },
+    planContext: async () => { throw new Error("쓰지 않는다"); }
+  };
+  const { done, cancel } = await startRun(deps, "질의", undefined, {}, engine);
+  await running;
+  cancel();
+  const outcome = await done;
+  assert.equal(outcome.error, "취소됨(cancelled)");
+  assert.equal(outcome.aborted, "cancelled");
+  const final = calls.find((call) => /set status = \$2/.test(call.text));
+  assert.deepEqual(final?.values.slice(1, 3), ["error", "취소됨(cancelled)"]);
+  assert.match(final?.text ?? "", /status = 'running'$/);
+  assert.equal(calls.some((call) => /set answers = coalesce/.test(call.text)), false, "취소된 실행은 최종 답변을 만들지 않는다");
+});
+
+test("시한 만료(deadline): 계획 모드의 부분 결과는 오류 없이 저장되고 최종 답변 호출은 하지 않는다", async () => {
+  const { deps, calls, chats } = fake({ ...defaultPlanConfig(), mode: "decompose" });
+  const partial = { ...trace, mode: "decompose", stop: "deadline" } as unknown as PlanTrace;
+  const engine: RunAugmentEngine = { augment: async () => classic, planContext: async () => ({ context: "부분 컨텍스트", trace: partial }) };
+  const { done } = await startRun(deps, "질의", undefined, {}, engine);
+  const outcome = await done;
+  assert.equal(outcome.error, null);
+  assert.equal(outcome.plan?.stop, "deadline");
+  assert.equal(chats.length, 0, "부분 결과 뒤에는 추가 모델 호출이 없다");
+  assert.equal(calls.some((call) => /set answers = coalesce/.test(call.text)), false);
+});
+
+test("보관 삭제는 진행 중인 실행을 지우지 않는다", async () => {
+  const { deps, calls } = fake(defaultPlanConfig());
+  const { done } = await startRun(deps, "질의", undefined, {}, { augment: async () => classic, planContext: async () => { throw new Error("x"); } });
+  await done;
+  const del = calls.find((call) => /^delete from augment_runs/.test(call.text));
+  assert.match(del?.text ?? "", /status <> 'running'/);
 });
 
 test("노드 기록: 계획 · classic 실행의 onNode 조각이 augment_run_nodes 에 쓰이고 최종 답변 호출이 answer:before · after 노드로 남는다", async () => {

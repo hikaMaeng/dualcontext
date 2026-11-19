@@ -41,6 +41,8 @@ function register(engine: RunAugmentEngine, stored: unknown = defaultPlanConfig(
   let handler: Handler | null = null;
   const server = { registerTool: (_name: string, config: { inputSchema: typeof captured.schema }, run: Handler) => { handler = run; captured.schema = config.inputSchema; } };
   registerAugmentTool(server as never, { pool, model, dataDir: "" } as unknown as Deps, engine);
+  // 실행에 바인딩된 모델(forRun)은 이 시험에서는 같은 가짜 모델이다.
+  (model as Record<string, unknown>).forRun = () => model;
   return { run: (args: Args) => (handler as Handler)(args), calls, chats };
 }
 
