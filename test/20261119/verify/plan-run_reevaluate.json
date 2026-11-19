@@ -1,0 +1,3090 @@
+{
+  "runId": 313,
+  "mode": "reevaluate",
+  "maxItems": 3,
+  "elapsedMs": 722745,
+  "status": "error",
+  "error": "취소됨(cancelled)",
+  "planStop": null,
+  "items": 3,
+  "rounds": 0,
+  "steps": 4,
+  "answers": {
+    "before": null,
+    "after": null
+  },
+  "calls": 5,
+  "maxInFlight": 3,
+  "peakQueued": 0,
+  "eventLoopP99Max": 11.6,
+  "eventLoopMax": 23.2,
+  "finalQueues": {
+    "chat": {
+      "workers": 9,
+      "inFlight": 0,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 3,
+      "dispatched": 9,
+      "retried": 0,
+      "cancelled": 3
+    },
+    "embed": {
+      "workers": 32,
+      "inFlight": 0,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 2,
+      "dispatched": 9,
+      "retried": 0,
+      "cancelled": 0
+    }
+  },
+  "samples": [
+    {
+      "t": 0,
+      "stage": "augment",
+      "progress": "analyze",
+      "chat": {
+        "workers": 9,
+        "inFlight": 0,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 1,
+        "dispatched": 4,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 11.6,
+        "max": 11.6,
+        "samples": 8
+      }
+    },
+    {
+      "t": 5,
+      "stage": "augment",
+      "progress": "analyze",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 1,
+        "dispatched": 5,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11,
+        "max": 11.1,
+        "samples": 496
+      }
+    },
+    {
+      "t": 10,
+      "stage": "augment",
+      "progress": "analyze",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 1,
+        "dispatched": 6,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.5,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 15,
+      "stage": "augment",
+      "progress": "analyze",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 1,
+        "dispatched": 6,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 20,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 3,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11,
+        "max": 23.2,
+        "samples": 493
+      }
+    },
+    {
+      "t": 25,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 3,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11.1,
+        "max": 11.1,
+        "samples": 496
+      }
+    },
+    {
+      "t": 30,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 3,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11,
+        "max": 11.2,
+        "samples": 495
+      }
+    },
+    {
+      "t": 35,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 3,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11.1,
+        "max": 11.4,
+        "samples": 494
+      }
+    },
+    {
+      "t": 40,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 3,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11.1,
+        "max": 11.2,
+        "samples": 495
+      }
+    },
+    {
+      "t": 45,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 3,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 50,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 3,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 55,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 2,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 496
+      }
+    },
+    {
+      "t": 60,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 2,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 65,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 496
+      }
+    },
+    {
+      "t": 70,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 75,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 80,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 85,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.5,
+        "samples": 495
+      }
+    },
+    {
+      "t": 90,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 95,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 493
+      }
+    },
+    {
+      "t": 100,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 106,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 111,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 116,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 121,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 126,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 131,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 136,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 141,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 146,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 151,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 156,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 161,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 166,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 171,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 176,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 181,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 493
+      }
+    },
+    {
+      "t": 186,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 191,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 196,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11.4,
+        "samples": 494
+      }
+    },
+    {
+      "t": 201,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 493
+      }
+    },
+    {
+      "t": 206,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 211,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 10.9,
+        "samples": 497
+      }
+    },
+    {
+      "t": 216,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 221,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 226,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 231,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 236,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.8,
+        "samples": 495
+      }
+    },
+    {
+      "t": 241,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11.5,
+        "samples": 495
+      }
+    },
+    {
+      "t": 246,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 251,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 256,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 261,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 266,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.8,
+        "samples": 495
+      }
+    },
+    {
+      "t": 271,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 276,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 281,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 286,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.5,
+        "max": 10.9,
+        "samples": 496
+      }
+    },
+    {
+      "t": 291,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 296,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 301,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 306,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 311,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 316,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 321,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.8,
+        "samples": 493
+      }
+    },
+    {
+      "t": 326,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 331,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 336,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 341,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 346,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 351,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 356,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 361,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 366,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 371,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.6,
+        "max": 10.7,
+        "samples": 495
+      }
+    },
+    {
+      "t": 376,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 382,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.9,
+        "max": 11.2,
+        "samples": 493
+      }
+    },
+    {
+      "t": 387,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 392,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 492
+      }
+    },
+    {
+      "t": 397,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 402,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 407,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 412,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 417,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 422,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 427,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 432,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 437,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 442,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 447,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.8,
+        "samples": 495
+      }
+    },
+    {
+      "t": 452,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 457,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 462,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 467,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 472,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 477,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 482,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 487,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 492,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 497,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.2,
+        "samples": 494
+      }
+    },
+    {
+      "t": 502,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 507,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.8,
+        "samples": 495
+      }
+    },
+    {
+      "t": 512,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 517,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 522,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 527,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 496
+      }
+    },
+    {
+      "t": 532,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 537,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 542,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 547,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 552,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.8,
+        "samples": 496
+      }
+    },
+    {
+      "t": 557,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 562,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 567,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 572,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 577,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 582,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 587,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 11,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 592,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 597,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 602,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 607,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 612,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 617,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 622,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 627,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.6,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 632,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 496
+      }
+    },
+    {
+      "t": 637,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 496
+      }
+    },
+    {
+      "t": 642,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 647,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 494
+      }
+    },
+    {
+      "t": 653,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 658,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.3,
+        "samples": 494
+      }
+    },
+    {
+      "t": 663,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 495
+      }
+    },
+    {
+      "t": 668,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 493
+      }
+    },
+    {
+      "t": 673,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 678,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.2,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 495
+      }
+    },
+    {
+      "t": 683,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 688,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11,
+        "samples": 494
+      }
+    },
+    {
+      "t": 693,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 493
+      }
+    },
+    {
+      "t": 698,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 11.3,
+        "samples": 494
+      }
+    },
+    {
+      "t": 703,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11,
+        "samples": 495
+      }
+    },
+    {
+      "t": 708,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 494
+      }
+    },
+    {
+      "t": 713,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.9,
+        "max": 11.1,
+        "samples": 493
+      }
+    },
+    {
+      "t": 718,
+      "stage": "augment",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 1,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 2
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.8,
+        "max": 10.9,
+        "samples": 334
+      }
+    },
+    {
+      "t": 723,
+      "stage": "done",
+      "progress": "dependencies",
+      "chat": {
+        "workers": 9,
+        "inFlight": 0,
+        "queued": 0,
+        "delayed": 0,
+        "maxInFlight": 3,
+        "dispatched": 9,
+        "retried": 0,
+        "cancelled": 3
+      },
+      "eventLoop": {
+        "p50": 10.1,
+        "p99": 10.7,
+        "max": 10.9,
+        "samples": 495
+      }
+    }
+  ]
+}

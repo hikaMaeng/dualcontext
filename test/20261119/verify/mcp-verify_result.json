@@ -1,5 +1,5 @@
 {
-  "startedAt": "2026-11-19T03:01:13.472Z",
+  "startedAt": "2026-11-19T03:15:35.861Z",
   "checks": [
     {
       "name": "status: queues · activeRuns · eventLoop 가 있다",
@@ -9,7 +9,7 @@
     {
       "name": "light: 중계로 정상 응답(머리 + 컨텍스트)",
       "ok": true,
-      "detail": "[dualcontext] effort=light coverage=ok sources=2 elapsed=17s | next: -"
+      "detail": "[dualcontext] effort=light coverage=ok sources=2 elapsed=16s | next: -"
     },
     {
       "name": "light: 진행 알림이 단조 증가로 왔다",
@@ -19,17 +19,17 @@
     {
       "name": "light: 실행 로그에 MCP 로 남았다",
       "ok": true,
-      "detail": "{\"id\":310,\"source\":\"mcp\",\"status\":\"ok\"}"
+      "detail": "{\"id\":314,\"source\":\"mcp\",\"status\":\"ok\"}"
     },
     {
       "name": "취소: middle 실행이 시작되어 running 이다",
       "ok": true,
-      "detail": "{\"id\":311,\"status\":\"running\"}"
+      "detail": "{\"id\":315,\"status\":\"running\"}"
     },
     {
       "name": "취소: 취소 알림 뒤 실행이 error(취소됨)로 닫힌다",
       "ok": true,
-      "detail": "{\"status\":\"error\",\"error\":\"취소됨(cancelled)\",\"afterMs\":624}"
+      "detail": "{\"status\":\"error\",\"error\":\"취소됨(cancelled)\",\"afterMs\":541}"
     },
     {
       "name": "취소: 큐의 진행 중 요청이 0 으로 돌아오고 활성 실행이 없다",
@@ -39,7 +39,7 @@
     {
       "name": "EOF: middle 실행이 시작되어 running 이다",
       "ok": true,
-      "detail": "{\"id\":312}"
+      "detail": "{\"id\":316}"
     },
     {
       "name": "EOF: stdio 가 닫히면 실행이 취소된다",
@@ -53,13 +53,13 @@
     }
   ],
   "light": {
-    "elapsedMs": 17472,
-    "header": "[dualcontext] effort=light coverage=ok sources=2 elapsed=17s\nnext: -",
-    "runId": 310,
+    "elapsedMs": 15569,
+    "header": "[dualcontext] effort=light coverage=ok sources=2 elapsed=16s\nnext: -",
+    "runId": 314,
     "progressCount": 1
   },
   "cancel": {
-    "runId": 311,
+    "runId": 315,
     "closed": {
       "status": "error",
       "error": "취소됨(cancelled)"
@@ -86,7 +86,7 @@
     }
   },
   "eof": {
-    "runId": 312,
+    "runId": 316,
     "closed": {
       "status": "error",
       "error": "취소됨(cancelled)"
@@ -115,7 +115,7 @@
         "queued": 0,
         "delayed": 0,
         "maxInFlight": 2,
-        "dispatched": 8,
+        "dispatched": 7,
         "retried": 0,
         "cancelled": 0
       }
@@ -123,10 +123,10 @@
     "activeRuns": 0,
     "eventLoop": {
       "p50": 10.1,
-      "p99": 10.9,
-      "max": 19.6,
-      "samples": 615
+      "p99": 10.8,
+      "max": 11.5,
+      "samples": 618
     }
   },
-  "finishedAt": "2026-11-19T03:01:48.586Z"
+  "finishedAt": "2026-11-19T03:16:08.921Z"
 }

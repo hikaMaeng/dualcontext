@@ -1,0 +1,56 @@
+{
+  "checks": [
+    {
+      "name": "SSE: 실행이 끝나면 화면이 따라간다(콘솔 오류 없음)",
+      "ok": false,
+      "detail": "{\"eventRequests\":1,\"pollRequests\":0,\"doneMs\":126145}"
+    },
+    {
+      "name": "SSE: 이벤트 스트림 하나로 받고 상세 폴링을 하지 않는다",
+      "ok": true,
+      "detail": "{\"eventRequests\":1,\"pollRequests\":0}"
+    },
+    {
+      "name": "취소: 화면에 취소됨이 반영된다",
+      "ok": true,
+      "detail": "{\"status\":\"error\",\"error\":\"취소됨(cancelled)\",\"consoleErrors\":[\"Failed to load resource: the server responded with a status of 404 (Not Found)\",\"Failed to load resource: the server responded with a status of 404 (Not Found)\"]}"
+    }
+  ],
+  "normal": {
+    "mode": "normal",
+    "runId": 319,
+    "status": "running",
+    "error": null,
+    "openedToDoneMs": 126145,
+    "eventRequests": 1,
+    "pollRequests": 0,
+    "nodeRequests": 18,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "screenText": "dualcontext\n조사원\n프로시저\n라우터\n컨텍스트 계획\n라이터\nAI 서버 설정\n시험 실행\n실행 로그\n\n데이터베이스 연결됨. 한국어 검색 분석 예시: '검색':3 '한국어':1 '형태소':2\n\n상태\n실행 로그\n목록으로\n실행 상세 #319\n질의\n\n근로계약서 없이 일했을 때 퇴직금 청구 요건\n\n실행 계획\n기본(classic)\n라이터: 기본 조립 (일괄)\n모드"
+  },
+  "cancelled": {
+    "mode": "cancel",
+    "runId": 320,
+    "status": "error",
+    "error": "취소됨(cancelled)",
+    "openedToDoneMs": 5073,
+    "eventRequests": 1,
+    "pollRequests": 0,
+    "nodeRequests": 2,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "screenText": "dualcontext\n조사원\n프로시저\n라우터\n컨텍스트 계획\n라이터\nAI 서버 설정\n시험 실행\n실행 로그\n\n데이터베이스 연결됨. 한국어 검색 분석 예시: '검색':3 '한국어':1 '형태소':2\n\n상태\n실행 로그\n목록으로\n실행 상세 #320\n삭제\n질의\n\n근로계약서 없이 일했을 때 퇴직금 청구 요건\n\n실행 계획\n기본(classic)\n라이터: 기본 조립 (일괄)"
+  }
+}

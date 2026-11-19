@@ -35,8 +35,9 @@ export function useNodeDetail(runId: number, key: string | null, options: { runn
     loadNode(runId, key)
       .then((doc) => {
         if (stale) return;
+        // 문서가 아직 없는 것(null)도 「바뀌지 않음」이다: 만들어지기를 기다리는 동안 4초 간격으로 404 를 두드리지 않는다.
         const at = doc?.at ?? null;
-        unchanged.current = at !== null && at === lastAt.current ? unchanged.current + 1 : 0;
+        unchanged.current = at === lastAt.current ? unchanged.current + 1 : 0;
         lastAt.current = at;
         setState({ status: doc ? "ready" : "missing", doc, for: identity });
       })

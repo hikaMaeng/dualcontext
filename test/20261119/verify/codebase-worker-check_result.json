@@ -1,0 +1,53 @@
+{
+  "createdStatus": 201,
+  "researcherId": 62,
+  "rounds": [
+    {
+      "round": 1,
+      "elapsedMs": 23977,
+      "isError": false,
+      "header": "[dualcontext] effort=light coverage=ok sources=4 elapsed=24s\nnext: -",
+      "hasSection": true,
+      "chars": 21808,
+      "sample": "PDFit 코드베이스(검증용 임시)\n\n[R62-1] README_kor.md:1-43 doc README_kor.md\n# PDFit\n\n**한국어** · [English](README.md)\n\n> WebGPU와 PDFium WebAssembly로 빠르게 읽고, 태그로 방대한 PDF를 직관적으로 관리하는 개인용 문서 서재입니다.\n\n<p align=\"center\">\n  <img src=\"apps/pdfit/public/brand/pdfit-logo-dark.png\" alt=\"PDFit 로고\" width=\"180\" />\n</p>\n\nPDFit은 로컬 PDF 컬렉션을 검색 가능한 독서 작업공간으로 바꿉니다. 공개 저장소는 `apps/pdfit` 기반의 로컬/USB/SMB Docker 서비스만 제공합니다.\n\n[![Doc"
+    },
+    {
+      "round": 2,
+      "elapsedMs": 17722,
+      "isError": false,
+      "header": "[dualcontext] effort=light coverage=ok sources=4 elapsed=18s\nnext: -",
+      "hasSection": true,
+      "chars": 22083,
+      "sample": "PDFit 코드베이스(검증용 임시)\n\n[R62-1] README_kor.md:1-43 doc README_kor.md\n# PDFit\n\n**한국어** · [English](README.md)\n\n> WebGPU와 PDFium WebAssembly로 빠르게 읽고, 태그로 방대한 PDF를 직관적으로 관리하는 개인용 문서 서재입니다.\n\n<p align=\"center\">\n  <img src=\"apps/pdfit/public/brand/pdfit-logo-dark.png\" alt=\"PDFit 로고\" width=\"180\" />\n</p>\n\nPDFit은 로컬 PDF 컬렉션을 검색 가능한 독서 작업공간으로 바꿉니다. 공개 저장소는 `apps/pdfit` 기반의 로컬/USB/SMB Docker 서비스만 제공합니다.\n\n[![Doc"
+    }
+  ],
+  "eventLoop": {
+    "p50": 10.1,
+    "p99": 10.9,
+    "max": 50.6,
+    "samples": 4269
+  },
+  "queues": {
+    "chat": {
+      "workers": 9,
+      "inFlight": 0,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 1,
+      "dispatched": 8,
+      "retried": 0,
+      "cancelled": 2
+    },
+    "embed": {
+      "workers": 32,
+      "inFlight": 0,
+      "queued": 0,
+      "delayed": 0,
+      "maxInFlight": 3,
+      "dispatched": 14,
+      "retried": 0,
+      "cancelled": 0
+    }
+  },
+  "logTail": []
+}

@@ -3,26 +3,26 @@
     "mcpItemBadgeCount": 1,
     "mcpItemBadgeText": "MCP",
     "testItemBadgeCount": 0,
-    "mcpItemEffort": "high",
-    "mcpItemEffortAttr": "high",
+    "mcpItemEffort": "light",
+    "mcpItemEffortAttr": "light",
     "testItemEffortCount": 0
   },
   "mcpView": {
-    "id": 296,
+    "id": 314,
     "badgeCount": 1,
     "effortCount": 1,
-    "effortText": "high",
+    "effortText": "light",
     "badgeText": "MCP",
-    "heading": "실행 상세 #296MCPhigh",
+    "heading": "실행 상세 #314MCPlight",
     "beforeAnswerNodeInPage": false
   },
   "testView": {
-    "id": 287,
+    "id": 313,
     "badgeCount": 0,
     "effortCount": 0,
     "effortText": null,
     "badgeText": null,
-    "heading": "실행 상세 #287",
+    "heading": "실행 상세 #313",
     "beforeAnswerNodeInPage": true
   },
   "consoleErrors": [],
