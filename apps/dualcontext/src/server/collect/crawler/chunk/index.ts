@@ -1,4 +1,6 @@
-export type Chunk = { index: number; heading: string; text: string };
+import { parseTitle } from "./title.js";
+
+export type Chunk ={ index: number; heading: string; text: string };
 
 /**
  * 마크다운을 검색용 조각으로 나눈다. 제목(#)에서 먼저 끊고, 한 절이 chunkChars 보다 길면 문단 → 문장 경계에서 자른다.
@@ -16,10 +18,10 @@ export function chunkMarkdown(markdown: string, chunkChars: number): Chunk[] {
   };
   for (const line of markdown.split(/\r?\n/)) {
     if (/^\s*```/.test(line)) inFence = !inFence;
-    const title = !inFence ? line.match(/^#{1,4}\s+(.+?)\s*#*$/) : null;
-    if (title) {
+    const title = !inFence ? parseTitle(line) : null;
+    if (title !== null) {
       flush();
-      heading = title[1];
+      heading = title;
     } else lines.push(line);
   }
   flush();

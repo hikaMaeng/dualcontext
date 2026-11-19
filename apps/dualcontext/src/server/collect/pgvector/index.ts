@@ -1,6 +1,7 @@
 import type pg from "pg";
 import type { Material } from "dualcontext_domain/common";
 import type { ModelClient } from "../../model/index.js";
+import { raceAbort, throwIfAborted } from "../abort/index.js";
 import { excerpt } from "./excerpt.js";
 import { extractIdentifiers, likePattern } from "./identifiers.js";
 
@@ -50,7 +51,7 @@ type Target = { from: string; titleSql: string; textColumn: string; idColumn: st
  * 질의에 적힌 식별자(CVE ID, 모델명, 「질문 61」 같은 번호)를 문자열로 정확히 찾는다. 임베딩이 놓치는 경우를 메운다(실행 로그 #25).
  * 인덱스가 없는 순차 검색이라 행이 수천 개 이하인 테이블용이다. 큰 테이블은 config.identifierSearch=false 로 끈다.
  */
-export async function findByIdentifiers(pool: pg.Pool, target: Target, query: string): Promise<Material[]> {
+export async function findByIdentifiers(pool: pg.Pool, target: Target, query: string, signal?: AbortSignal): Promise<Material[]> {
   const { literals, refs } = extractIdentifiers(query);
   const found: Material[] = [];
   const seen = new Set<string>();
@@ -63,17 +64,22 @@ export async function findByIdentifiers(pool: pg.Pool, target: Target, query: st
   };
   const select = `select ${target.titleSql} as title, left("${target.textColumn}"::text, $2) as text from ${target.from}`;
   for (const value of literals) {
-    const { rows } = await pool.query<{ title: string; text: string }>(
-      `${select} where ${target.titleSql} ilike $1 or "${target.textColumn}"::text ilike $1 limit ${maxLiteralHits + 1}`,
-      [likePattern(value), target.snippetChars + 1]
+    throwIfAborted(signal);
+    const { rows } = await raceAbort(
+      pool.query<{ title: string; text: string }>(
+        `${select} where ${target.titleSql} ilike $1 or "${target.textColumn}"::text ilike $1 limit ${maxLiteralHits + 1}`,
+        [likePattern(value), target.snippetChars + 1]
+      ),
+      signal
     );
     if (rows.length <= maxLiteralHits) push(rows);
   }
   if (target.idColumn) {
     for (const ref of refs) {
-      const { rows } = await pool.query<{ title: string; text: string }>(
-        `${select} where "${target.idColumn}"::text = $1 or "${target.idColumn}"::text like $3 limit 2`,
-        [ref, target.snippetChars + 1, `%/${ref}`]
+      throwIfAborted(signal);
+      const { rows } = await raceAbort(
+        pool.query<{ title: string; text: string }>(`${select} where "${target.idColumn}"::text = $1 or "${target.idColumn}"::text like $3 limit 2`, [ref, target.snippetChars + 1, `%/${ref}`]),
+        signal
       );
       push(rows);
     }
@@ -93,7 +99,7 @@ export function mergeIdentifierRows(exact: Material[], vector: Material[], topK:
  * 전체 차원 컬럼으로 재순위화해 topK 개를 돌려준다. 없으면 전체 차원 컬럼만 쓴다.
  * 질의 임베딩은 AI 서버 설정의 임베딩 모델로 만든다(테이블의 벡터와 같은 모델이어야 한다).
  */
-export async function collectPgvector(pool: pg.Pool, model: ModelClient, config: Record<string, unknown>, query: string): Promise<Material[]> {
+export async function collectPgvector(pool: pg.Pool, model: ModelClient, config: Record<string, unknown>, query: string, signal?: AbortSignal): Promise<Material[]> {
   const table = assertIdentifier(config.table, "table");
   const vectorColumn = assertIdentifier(config.vectorColumn, "vectorColumn");
   const textColumn = assertIdentifier(config.textColumn, "textColumn");
@@ -109,29 +115,36 @@ export async function collectPgvector(pool: pg.Pool, model: ModelClient, config:
   const idColumn = config.idColumn ? assertIdentifier(config.idColumn, "idColumn") : null;
   const identifierSearch = config.identifierSearch !== false;
 
-  const [full] = await model.embed([query]);
+  // 임베딩 호출은 모델 층(큐 · 신호)이 취소를 다룬다. 이 아래의 DB 쿼리는 취소할 수 없으므로 `raceAbort` 로 기다림만 끝낸다.
+  const [full] = await raceAbort(model.embed([query]), signal);
   const titleSql = titleColumn ? `"${titleColumn}"::text` : `'${table}'`;
   const from = `"public"."${table}"`;
 
   const withIdentifiers = async (vector: Material[]) =>
-    identifierSearch ? mergeIdentifierRows(await findByIdentifiers(pool, { from, titleSql, textColumn, idColumn, snippetChars }, query), vector, topK) : vector;
+    identifierSearch ? mergeIdentifierRows(await findByIdentifiers(pool, { from, titleSql, textColumn, idColumn, snippetChars }, query, signal), vector, topK) : vector;
 
   if (!reducedColumn) {
-    const { rows } = await pool.query<RawRow>(
-      `select ${titleSql} as title, left("${textColumn}"::text, $3) as text, 1 - ("${vectorColumn}" <=> $1::vector) as score from ${from} order by "${vectorColumn}" <=> $1::vector limit $2`,
-      [literal(full), topK, snippetChars + 1]
+    const { rows } = await raceAbort(
+      pool.query<RawRow>(
+        `select ${titleSql} as title, left("${textColumn}"::text, $3) as text, 1 - ("${vectorColumn}" <=> $1::vector) as score from ${from} order by "${vectorColumn}" <=> $1::vector limit $2`,
+        [literal(full), topK, snippetChars + 1]
+      ),
+      signal
     );
     return withIdentifiers(toMaterials(rows, snippetChars, minScore));
   }
 
   const reducedDim = Number(config.reducedDim);
   if (!Number.isInteger(reducedDim) || reducedDim < 1 || reducedDim > full.length) throw new Error("reducedDim must be an integer within the embedding size");
-  const { rows } = await pool.query<RawRow>(
-    `select title, text, 1 - (full_vector <=> $2::vector) as score from (
+  const { rows } = await raceAbort(
+    pool.query<RawRow>(
+      `select title, text, 1 - (full_vector <=> $2::vector) as score from (
        select ${titleSql} as title, left("${textColumn}"::text, $5) as text, "${vectorColumn}" as full_vector
          from ${from} order by "${reducedColumn}" <=> $1::vector limit $3
      ) candidates order by full_vector <=> $2::vector limit $4`,
-    [literal(reduceMrl(full, reducedDim)), literal(full), topK * candidatePool, topK, snippetChars + 1]
+      [literal(reduceMrl(full, reducedDim)), literal(full), topK * candidatePool, topK, snippetChars + 1]
+    ),
+    signal
   );
   return withIdentifiers(toMaterials(rows, snippetChars, minScore));
 }

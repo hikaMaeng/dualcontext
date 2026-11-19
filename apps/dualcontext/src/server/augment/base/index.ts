@@ -8,7 +8,13 @@ import { createSelectors } from "../../routing/index.js";
 import { createWriter, loadWriter } from "../../writer/index.js";
 
 /** 서버가 가진 의존성 묶음. MCP 도구와 관리자 API 가 같은 것을 쓴다. */
-export type Deps = { pool: pg.Pool; model: ModelClient; dataDir: string };
+export type Deps = {
+  pool: pg.Pool;
+  model: ModelClient;
+  dataDir: string;
+  /** 실행 취소 신호(실행마다 `startRun` 이 채운다). 수집기가 `fetch` · 파일 루프 · 대기에 쓴다. 모델 호출은 `model.forRun` 이 같은 신호로 취소한다. */
+  signal?: AbortSignal;
+};
 
 /**
  * 한 번의 기본 증강(조사원 라우팅 → 수집 → 프로시저 → 라이터). classic 모드가 이것 하나이고,
@@ -23,7 +29,7 @@ export async function augment(deps: Deps, query: string, writerId?: number, prov
     split: selectors.split,
     selectResearchers: selectors.selectResearchers,
     selectProcedures: selectors.selectProcedures,
-    collect: (researcher, text) => collect(deps.pool, deps.model, deps.dataDir, researcher, text),
+    collect: (researcher, text) => collect(deps.pool, deps.model, deps.dataDir, researcher, text, deps.signal),
     writer: createWriter(deps.model, await loadWriter(deps.pool, writerId))
   };
   return provided && provided.length > 0 ? augmentQuery(query, ports, provided) : augmentQuery(query, ports);

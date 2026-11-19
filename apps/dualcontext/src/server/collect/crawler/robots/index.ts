@@ -1,3 +1,5 @@
+import { matches, robotsLimits } from "./match.js";
+
 /** 크롤러가 robots.txt 에서 자신을 가리키는 이름. User-Agent 헤더에도 같은 토큰을 쓴다. */
 export const botToken = "dualcontext";
 
@@ -43,22 +45,29 @@ export function parseRobots(text: string): Robots {
   const mine = groups.filter((group) => group.agents.some((agent) => agent === botToken));
   const chosen = mine.length > 0 ? mine : groups.filter((group) => group.agents.includes("*"));
   return {
-    rules: chosen.flatMap((group) => group.rules),
+    rules: boundRules(chosen.flatMap((group) => group.rules)),
     crawlDelaySeconds: chosen.map((group) => group.delay).find((delay) => delay !== null) ?? null
   };
 }
 
-function matches(pattern: string, path: string): boolean {
-  const anchored = pattern.endsWith("$");
-  const body = anchored ? pattern.slice(0, -1) : pattern;
-  const expression = body.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join(".*");
-  return new RegExp(`^${expression}${anchored ? "$" : ""}`).test(path);
+/**
+ * 선택된 그룹을 합친 규칙에 상한을 둔다: 앞쪽 200개만 쓴다(동작 변경). 패턴이 256자를 넘는 규칙은 Allow 면 버리고
+ * Disallow 면 앞 256자의 접두 규칙(`$` 고정 없음)으로 줄인다(동작 변경): 상한 때문에 금지가 풀리는 쪽으로 틀어지지 않게 한다.
+ */
+function boundRules(rules: Rule[]): Rule[] {
+  const bounded: Rule[] = [];
+  for (const rule of rules.slice(0, robotsLimits.rulesPerGroup)) {
+    if (rule.pattern.length <= robotsLimits.patternChars) bounded.push(rule);
+    else if (!rule.allow) bounded.push({ allow: false, pattern: rule.pattern.slice(0, robotsLimits.patternChars).replace(/\$+$/, "") });
+  }
+  return bounded;
 }
 
-/** path 는 경로 + 쿼리(`/a/b?x=1`). 일치하는 규칙이 없으면 허용. */
-export function isAllowed(robots: Robots, path: string): boolean {
+/** path 는 경로 + 쿼리(`/a/b?x=1`)이고 앞 2048자만 본다(동작 변경). 일치하는 규칙이 없으면 허용. */
+export function isAllowed(robots: Robots, rawPath: string): boolean {
+  const path = rawPath.length > robotsLimits.pathChars ? rawPath.slice(0, robotsLimits.pathChars) : rawPath;
   let best: Rule | null = null;
-  for (const rule of robots.rules) {
+  for (const rule of robots.rules.length > robotsLimits.rulesPerGroup ? robots.rules.slice(0, robotsLimits.rulesPerGroup) : robots.rules) {
     if (!matches(rule.pattern, path)) continue;
     if (best === null || rule.pattern.length > best.pattern.length || (rule.pattern.length === best.pattern.length && rule.allow)) best = rule;
   }

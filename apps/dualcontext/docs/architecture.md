@@ -4,15 +4,21 @@
 | --- | --- | --- |
 | `src/server/index.ts` | 진입. 기본값을 시드한 뒤 `--stdio` 면 MCP stdio, 아니면 HTTP(헬스 + 관리자 + 프런트). | `src/server/index.ts` |
 | `src/server/app.ts` | Express 앱. `/health`, `/api/admin`, 정적 서빙. | `createApp` |
-| `src/server/mcp` | MCP 서버. 도구 `augment_context` 하나. 입력 `query` + 선택 `effort`, 응답은 고정 머리 + 컨텍스트. `augment/effort`(effort → 모드 · `maxRounds`), `augment/envelope`(응답 머리 · coverage · 오류 한 줄). | `mcp/tools/augment`, `mcp/tools/augment/effort`, `mcp/tools/augment/envelope` |
+| `src/server/mcp` | MCP 서버. 도구 `augment_context` 하나. 입력 `query` + 선택 `effort`, 응답은 고정 머리 + 컨텍스트. `tools/augment`(도구 등록 · 진행 알림 · 취소 신호 결합), `tools/augment/effort`(effort → 모드 · `maxRounds`), `tools/augment/envelope`(응답 머리 · coverage · 오류 한 줄), `tools/augment/run`(엔진 소유 프로세스의 로컬 실행기), `relay`(stdio 프로세스가 서버의 내부 listener 로 중계), `transport`(SDK transport 를 감싼 취소 어댑터: 요청 수신 즉시 신호 등록 · 요청 ID 0 취소 · 응답 억제). | `mcp/index.ts`, `mcp/tools/augment`, `mcp/relay`, `mcp/transport` |
 | `src/server/augment` | 증강 진입점 `runAugment`(MCP 와 시험 실행이 공유): 모드가 `classic` 이면 `base/` 의 한 번의 기본 증강(도메인 `augmentQuery` 에 저장소 · 라우팅 · 수집 · 라이터 포트를 채운다), 계획 모드면 도메인 `planContext` 를 부르고 결과를 `AugmentResult` 로 바꾼다(`planResult`). `base/` 를 따로 둔 것은 계획기 어댑터가 이것을 가져가 순환 import 를 피하려는 것이다. | `augment/index.ts#runAugment`, `augment/base/index.ts#augment` |
 | `src/server/plan` | 컨텍스트 계획기의 앱 어댑터. `prompts/`(기본 프롬프트 4종, JSON 응답 스키마 · 데이터 구분자 포함, `legacy/` 는 옛 기본값 = 저장 행 승격 비교 기준), `parse/`(기대 스키마에 맞는 JSON 후보 선택 · 항목 검증 · 길이 상한 · 점수 클램프 · 평가 형식 오류는 던짐), `ports/`(`createPlanPorts`: 채팅 모델 · 답변 프롬프트 · 기본 증강으로 `PlanPorts` 를 채우고 아이템별 원본 결과를 기록), `provided/`(사전 컨텍스트의 중첩 섹션 제거 · 길이 상한), `config/`(설정 스키마 · 기본값 · `plan_config` 읽기/쓰기 · 실행 한 번 override). 플래너 자체는 도메인(`dualcontext_domain/server#planContext`). | `plan/ports/index.ts#createPlanPorts` |
 | `src/server/routing` | 라우터 설정대로 질의를 나누고 조사원/프로시저를 고른다. 하위 폴더: `config`(설정 스키마 · 기본값 · 옛 설정 변환 · 프롬프트), `pipeline`(단계 파이프라인 실행), `steps/{embedding,keyword,llm}`(단계 종류별 구현), `split`(질의 분해). 임베딩 캐시. 개별 라우터가 있는 조사원은 전역 후보에서 빼고 각자의 단계 파이프라인으로 따로 판정한 뒤 합친다(`selectResearchers`). | `routing/index.ts` |
 | `src/server/collect` | 조사원 타입별 수집기 폴더: `duckduckgo`, `pgvector`, `folder`, `codebase`. | `collect/index.ts` |
-| `src/server/collect/codebase` | 코드베이스 조사원(레포 클론 또는 볼륨 폴더 → 심볼 · 호출 · import 구조 인덱스 → 질의). 하위 폴더: `config`(설정 스키마), `guard`(URL · SSRF · ref · 경로 검증), `clone`(얕은 git 클론), `scan`(안전한 파일 순회), `symbols`(언어별 정의 · import 추출), `graph`(구조 인덱스 · import 해석), `rank`(BM25 + 호출 이웃 보강), `store`(볼륨 안 JSON 인덱스), `format`(자료 변환), `model`(인덱스 타입), `acquire`(인덱스 얻기 · 진행 중 중복 방지 · 갱신 정책), `projects`(폴더 아래 하위 프로젝트 인식 · 이름 선택 · 병합). `build.ts` 가 만들기, `index.ts` 가 진입. 결정 근거는 `internals.md`. | `collect/codebase/index.ts` |
-| `src/server/collect` | 조사원 타입별 수집기 폴더: `duckduckgo`, `pgvector`, `folder`, `crawler`. `crawler/` 는 역할별 하위 폴더(`config` 설정·상한, `guard` SSRF 방어, `robots`, `chunk`, `client` 크롤러 컨테이너 REST 클라이언트, `walk` 너비 우선 크롤, `store` 캐시·임베딩·검색)로 나뉜다. | `collect/index.ts`, `collect/crawler/index.ts` |
+| `src/server/collect/codebase` | 코드베이스 조사원(레포 클론 또는 볼륨 폴더 → 심볼 · 호출 · import 구조 인덱스 → 질의). 하위 폴더: `config`(설정 스키마), `guard`(URL · SSRF · ref · 경로 검증), `clone`(얕은 git 클론), `scan`(안전한 파일 순회), `symbols`(언어별 정의 · import 추출), `graph`(구조 인덱스 · import 해석), `rank`(BM25 + 호출 이웃 보강), `store`(볼륨 안 JSON 인덱스), `format`(자료 변환), `model`(인덱스 타입), `acquire`(질의 · 인덱스 만들기 요청 · 진행 중 중복 방지 · 실패 백오프 · 갱신 정책 — 인덱스를 읽지 않고 검색 스레드에 질의한다), `projects`(폴더 아래 하위 프로젝트 인식 · 이름 선택 · 병합). `build.ts` 가 만들기(클론은 메인, 스캔 · 심볼 · 그래프 · 쓰기는 빌드 스레드), `index.ts` 가 진입. `symbols/imports.ts` 는 줄 단위 import 스캐너(정규식 폭주 방지). 결정 근거는 `internals.md`. | `collect/codebase/index.ts` |
+| `src/server/collect/abort` · `collect/timeout` | 수집기의 취소 규약(`isAbort` · `throwIfAborted` · `raceAbort`)과 시한 있는 쿼리(`withStatementTimeout`: 체크아웃한 연결의 `begin; set local statement_timeout; …; commit`). | `collect/abort/index.ts` |
+| `src/server/workers` | CPU 격리 스레드 소비자(`node:worker_threads`). 하위 폴더: `search`(색인 키 해시로 고정되는 검색 스레드 · 색인 캐시 · 협력 취소), `build`(작업 단위 빌드 스레드 · foreground/background 2단계), `regex`(임의 정규식 전용 스레드 하나), `pool`(작업 장부 · 종료 등록), `thread`(스레드 기동 · 종료 확인), `location`(번들 기준 워커 URL), `config`(환경 변수 설정), `testing`(풀 시험용 가짜 스레드), `dist-check`(dist 단독 실행 확인). esbuild 진입점은 각 폴더의 `worker.ts` 이며 `dist/server/workers/<이름>.js` 로 나온다. | `workers/index.ts` |
+| `src/server/collect` | 조사원 타입별 수집기 폴더: `duckduckgo`, `pgvector`, `folder`, `crawler`. `crawler/` 는 역할별 하위 폴더(`config` 설정·상한, `guard` SSRF 방어, `robots`(정규식 없는 매칭), `chunk`, `client` 크롤러 컨테이너 REST 클라이언트, `walk` 너비 우선 크롤, `embedding` 임베딩 설정 고정 · 벡터 검증, `store` 캐시·백필·DB 코사인 검색)로 나뉜다. | `collect/index.ts`, `collect/crawler/index.ts` |
 | `src/server/writer` | 라이터 설정을 `{mode, write}` 로 바꾼다(LLM 실패 시 기본 조립으로 대체). 계획기의 사전 컨텍스트는 템플릿이면 「사전 제공된 컨텍스트」 섹션, LLM 이면 프롬프트에 넣는다(`fillWriterPrompt`). | `writer/index.ts` |
-| `src/server/model` | AI 서버 클라이언트(임베딩 · LLM, OpenAI 호환). 채팅은 `chat/`(스트리밍, 유휴 시간 기준 중단), `stream/`(SSE 해석), `limit/`(동시 호출 제한 · 503/429 재시도)로 나눈다. | `model/index.ts` |
+| `src/server/model` | AI 서버 클라이언트(임베딩 · LLM, OpenAI 호환). 호출은 `queue/` 의 작업 큐에 담기고 소비자가 당겨 간다(채팅 · 임베딩 각자의 큐, 모든 요청을 받는다). `chat/`(스트리밍, 유휴 시간 기준 중단, 수신 중 바이트 상한), `stream/`(SSE 해석 · 스트림 가드), `retry/`(일시 오류 분류 · 백오프)로 나눈다. `forRun` 은 실행에 바인딩된(runKey · 취소 신호) façade 를 돌려준다. | `model/index.ts` |
+| `src/server/queue` | 큐와 소비자: 실행별 라운드로빈 ready 큐(`ring.ts`) · 재시도 지연 큐(`delayed.ts`) · 작업 상태기계(정확히 한 번 settle, 취소는 되돌릴 수 없는 표식) · aging. | `queue/index.ts` |
+| `src/server/run` | 실행 컨텍스트(취소 신호 · 종료 사유 · 선택 시한)와 활성 실행 레지스트리. | `run/index.ts` |
+| `src/server/internal` | 엔진 소유 서버의 내부 전용 listener(`POST /internal/augment`, 줄 단위 JSON 스트림, 연결 이탈 = 실행 취소). MCP stdio 프로세스가 중계한다. | `internal/index.ts` |
+| `src/server/metrics` | 이벤트 루프 지연 계측. | `metrics/index.ts` |
 | `src/server/admin` | 관리 API. 엔티티별 폴더: `researchers`, `procedures`, `router`, `writers`, `ai-server`, `plan`(계획 설정 `GET/PUT /plan/config` · `GET /plan/defaults`), `runs`(시험 실행 로그: `index.ts` 는 라우터, `lifecycle/` 실행 · 진행 방송 · 정리, `list/` 목록 — `params/` 입력 검증, `query/` SQL 빌더, `filters/` 필터 이름, `semantic/` 의미 검색 상수 — , `embedding/` 질의 임베딩 저장 · 백필), `crawl`(크롤러 조사원의 상태·지금 크롤·캐시 지우기). | `admin/index.ts` |
 | `src/server/seed` | 기본 라우터 · 라이터 · AI 서버 값과 사전 정의 프리셋(한 번만). | `seed/index.ts` |
 | `src/server/db` | 커넥션 풀과 상태 조회. | `db/index.ts` |
@@ -52,7 +58,7 @@
 ## 크롤러 조사원과 크롤러 컨테이너
 
 ```
-질의 ─ collectCrawler ─ 캐시 있음? ─ 예 ─▶ 임베딩 유사도 검색(상위 조각) ─▶ 자료
+질의 ─ collectCrawler ─ 캐시 있음? ─ 예 ─▶ DB 코사인 검색(상위 조각, SQL 한 번) ─▶ 자료
                            │ 아니오(또는 크롤 대상 설정이 바뀜)         ▲
                            ▼                                            │ 갱신 주기를 넘겼으면 백그라운드 재크롤
                 walk(너비 우선): URL 마다 SSRF 검사 → 허용 도메인 → robots.txt → 호스트별 간격
@@ -63,4 +69,6 @@
 
 * 크롤러 컨테이너(`apps/crawler`, 공식 Crawl4AI 이미지)는 **렌더링과 마크다운 변환만** 한다. 어디를 갈지(깊이·도메인·robots·간격·SSRF·상한)는 전부 dualcontext 서버(`collect/crawler/walk`)가 결정하고, 크롤러에는 검사를 통과한 URL 하나씩만 보낸다.
 * 캐시는 dualcontext 의 DB 에 둔다(볼륨 하나 규칙 유지). 크롤러 컨테이너는 상태가 없고 볼륨이 없다.
-* 진행 중인 크롤은 프로세스 메모리의 `Map<researcherId, Promise>` 하나(키 = `researchers.id`, 크롤 한 번이 끝나면 지운다, 크기는 조사원 수 이하)로 묶어 같은 조사원의 크롤이 겹치지 않게 한다.
+* 진행 중인 크롤은 프로세스 메모리의 `Map<researcherId, Promise>` 하나(키 = `researchers.id`, 크롤 한 번이 끝나면 지운다, 크기는 조사원 수 이하)로 묶어 같은 조사원의 크롤이 겹치지 않게 한다. 크롤 · 임베딩 백필 · 코드 인덱스 빌드는 **공유 작업**이라 요청의 취소 신호로 죽지 않는다(요청은 기다림에서만 떨어진다). 백필의 단일 비행 키는 (조사원 id, 임베딩 모델)이고, 크롤 첫 실패 뒤 60초 동안은 질의가 크롤을 되풀이하지 않는다.
+* 코사인 순위는 **DB** 가 계산한다(`store/search.ts` 의 `searchSql`: 차원 · NULL · 비유한 선필터가 든 `materialized` CTE → `1 - (embedding <=> 질의)` → `minScore` → 페이지별 `perPage` → `topK`). 질의 벡터는 `[a,b,c]` 문자열로 바인딩하고, 체크아웃한 연결의 `set local statement_timeout = 30000` 안에서 돈다. 임베딩 설정(endpoint · 모델)은 작업 시작 때 한 번 읽어 고정하고(`embedding/`), 백필 UPDATE 는 읽은 텍스트와 같을 때만(`and text = $6`) 적용한다.
+* include/exclude 정규식은 관리자가 쓴 임의 정규식이라 메인에서 돌리지 않는다: 페이지의 링크를 50개 묶음으로 `workers/regex` 스레드에 보내고, 묶음이 200ms 안에 안 끝나면 스레드를 끝내고 그 묶음의 링크를 전부 제외한다.
