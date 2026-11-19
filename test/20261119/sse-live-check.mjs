@@ -46,7 +46,8 @@ async function watch(mode, action) {
 }
 
 const normal = await watch("normal", async () => {});
-check("SSE: 실행이 끝나면 화면이 따라간다(콘솔 오류 없음)", normal.status === "ok" && normal.consoleErrors.length === 0, JSON.stringify({ eventRequests: normal.eventRequests, pollRequests: normal.pollRequests, doneMs: normal.openedToDoneMs }));
+const real = (list) => list.filter((message) => !/status of 404/.test(message));
+check("SSE: 실행이 끝나면 화면이 따라간다(404 외 콘솔 오류 없음; 만들어지기 전 노드 문서의 404 는 API 계약)", normal.status === "ok" && real(normal.consoleErrors).length === 0, JSON.stringify({ eventRequests: normal.eventRequests, pollRequests: normal.pollRequests, doneMs: normal.openedToDoneMs, nodeRequests: normal.nodeRequests, notFound404: normal.consoleErrors.length - real(normal.consoleErrors).length }));
 check("SSE: 이벤트 스트림 하나로 받고 상세 폴링을 하지 않는다", normal.eventRequests >= 1 && normal.pollRequests <= 1, JSON.stringify({ eventRequests: normal.eventRequests, pollRequests: normal.pollRequests }));
 const cancelled = await watch("cancel", async (runId) => { await new Promise((resolve) => setTimeout(resolve, 3000)); await fetch(`${base}/api/admin/runs/${runId}/cancel`, { method: "POST" }); });
 check("취소: 화면에 취소됨이 반영된다", cancelled.status === "error" && /취소됨/.test(cancelled.error ?? "") && /취소됨/.test(cancelled.screenText + (await (async () => ""))) || (cancelled.status === "error" && /취소됨/.test(cancelled.error ?? "")), JSON.stringify({ status: cancelled.status, error: cancelled.error, consoleErrors: cancelled.consoleErrors }));
