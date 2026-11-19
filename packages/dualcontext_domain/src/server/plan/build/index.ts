@@ -1,6 +1,7 @@
-import type { PlanItem } from "../../../common/index.js";
+import { isRunAborted, type PlanItem } from "../../../common/index.js";
 import { computeWaves, type PlanGraph } from "../graph/index.js";
 import type { PlanPorts, Provided } from "../ports.js";
+import { settleAll } from "../settle/index.js";
 import type { StepRecorder } from "../steps/index.js";
 
 /** 아이템이 needs 로 가리키는 사전 아이템 중 컨텍스트가 있는 것(needs 순서). */
@@ -32,7 +33,7 @@ export async function buildItems(
   const waves = computeWaves(graph, ids);
   for (const [index, wave] of waves.entries()) {
     if (onWave) await onWave(wave, index);
-    await Promise.all(
+    await settleAll(
       wave.map(async (id) => {
         const item = graph.byId.get(id) as PlanItem;
         const started = now();
@@ -43,6 +44,7 @@ export async function buildItems(
           item.pairs = Array.isArray(built?.pairs) ? built.pairs : [];
           item.status = item.context.trim() === "" ? "empty" : "built";
         } catch (error) {
+          if (isRunAborted(error)) throw error;
           item.status = "error";
           item.context = "";
           item.error = error instanceof Error ? error.message : String(error);

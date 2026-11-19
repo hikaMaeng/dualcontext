@@ -45,6 +45,11 @@ export type PlanOptions = {
   config: ContextPlanConfig;
   ports: PlanPorts;
   now?: () => number;
+  /**
+   * 실행 취소 신호. 레벨 · 웨이브 · 라운드 경계에서 확인하고, abort 되면 RunAborted 를 던진다. 사유가 deadline 이고 조립된 컨텍스트가
+   * 있으면 던지는 대신 부분 결과(stop = "deadline")를 돌려준다.
+   */
+  signal?: AbortSignal;
   onProgress?: (event: PlanProgress) => Promise<void> | void;
   /**
    * 단계 기록이 늘 때마다(그리고 진행 알림마다) 그 시점의 부분 trace(stop=null)를 건넨다. 값은 계획이 계속 고치는 객체를 가리키므로

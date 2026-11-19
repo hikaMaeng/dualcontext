@@ -99,7 +99,8 @@ export type PlanStop =
   | "no-new-items" // 요구한 것이 모두 이미 컨텍스트가 있는 top 아이템이라 보강할 것이 없다
   | "no-items" // 질의에서 아이템이 나오지 않았다(빈 컨텍스트)
   | "evaluation-failed" // 평가 호출 실패(응답 형식 오류 포함)
-  | "answer-failed"; // 답변 생성 실패
+  | "answer-failed" // 답변 생성 실패
+  | "deadline"; // 선택 시한 만료: 그때까지 조립된 컨텍스트만 돌려준다(부분 결과)
 
 /**
  * 계획이 밟은 단계 하나. 시간 순서대로 `PlanTrace.steps` 에 쌓이고 실행 로그의 「진행 기록」이 그대로 그린다.

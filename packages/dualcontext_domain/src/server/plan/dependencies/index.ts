@@ -1,7 +1,8 @@
-import type { ContextPlanConfig, ItemDraft, PlanItem, PlanTrace } from "../../../common/index.js";
+import { isRunAborted, type ContextPlanConfig, type ItemDraft, type PlanItem, type PlanTrace } from "../../../common/index.js";
 import { cleanDrafts, dedupeCandidates } from "../dedupe/index.js";
 import { addEdge, addItem, type PlanGraph } from "../graph/index.js";
 import type { PlanPorts } from "../ports.js";
+import { settleAll } from "../settle/index.js";
 import type { StepRecorder } from "../steps/index.js";
 
 export type LevelLog = PlanTrace["levels"][number];
@@ -31,7 +32,7 @@ export async function expandDependencies(
   for (let level = 2; level <= config.maxLevels && current.length > 0; level += 1) {
     const failed: { item: string; error: string }[] = [];
     const known: ItemDraft[] = graph.items.map((item) => ({ name: item.name, description: item.description }));
-    const analyses = await Promise.all(
+    const analyses = await settleAll(
       current.map(async (item) => {
         const startedAt = rec?.elapsed() ?? 0;
         try {
@@ -39,6 +40,7 @@ export async function expandDependencies(
           rec?.add({ kind: "prerequisites", round: at.round, ms: rec.elapsed() - startedAt, level, item: item.id, drafts });
           return drafts;
         } catch (error) {
+          if (isRunAborted(error)) throw error;
           const message = error instanceof Error ? error.message : String(error);
           failed.push({ item: item.id, error: message });
           rec?.add({ kind: "prerequisites", round: at.round, ms: rec.elapsed() - startedAt, level, item: item.id, drafts: [], error: message });

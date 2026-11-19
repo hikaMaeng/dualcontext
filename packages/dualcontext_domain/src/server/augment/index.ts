@@ -1,4 +1,5 @@
-import type { AugmentResult, Material, Pair, Procedure, Researcher, RoutingTrace, WriterMode } from "../../common/index.js";
+import { isRunAborted, type AugmentResult, type Material, type Pair, type Procedure, type Researcher, type RoutingTrace, type WriterMode } from "../../common/index.js";
+import { settleAll } from "../plan/settle/index.js";
 import type { Provided } from "../plan/ports.js";
 import type { Selection } from "../route/index.js";
 import { mergeContexts, webLast } from "../write/index.js";
@@ -53,7 +54,11 @@ export async function augmentQuery(query: string, ports: AugmentPorts, provided?
   const pairs: Pair[] = [];
   const procedureRoutings: string[] = [];
 
-  for (const researcher of researcherSelection.selected) {
+  // 조사원마다 수집 · 프로시저 선택은 서로 의존이 없으므로 병렬로 돈다(동시 수는 호출이 지나는 큐의 소비자 수가 정한다).
+  // 결과는 조사원 입력 순서로 이어 붙여 pairs · routing 의 순서가 순차 실행과 같다.
+  type Outcome = { pairs: Pair[]; routings: string[]; procedureRouting?: RoutingTrace["procedures"][number] };
+  const handle = async (researcher: Researcher): Promise<Outcome> => {
+    const out: Outcome = { pairs: [], routings: [] };
     // 이 조사원을 고른 질의(통째 또는 하위 질문)마다 수집하고 자료는 제목으로 중복을 없앤다.
     const asks = selections.filter((entry) => entry.selection.selected.some((chosen) => chosen.id === researcher.id)).map((entry) => entry.asked);
     const collected: Material[] = [];
@@ -62,15 +67,16 @@ export async function augmentQuery(query: string, ports: AugmentPorts, provided?
       try {
         for (const material of await ports.collect(researcher, asked)) if (!collected.some((existing) => existing.title === material.title)) collected.push(material);
       } catch (error) {
+        if (isRunAborted(error)) throw error;
         errors.push(error instanceof Error ? error.message : String(error));
       }
     }
     const materials = { found: collected.slice(0, maxMaterials), error: collected.length === 0 && errors.length > 0 ? errors.join("; ") : undefined };
     // 자료가 하나도 없으면 분석 관점을 붙일 대상이 없다. 프로시저를 고르지 않는다(관련 없는 절차가 컨텍스트에 실리는 것을 막는다).
     if (materials.found.length === 0 && materials.error === undefined) {
-      pairs.push({ researcher, materials: [], procedure: null });
-      procedureRoutings.push("skipped(no-material)");
-      continue;
+      out.pairs.push({ researcher, materials: [], procedure: null });
+      out.routings.push("skipped(no-material)");
+      return out;
     }
     const linked = await ports.listProceduresOf(researcher);
     // 기본 프로시저는 라우팅 후보가 아니다: 범용 문구가 구체적 프로시저보다 앞서(1위 적중 24→19로 측정됨) 오히려 흐리기 때문이다. 폴백으로만 붙는다.
@@ -80,18 +86,24 @@ export async function augmentQuery(query: string, ports: AugmentPorts, provided?
     const base = { researcher, materials: materials.found, error: materials.error };
     // 폴백: 라우팅이 하나도 고르지 못했을 때만, 연결 목록에 있는 활성 기본 프로시저를 대신 붙인다(고른 것이 있으면 붙이지 않는다).
     const fallback = procedures.length === 0 ? linked.find((procedure) => procedure.id === researcher.defaultProcedureId && procedure.enabled) : undefined;
-    routing.procedures.push({ researcher: researcher.name, candidates: trace(candidates, procedureSelection.scores), ...(fallback ? { fallback: "default" as const } : {}) });
+    out.procedureRouting = { researcher: researcher.name, candidates: trace(candidates, procedureSelection.scores), ...(fallback ? { fallback: "default" as const } : {}) };
     if (fallback) {
-      pairs.push({ ...base, procedure: fallback });
-      procedureRoutings.push(defaultProcedureRouting);
+      out.pairs.push({ ...base, procedure: fallback });
+      out.routings.push(defaultProcedureRouting);
     } else if (procedures.length === 0) {
-      pairs.push({ ...base, procedure: null });
-      procedureRoutings.push(procedureSelection.mode);
+      out.pairs.push({ ...base, procedure: null });
+      out.routings.push(procedureSelection.mode);
     }
     for (const procedure of procedures) {
-      pairs.push({ ...base, procedure });
-      procedureRoutings.push(procedureSelection.mode);
+      out.pairs.push({ ...base, procedure });
+      out.routings.push(procedureSelection.mode);
     }
+    return out;
+  };
+  for (const outcome of await settleAll(researcherSelection.selected.map(handle))) {
+    pairs.push(...outcome.pairs);
+    procedureRoutings.push(...outcome.routings);
+    if (outcome.procedureRouting) routing.procedures.push(outcome.procedureRouting);
   }
 
   // 쓸 만한 것이 있는가: 자료가 하나라도 모였거나, 수집 실패가 있어 그 사실을 알려야 하는 경우.
@@ -109,9 +121,9 @@ export async function augmentQuery(query: string, ports: AugmentPorts, provided?
     context = mergeContexts(query, [await ports.writer.write(query, [], given)]);
     calls = 1;
   } else if (ports.writer.mode === "per_pair") {
-    const parts: string[] = [];
     // 쌍별 호출도 각 호출이 사전 컨텍스트를 받는다(쌍 하나만 보는 LLM 라이터도 앞 아이템을 반영해야 한다).
-    for (const pair of ordered) parts.push(await (given ? ports.writer.write(query, [pair], given) : ports.writer.write(query, [pair])));
+    // 쌍마다 호출은 서로 의존이 없으므로 병렬로 돌고 결과는 쌍 순서로 이어 붙인다.
+    const parts = await settleAll(ordered.map(async (pair) => (given ? ports.writer.write(query, [pair], given) : ports.writer.write(query, [pair]))));
     context = mergeContexts(query, parts);
     calls = pairs.length;
   } else {

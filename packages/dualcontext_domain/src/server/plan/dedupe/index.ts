@@ -1,4 +1,4 @@
-import type { ContextPlanConfig, ItemDraft } from "../../../common/index.js";
+import { isRunAborted, type ContextPlanConfig, type ItemDraft } from "../../../common/index.js";
 import { findByName, normalizeName, type PlanGraph } from "../graph/index.js";
 import type { PlanCallRef, PlanPorts } from "../ports.js";
 
@@ -60,7 +60,8 @@ export async function dedupeCandidates(
         if (valid(index) && typeof id === "string" && graph.byId.has(id)) existing.set(index, id);
       }
       method = "llm";
-    } catch {
+    } catch (error) {
+      if (isRunAborted(error)) throw error;
       method = "llm-fallback-name";
     }
   }

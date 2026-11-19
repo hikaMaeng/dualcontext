@@ -1,4 +1,4 @@
-import type { PlanStop, PlanTrace } from "../../common/index.js";
+import { isRunAborted, throwIfAborted, type PlanStop, type PlanTrace } from "../../common/index.js";
 import { assembleContext } from "./assemble/index.js";
 import { buildItems } from "./build/index.js";
 import { expandDependencies } from "./dependencies/index.js";
@@ -33,7 +33,7 @@ export async function planContext(query: string, options: PlanOptions): Promise<
   // 부분 trace: 아직 멈추지 않았으므로 stop=null 이고 rounds 는 루프가 채우는 state.rounds 다.
   const emit = () => options.onTrace?.(trace(null, { rounds: state.rounds }));
   const rec = createRecorder(now, started, emit);
-  const state: RunState = { graph: createGraph(), config, ports, now, progress, waves: [], levels: [], rounds: [], rec };
+  const state: RunState = { graph: createGraph(), config, ports, now, progress, waves: [], levels: [], rounds: [], rec, ...(options.signal ? { signal: options.signal } : {}) };
   const trace = (stop: PlanStop | null, extra: Partial<PlanTrace> = {}): PlanTrace => ({
     mode: config.mode as PlanTrace["mode"],
     limits: {
@@ -54,43 +54,61 @@ export async function planContext(query: string, options: PlanOptions): Promise<
     ms: now() - started
   });
 
-  await progress("analyze");
-  const analyzeStarted = rec.elapsed();
-  let drafts: Awaited<ReturnType<typeof ports.analyze>>;
+  const signal = options.signal;
+  const execute = async (): Promise<{ context: string; trace: PlanTrace }> => {
+    throwIfAborted(signal);
+    await progress("analyze");
+    const analyzeStarted = rec.elapsed();
+    let drafts: Awaited<ReturnType<typeof ports.analyze>>;
+    try {
+      drafts = await ports.analyze(query, { round: 0 });
+    } catch (error) {
+      // 질의 분석 실패는 그대로 던진다(실행 로그가 오류로 닫는다). 그 전에 부분 trace 에 남겨 어디서 멈췄는지 보이게 한다.
+      rec.add({ kind: "analyze", round: 0, ms: rec.elapsed() - analyzeStarted, drafts: [], error: error instanceof Error ? error.message : String(error) });
+      throw error;
+    }
+    rec.add({ kind: "analyze", round: 0, ms: rec.elapsed() - analyzeStarted, drafts: cleanDrafts(drafts) });
+    throwIfAborted(signal);
+    const seeded = await seedTopItems(query, drafts, state.graph, { round: 0, maxCreate: config.maxItems }, config, ports, rec);
+    if (seeded.created.length === 0) {
+      await progress("done", "no-items");
+      return { context: "", trace: trace("no-items") };
+    }
+
+    throwIfAborted(signal);
+    await progress("dependencies");
+    const expanded = await expandDependencies(query, state.graph, seeded.created, { round: 0 }, config, ports, rec);
+    state.levels.push(...expanded.levels);
+
+    throwIfAborted(signal);
+    const waves = await buildItems(query, state.graph, state.graph.items.map((item) => item.id), ports, now, (wave, i) => {
+      throwIfAborted(signal);
+      return progress("build", `wave ${i + 1}: ${wave.join(",")}`);
+    }, { rec, round: 0 });
+    state.waves.push(...waves);
+
+    if (config.mode === "decompose") {
+      rec.add({ kind: "assemble", round: 0, ms: 0, items: state.graph.items.filter((item) => item.top && item.status === "built").map((item) => item.id), chars: assembleContext(state.graph.items).length });
+      await progress("done", "mode-decompose");
+      return { context: assembleContext(state.graph.items), trace: trace("mode-decompose") };
+    }
+
+    const result = await reevaluateLoop(query, state);
+    await progress("done", result.stop);
+    return {
+      context: assembleContext(state.graph.items),
+      trace: trace(result.stop, { ...(result.answer !== undefined ? { answer: result.answer } : {}) })
+    };
+  };
+
   try {
-    drafts = await ports.analyze(query, { round: 0 });
+    return await execute();
   } catch (error) {
-    // 질의 분석 실패는 그대로 던진다(실행 로그가 오류로 닫는다). 그 전에 부분 trace 에 남겨 어디서 멈췄는지 보이게 한다.
-    rec.add({ kind: "analyze", round: 0, ms: rec.elapsed() - analyzeStarted, drafts: [], error: error instanceof Error ? error.message : String(error) });
+    // 시한 만료: 시작한 분기가 모두 정착한 뒤(settleAll) 이 자리에 온다. 그때까지 조립된 컨텍스트가 있으면 부분 결과로 돌려준다.
+    if (isRunAborted(error) && error.reason === "deadline") {
+      const context = assembleContext(state.graph.items);
+      if (context.trim() !== "") return { context, trace: trace("deadline") };
+    }
     throw error;
   }
-  rec.add({ kind: "analyze", round: 0, ms: rec.elapsed() - analyzeStarted, drafts: cleanDrafts(drafts) });
-  const seeded = await seedTopItems(query, drafts, state.graph, { round: 0, maxCreate: config.maxItems }, config, ports, rec);
-  if (seeded.created.length === 0) {
-    await progress("done", "no-items");
-    return { context: "", trace: trace("no-items") };
-  }
-
-  await progress("dependencies");
-  const expanded = await expandDependencies(query, state.graph, seeded.created, { round: 0 }, config, ports, rec);
-  state.levels.push(...expanded.levels);
-
-  const waves = await buildItems(query, state.graph, state.graph.items.map((item) => item.id), ports, now, (wave, i) =>
-    progress("build", `wave ${i + 1}: ${wave.join(",")}`),
-    { rec, round: 0 }
-  );
-  state.waves.push(...waves);
-
-  if (config.mode === "decompose") {
-    rec.add({ kind: "assemble", round: 0, ms: 0, items: state.graph.items.filter((item) => item.top && item.status === "built").map((item) => item.id), chars: assembleContext(state.graph.items).length });
-    await progress("done", "mode-decompose");
-    return { context: assembleContext(state.graph.items), trace: trace("mode-decompose") };
-  }
-
-  const result = await reevaluateLoop(query, state);
-  await progress("done", result.stop);
-  return {
-    context: assembleContext(state.graph.items),
-    trace: trace(result.stop, { ...(result.answer !== undefined ? { answer: result.answer } : {}) })
-  };
 }

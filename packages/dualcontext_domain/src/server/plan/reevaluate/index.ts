@@ -1,4 +1,4 @@
-import type { ContextPlanConfig, PlanEvaluation, PlanRound, PlanStop } from "../../../common/index.js";
+import { isRunAborted, throwIfAborted, type ContextPlanConfig, type PlanEvaluation, type PlanRound, type PlanStop } from "../../../common/index.js";
 import { assembleContext } from "../assemble/index.js";
 import { buildItems } from "../build/index.js";
 import { expandDependencies, type LevelLog } from "../dependencies/index.js";
@@ -19,6 +19,8 @@ export type RunState = {
   /** 라운드 기록. 루프가 push 하므로 부분 trace 에서도 진행 중인 라운드가 보인다. */
   rounds: PlanRound[];
   rec: StepRecorder;
+  /** 실행 취소 신호. 라운드 경계에서 확인한다. */
+  signal?: AbortSignal;
 };
 
 const message = (error: unknown) => (error instanceof Error ? error.message : String(error));
@@ -57,6 +59,7 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
   let lastAnswer: string | undefined;
 
   for (let round = 0; ; round += 1) {
+    throwIfAborted(state.signal);
     const context = assembleContext(graph.items);
     const record: PlanRound = { round, contextChars: context.length, answer: { text: null, error: null, ms: 0 }, evaluation: null, addedItemIds: [] };
     rounds.push(record);
@@ -68,6 +71,7 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
       record.answer.text = await ports.answer(query, context, { round });
       lastAnswer = record.answer.text;
     } catch (error) {
+      if (isRunAborted(error)) throw error;
       record.answer.error = message(error);
     }
     record.answer.ms = now() - answerStarted;
@@ -80,6 +84,7 @@ export async function reevaluateLoop(query: string, state: RunState): Promise<{ 
       record.evaluation = judge(await ports.evaluate(query, context, record.answer.text, { round }), limits);
       rec.add({ kind: "evaluate", round, ms: now() - evaluateStarted, score: record.evaluation.score, pass: record.evaluation.pass, missing: record.evaluation.missing.length });
     } catch (error) {
+      if (isRunAborted(error)) throw error;
       record.evaluationError = message(error);
       rec.add({ kind: "evaluate", round, ms: now() - evaluateStarted, score: 0, pass: false, missing: 0, error: record.evaluationError });
       return { rounds, stop: "evaluation-failed", answer: lastAnswer };
