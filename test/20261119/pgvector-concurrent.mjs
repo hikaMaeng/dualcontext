@@ -6,7 +6,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 
 const seconds = Number(process.argv[2] ?? 40);
 const embeddingUrl = process.env.EMBED_URL ?? "http://127.0.0.1:12345/v1/embeddings";
-const embeddingModel = "embeddinggemma2:mp";
+const embeddingModel = process.env.EMBED_MODEL ?? "embeddinggemma2:mp";
 const out = new URL("./verify/", import.meta.url);
 mkdirSync(out, { recursive: true });
 
@@ -58,38 +58,42 @@ function openSession() {
 }
 
 const percentile = (values, p) => (values.length === 0 ? null : [...values].sort((a, b) => a - b)[Math.min(values.length - 1, Math.floor(values.length * p))]);
+// MODE=both(기본: 임베딩 + SQL) | embed(임베딩만, DB 안 씀) | sql(임베딩을 한 번만 받아 재사용하고 SQL 만 반복). 원인 분리용.
+const mode = process.env.MODE ?? "both";
+const fixed = mode === "sql" ? await embed(queries[0]) : null;
 const results = workers.map((worker) => ({ ...worker, rounds: 0, rows: 0, errors: 0, embedMs: [], sqlMs: [] }));
 const stopAt = Date.now() + seconds * 1000;
 const started = Date.now();
 
 await Promise.all(results.map(async (worker, index) => {
-  const session = openSession();
+  const session = mode === "embed" ? null : openSession();
   let round = index;
   while (Date.now() < stopAt) {
     const query = queries[round % queries.length];
     round += 1;
     try {
       const t0 = performance.now();
-      const full = await embed(query);
+      const full = fixed ?? (await embed(query));
       const t1 = performance.now();
-      const text = await session.query(sqlFor(worker.table, full));
+      const text = session ? await session.query(sqlFor(worker.table, full)) : "";
       const t2 = performance.now();
       worker.embedMs.push(Math.round(t1 - t0));
       worker.sqlMs.push(Math.round(t2 - t1));
       worker.rows += text.split("\n").filter((line) => line && line !== "DONE").length;
       worker.rounds += 1;
+      if (mode === "sql") await new Promise((resolve) => setTimeout(resolve, 400));
     } catch (error) {
       worker.errors += 1;
       console.error(String(error));
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
   }
-  session.close();
+  session?.close();
 }));
 
 const summary = {
   seconds, elapsedMs: Date.now() - started, concurrency: workers.length,
   workers: results.map((w) => ({ id: w.id, table: w.table, rounds: w.rounds, rows: w.rows, errors: w.errors, embedMs: { p50: percentile(w.embedMs, 0.5), p99: percentile(w.embedMs, 0.99), max: Math.max(0, ...w.embedMs) }, sqlMs: { p50: percentile(w.sqlMs, 0.5), p99: percentile(w.sqlMs, 0.99), max: Math.max(0, ...w.sqlMs) } }))
 };
-writeFileSync(new URL("./pgvector-concurrent_result.json", out), JSON.stringify(summary, null, 2));
+writeFileSync(new URL(`./pgvector-concurrent${process.argv[3] ? `_${process.argv[3]}` : ""}_result.json`, out), JSON.stringify(summary, null, 2));
 console.log(JSON.stringify(summary, null, 1));
